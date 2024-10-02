@@ -38,14 +38,6 @@ public:
         quit();
     }
 
-    void anotherInstanceStarted (const juce::String& commandLine) override
-    {
-        // When another instance of the app is launched while this one is running,
-        // this method is invoked, and the commandLine parameter tells you what
-        // the other instance's command-line arguments were.
-        juce::ignoreUnused (commandLine);
-    }
-
     //==============================================================================
     /*
         This class implements the desktop window that contains an instance of
@@ -63,7 +55,7 @@ public:
             setUsingNativeTitleBar (true);
             setContentOwned (new MainComponent(), true);
 
-           #if JUCE_IOS || JUCE_ANDROID
+           #if JUCE_IOS || JUCE_ANDROID#if
             setFullScreen (true);
            #else
             setResizable (true, true);
