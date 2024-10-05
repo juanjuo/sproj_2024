@@ -10,7 +10,7 @@ add_executable(${PROJECT_NAME}
         source/plugin_test_cmake_test.cpp
 )
 
-# Sets the necessary include directories: ours, JUCE's, and googletest's.
+# Sets the necessary audio directories: ours, JUCE's, and googletest's.
 target_include_directories(${PROJECT_NAME}
         PRIVATE
         plugin_test_cmake/include
