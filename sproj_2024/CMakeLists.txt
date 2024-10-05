@@ -6,8 +6,11 @@ cmake_minimum_required(VERSION 3.22)
 project(sproj2024 VERSION 0.1.0)
 
 # Adding a directory with the library/application name as a subfolder of the
-# include folder is a good practice. It helps avoid name clashes later on.
-set(INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+# audio folder is a good practice. It helps avoid name clashes later on.
+set(AUDIO_DIR ${CMAKE_CURRENT_SOURCE_DIR}/audio)
+set(GUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/gui)
+set(CONTROLLER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/controller)
+set(MAIN_DIR ${CMAKE_CURRENT_SOURCE_DIR}/main)
 
 # Adds a plugin target (that's basically what the Projucer does).
 #juce_add_plugin(${PROJECT_NAME}
@@ -31,19 +34,27 @@ juce_add_gui_app(${PROJECT_NAME}
         # COMPANY_NAME ...                  # Specify the name of the app's author
         PRODUCT_NAME "Sproj2024")     # The name of the final executable, which can differ from the target name
 
-# Sets the source files of the plugin project.
+# Sets the gui files of the plugin project.
 target_sources(${PROJECT_NAME}
         PRIVATE
-            source/Main.cpp
-            source/MainComponent.cpp
+        main/Main.cpp
+        gui/MainComponent.cpp
+        audio/Clock.cpp
             #${INCLUDE_DIR}/PluginEditor.h
             #${INCLUDE_DIR}/PluginProcessor.h
 )
 
-# Sets the include directories of the plugin project.
+# Sets the audio directories of the plugin project.
 target_include_directories(${PROJECT_NAME}
         PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/audio
+        ${CMAKE_CURRENT_SOURCE_DIR}/controller
+        ${CMAKE_CURRENT_SOURCE_DIR}/gui
+        ${CMAKE_CURRENT_SOURCE_DIR}/main
+
+
+
+
 )
 
 # Links to all necessary dependencies. The present ones are recommended by JUCE.
@@ -83,5 +94,5 @@ else()
     target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
-# In Visual Studio this command provides a nice grouping of source files in "filters".
+# In Visual Studio this command provides a nice grouping of gui files in "filters".
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/..)
