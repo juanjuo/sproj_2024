@@ -23,6 +23,6 @@ class Quantizer
 
   private:
 
-    Clock clock;
+    //Clock clock;
 
 };

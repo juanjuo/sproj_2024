@@ -9,7 +9,28 @@ class Clock : public juce::HighResolutionTimer
 {
 public:
 
-  void hiResTimerCallback() override;
+    Clock() = default;
+
+    void setNumerator(const int& numerator); //passing by reference since these values won't be modified
+
+    void setDenominator(const int& denominator);
+
+    void hiResTimerCallback() override;
+
+    void setInterval();
+
+    void setBPM(const int& bpm);
+
+    void getMilliseconds(int milliseconds);
+
+    float toMilliseconds(const int& bpm);
+
+    float toBPM(const int& milliseconds);
 
 private:
+    int* bpm_val;
+    int* numerator_val;
+    int* denominator_val;
+
 };
+

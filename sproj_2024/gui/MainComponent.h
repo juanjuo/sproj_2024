@@ -5,6 +5,7 @@
 // have called `juce_generate_juce_header(<thisTarget>)` in your CMakeLists.txt,
 // you could `#audio <JuceHeader.h>` here instead, to make all your module headers visible.
 #include <juce_gui_extra/juce_gui_extra.h>
+#include <ClockGUI.cpp>
 
 //==============================================================================
 /*
@@ -14,16 +15,15 @@
 class MainComponent final : public juce::Component
 {
 public:
-    //==============================================================================
+
     MainComponent();
 
-    //==============================================================================
     void paint (juce::Graphics&) override;
     void resized() override;
 
 private:
-    //==============================================================================
-    // Your private member variables go here...
+
+    ClockGUI clockGui;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };

@@ -39,7 +39,11 @@ target_sources(${PROJECT_NAME}
         PRIVATE
         main/Main.cpp
         gui/MainComponent.cpp
+        gui/MainWindow.cpp
+        gui/ClockGUI.cpp
         audio/Clock.cpp
+        audio/Quantizer.cpp
+        audio/Record.cpp
             #${INCLUDE_DIR}/PluginEditor.h
             #${INCLUDE_DIR}/PluginProcessor.h
 )
