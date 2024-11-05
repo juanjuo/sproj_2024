@@ -1,5 +1,9 @@
+#include <Clock.h>
+#include <MainAudio.h>
+
 #include "MainComponent.h"
 #include "MainWindow.h"
+#include "Identifiers.h"
 
 //==============================================================================
 class GuiAppApplication final : public juce::JUCEApplication
@@ -21,12 +25,17 @@ public:
         // This method is where you should put your application's initialisation code..
         juce::ignoreUnused (commandLine);
 
-        mainWindow.reset (new MainWindow (getApplicationName()));
+        mainAudio = std::make_unique<MainAudio>();
+
+        mainWindow.reset (new MainWindow (getApplicationName(), valueTree));
     }
 
     void shutdown() override
     {
         // Add your application's shutdown code here..
+
+        //clock = nullptr;
+        mainAudio = nullptr;
 
         mainWindow = nullptr; // (deletes our window)
     }
@@ -40,7 +49,9 @@ public:
     }
 
 private:
+    juce::ValueTree valueTree {SP_ID::MAIN_BRANCH};
     std::unique_ptr<MainWindow> mainWindow;
+    std::unique_ptr<MainAudio> mainAudio;
 };
 
 //==============================================================================

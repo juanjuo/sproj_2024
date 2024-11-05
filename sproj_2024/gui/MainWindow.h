@@ -12,7 +12,7 @@
     class MainWindow final : public juce::DocumentWindow
     {
     public:
-        explicit MainWindow (juce::String name);
+        explicit MainWindow (juce::String name, juce::ValueTree tree);
 
         void closeButtonPressed() override;
 

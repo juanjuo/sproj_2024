@@ -2,97 +2,92 @@
 // Created by Juan Diego on 10/9/24.
 //
 
-#include <juce_gui_extra/juce_gui_extra.h>
+#include <ClockGUI.h>
+#include <Identifiers.h>
+
 
 /*
  * GUI class that handles the initialization and interactions with the Clock class
  */
 
-class ClockGUI : public juce::Component
+// Constructor
+ClockGUI::ClockGUI(const juce::ValueTree& valueTree) : clockGuiValueTree(valueTree)
 {
-  public:
 
-    ClockGUI()
-    {
-      tempoNumerator.setFont(font); //font
-      tempoDenominator.setFont(font);
-      BPM.setFont(font);
+  //clock.startTimer(clock.toMilliseconds(*bpm));
 
-      //maybe using tempoNumerator.setJustification?
-      tempoNumerator.setIndents(10, 0); // margin
-      tempoDenominator.setIndents(10, 0);
-      BPM.setIndents(10, 0);
+  tempoNumerator.setFont(font);
+  tempoDenominator.setFont(font);
+  BPM.setFont(font);
 
-      tempoNumerator.setTextToShowWhenEmpty(std::to_string(*tempo_num_val), juce::Colours::white);
-      tempoDenominator.setTextToShowWhenEmpty(std::to_string(*tempo_num_val), juce::Colours::white);
-      BPM.setTextToShowWhenEmpty(std::to_string(*bpm), juce::Colours::white);
+  tempoNumerator.setIndents(10, 0);
+  tempoDenominator.setIndents(10, 0);
+  BPM.setIndents(10, 0);
 
-      tempoNumerator.setReturnKeyStartsNewLine(false); //no new line
-      tempoDenominator.setReturnKeyStartsNewLine(false);
-      BPM.setReturnKeyStartsNewLine(false);
+  tempoNumerator.setTextToShowWhenEmpty(std::to_string(*tempo_num_val), juce::Colours::white);
+  tempoDenominator.setTextToShowWhenEmpty(std::to_string(*tempo_den_val), juce::Colours::white);
+  BPM.setTextToShowWhenEmpty(std::to_string(*bpm), juce::Colours::white);
 
-      //tempoNumerator.setCaretVisible(false);
-      //tempoDenominator.setCaretVisible(false);
+  tempoNumerator.setReturnKeyStartsNewLine(false);
+  tempoDenominator.setReturnKeyStartsNewLine(false);
+  BPM.setReturnKeyStartsNewLine(false);
 
-      tempoNumerator.setInputRestrictions(1); //only 1 input
-      tempoDenominator.setInputRestrictions(1);
-      BPM.setInputRestrictions(3);
+  tempoNumerator.setInputRestrictions(1);
+  tempoDenominator.setInputRestrictions(1);
+  BPM.setInputRestrictions(3);
 
-      tempoNumerator.onReturnKey = [this]() //using lambda when ENTER key pressed
-      {
-        *tempo_num_val = tempoNumerator.getText().getIntValue();
-        std::cout << std::to_string(*tempo_num_val) << '\n';
-      };
-
-      tempoDenominator.onReturnKey = [this]()
-      {
-        *tempo_den_val = tempoDenominator.getText().getIntValue();
-        std::cout << std::to_string(*tempo_den_val) << '\n';
-      };
-
-      BPM.onReturnKey = [this]()
-      {
-        *bpm = BPM.getText().getIntValue();
-        std::cout << std::to_string(*bpm) << '\n';
-      };
-
-      addAndMakeVisible(tempoNumerator); //initialize
-      addAndMakeVisible(tempoDenominator);
-      addAndMakeVisible(BPM);
+  tempoNumerator.onReturnKey = [this]()
+  {
+    *tempo_num_val = tempoNumerator.getText().getIntValue();
+    if (clockGuiValueTree.isValid()) {
+      clockGuiValueTree.setProperty(SP_ID::numerator, tempoNumerator.getTextValue(), nullptr );
+      std::cout << std::to_string(*tempo_num_val) + " from clockGUI" << '\n';
     }
+  };
 
-    void resized() override //position on screen
-    {
-      tempoNumerator.setBounds(0, 0, 50, 50);
-      tempoDenominator.setBounds(50, 0, 50, 50);
-      BPM.setBounds(100, 0, 100, 50);
-    }
+  tempoDenominator.onReturnKey = [this]()
+  {
+    *tempo_den_val = tempoDenominator.getText().getIntValue();
+    clockGuiValueTree.setProperty(SP_ID::denominator, tempoDenominator.getTextValue(), nullptr );
+    std::cout << std::to_string(*tempo_den_val) + " from clockGUI" << '\n';
+  };
 
-    int* getTempoNumVal()
-    {
-      return tempo_num_val;
-    }
+  BPM.onReturnKey = [this]()
+  {
+    *bpm = BPM.getText().getIntValue();
+    clockGuiValueTree.setProperty(SP_ID::bpm, BPM.getTextValue(), nullptr );
+    std::cout << std::to_string(*bpm) + " from clockGUI"<< '\n';
+  };
 
-    int* getTempoDenVal()
-    {
-      return tempo_den_val;
-    }
+  addAndMakeVisible(tempoNumerator);
+  addAndMakeVisible(tempoDenominator);
+  addAndMakeVisible(BPM);
+}
 
-    int* getBpm()
-    {
-      return bpm;
-    }
+// Resized method for positioning on the screen
+void ClockGUI::resized()
+{
+  tempoNumerator.setBounds(0, 0, 50, 50);
+  tempoDenominator.setBounds(50, 0, 50, 50);
+  BPM.setBounds(100, 0, 100, 50);
+}
 
-  private:
-    int* tempo_num_val = new int{4};
-    int* tempo_den_val = new int{4};
-    int* bpm = new int{120};
+// Getter for tempo numerator value
+int* ClockGUI::getTempoNumVal()
+{
+  return tempo_num_val;
+}
 
-    juce::FontOptions font = juce::FontOptions(50.0, juce::Font::bold); //font
-    juce::Font clockFont = juce::Font(font);
-    juce::TextEditor tempoNumerator; //text fields
-    juce::TextEditor tempoDenominator;
-    juce::TextEditor BPM;
-};
+// Getter for tempo denominator value
+int* ClockGUI::getTempoDenVal()
+{
+  return tempo_den_val;
+}
+
+// Getter for BPM
+int* ClockGUI::getBpm()
+{
+  return bpm;
+}
 
 

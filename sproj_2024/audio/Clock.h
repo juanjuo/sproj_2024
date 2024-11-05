@@ -17,20 +17,19 @@ public:
 
     void hiResTimerCallback() override;
 
-    void setInterval();
+    void setInterval(const float& interval);
 
     void setBPM(const int& bpm);
 
-    void getMilliseconds(int milliseconds);
-
     float toMilliseconds(const int& bpm);
 
-    float toBPM(const int& milliseconds);
+    float toBPM(const float& milliseconds);
 
 private:
     int* bpm_val;
     int* numerator_val;
     int* denominator_val;
+    float* interval_val = new float{1000.0};
 
 };
 

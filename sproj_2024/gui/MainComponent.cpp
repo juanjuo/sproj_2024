@@ -1,8 +1,9 @@
 #include "MainComponent.h"
 
 //==============================================================================
-MainComponent::MainComponent()
+MainComponent::MainComponent(juce::ValueTree tree) : clockGui(tree)
 {
+    if(tree.isValid()) std::cout<<"is valid"<<std::endl;
     setSize (600, 400);
 }
 
@@ -17,7 +18,6 @@ void MainComponent::paint (juce::Graphics& g)
     // g.drawText ("Hello World!", getLocalBounds(), juce::Justification::centred, true);
 
     addAndMakeVisible(clockGui);
-    setSize (600, 400);
 }
 
 void MainComponent::resized()
