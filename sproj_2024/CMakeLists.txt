@@ -39,7 +39,13 @@ target_sources(${PROJECT_NAME}
         PRIVATE
         main/Main.cpp
         gui/MainComponent.cpp
+        gui/MainWindow.cpp
+        gui/ClockGUI.cpp
         audio/Clock.cpp
+        audio/Quantizer.cpp
+        audio/Record.cpp
+        audio/SPAudioProcessor.cpp
+        audio/MainAudio.cpp
             #${INCLUDE_DIR}/PluginEditor.h
             #${INCLUDE_DIR}/PluginProcessor.h
 )
@@ -51,6 +57,7 @@ target_include_directories(${PROJECT_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/controller
         ${CMAKE_CURRENT_SOURCE_DIR}/gui
         ${CMAKE_CURRENT_SOURCE_DIR}/main
+        ${CMAKE_CURRENT_SOURCE_DIR}/helpers
 
 
 
@@ -61,9 +68,12 @@ target_include_directories(${PROJECT_NAME}
 # If you use one of the additional modules, like the DSP module, you need to specify it here.
 target_link_libraries(${PROJECT_NAME}
         PRIVATE
+            juce::juce_audio_devices
+            juce::juce_audio_processors
             juce::juce_audio_utils
             juce::juce_gui_extra
             juce::juce_core
+            juce::juce_dsp
         PUBLIC
             juce::juce_recommended_config_flags
             juce::juce_recommended_lto_flags #link time optimization flags
