@@ -4,7 +4,7 @@
 
 #include "MainAudio.h"
 
-MainAudio::MainAudio() : audioGraph(new juce::AudioProcessorGraph())
+MainAudio::MainAudio(juce::ValueTree v) : audioGraph(new juce::AudioProcessorGraph()), mainAudioValueTree(v)
 {
     audioGraph->enableAllBuses();
 
@@ -34,7 +34,7 @@ void MainAudio::initGraph()
         std::make_unique<juce::AudioProcessorGraph::AudioGraphIOProcessor>
         (juce::AudioProcessorGraph::AudioGraphIOProcessor::audioOutputNode));
 
-    myProcessor = audioGraph->addNode(std::make_unique<SPAudioProcessor>());
+    clock = audioGraph->addNode(std::make_unique<Clock>(mainAudioValueTree));
 
     connectAudioNodes();
 
@@ -50,8 +50,8 @@ void MainAudio::connectAudioNodes()
     for (int channel = 0; channel < 2; ++channel)
     {
         audioGraph->addConnection({ { inputNode->nodeID,  channel},
-                                                { myProcessor->nodeID, channel } });
-        audioGraph->addConnection({{myProcessor->nodeID, channel},
+                                                { clock->nodeID, channel } });
+        audioGraph->addConnection({{clock->nodeID, channel},
                                                             {outputNode->nodeID, channel} });
     }
 }

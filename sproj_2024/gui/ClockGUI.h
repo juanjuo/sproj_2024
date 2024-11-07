@@ -9,7 +9,7 @@
 class ClockGUI : public juce::Component
 {
 public:
-    explicit ClockGUI(const juce::ValueTree& valueTree);
+    explicit ClockGUI(juce::ValueTree& valueTree);
 
     void resized() override;
 

@@ -26,7 +26,6 @@ public:
 private:
 
     ClockGUI clockGui;
-    Clock clock;
     //juce::ValueTree mainValueTree {mainValueTreeName};
 
 

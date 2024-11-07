@@ -15,12 +15,6 @@ SPAudioProcessor::SPAudioProcessor()
                      #endif
                        )
 {
-    //rate = 0;
-    osc.setFrequency(440.0f);
-    osc.initialise([] (float x)
-        {
-        return std::sin (x);
-        });
 }
 
 SPAudioProcessor::~SPAudioProcessor()
@@ -98,18 +92,14 @@ void SPAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
-    //rate = sampleRate;
 
-    juce::dsp::ProcessSpec spec { sampleRate, static_cast<juce::uint32> (samplesPerBlock), 2};
-    osc.prepare(spec);
+
 }
 
 void SPAudioProcessor::releaseResources()
 {
     // When playback stops, you can use this as an opportunity to free up any
     // spare memory, etc.
-
-    pos = 0;
 }
 
 bool SPAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
@@ -137,8 +127,7 @@ bool SPAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 }
 
 void SPAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
-                                              juce::MidiBuffer& midiMessages)
-{
+                                              juce::MidiBuffer& midiMessages) {
     juce::ignoreUnused (midiMessages);
 
     // juce::ScopedNoDenormals noDenormals;
@@ -168,15 +157,6 @@ void SPAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     //     }
     //     // ..do something to the data...
     // }
-
-    juce::dsp::AudioBlock<float> block (buffer);
-    juce::dsp::ProcessContextReplacing<float> context (block);
-    osc.process (context);
-}
-
-void SPAudioProcessor::reset()
-{
-    osc.reset();
 }
 
 //==============================================================================
@@ -212,3 +192,12 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new SPAudioProcessor();
 }
+
+//FROM ASYNC UPDATER
+
+void SPAudioProcessor::handleAsyncUpdate()
+{
+    //do something as base class maybe?
+}
+
+

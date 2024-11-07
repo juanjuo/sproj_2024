@@ -25,7 +25,7 @@ public:
         // This method is where you should put your application's initialisation code..
         juce::ignoreUnused (commandLine);
 
-        mainAudio = std::make_unique<MainAudio>();
+        mainAudio = std::make_unique<MainAudio>(valueTree);
 
         mainWindow.reset (new MainWindow (getApplicationName(), valueTree));
     }

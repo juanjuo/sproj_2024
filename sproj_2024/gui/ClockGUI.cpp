@@ -11,7 +11,7 @@
  */
 
 // Constructor
-ClockGUI::ClockGUI(const juce::ValueTree& valueTree) : clockGuiValueTree(valueTree)
+ClockGUI::ClockGUI(juce::ValueTree& valueTree) : clockGuiValueTree(valueTree)
 {
 
   //clock.startTimer(clock.toMilliseconds(*bpm));

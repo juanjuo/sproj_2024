@@ -26,12 +26,12 @@ ADD MIDI
 #include "juce_audio_processors/juce_audio_processors.h"
 #include "juce_audio_utils/juce_audio_utils.h"
 #include "juce_audio_devices/juce_audio_devices.h"
-#include "SPAudioProcessor.h"
+#include <Clock.h>
 
 class MainAudio
 {
 public:
-    MainAudio();
+    MainAudio(juce::ValueTree v);
 
     ~MainAudio();
 
@@ -43,10 +43,12 @@ public:
 
 private:
 
+    juce::ValueTree mainAudioValueTree;
+
     juce::AudioProcessorGraph::Node::Ptr inputNode;
     juce::AudioProcessorGraph::Node::Ptr outputNode;
 
-    juce::AudioProcessorGraph::Node::Ptr myProcessor;
+    juce::AudioProcessorGraph::Node::Ptr clock;
 
     std::unique_ptr<juce::AudioProcessorGraph> audioGraph;
     juce::AudioDeviceManager deviceManager;

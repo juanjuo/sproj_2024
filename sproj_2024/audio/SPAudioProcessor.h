@@ -7,7 +7,7 @@
 #include <juce_dsp/juce_dsp.h>
 
 
-class SPAudioProcessor : public juce::AudioProcessor
+class SPAudioProcessor : public juce::AudioProcessor, public juce::AsyncUpdater
 {
 public:
     //==============================================================================
@@ -47,13 +47,13 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
-    void reset() override;
+    //FROM ASYNC UPDATER
+    void handleAsyncUpdate() override;
+
 
 private:
-    float rate;
-    int pos = 0;
 
-    juce::dsp::Oscillator<float> osc;
+
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SPAudioProcessor)
 };
