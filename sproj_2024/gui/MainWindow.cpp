@@ -4,6 +4,7 @@
 
 #include <MainWindow.h>
 
+
 //==============================================================================
     /*
         This class implements the desktop window that contains an instance of
@@ -18,8 +19,16 @@ MainWindow::MainWindow (juce::String name, juce::ValueTree tree)
 
     setResizable (true, true);
     centreWithSize (getWidth(), getHeight());
+    setFullScreen(true);
 
     setVisible (true);
+
+    //MELATONIN WINDOW
+    // open the inspector window
+    inspector.setVisible(true);
+
+    // enable the inspector
+    inspector.toggle(true);
 }
 
 void MainWindow::closeButtonPressed()

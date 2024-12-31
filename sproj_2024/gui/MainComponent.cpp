@@ -1,7 +1,7 @@
 #include "MainComponent.h"
 
 //==============================================================================
-MainComponent::MainComponent(juce::ValueTree tree) : clockGui(tree)
+MainComponent::MainComponent(juce::ValueTree tree) : controlDeckGui(tree)
 {
     if(tree.isValid()) std::cout<<"is valid"<<std::endl;
     setSize (600, 400);
@@ -17,7 +17,7 @@ void MainComponent::paint (juce::Graphics& g)
     // g.setColour (juce::Colours::white);
     // g.drawText ("Hello World!", getLocalBounds(), juce::Justification::centred, true);
 
-    addAndMakeVisible(clockGui);
+    addAndMakeVisible(controlDeckGui); //controlDeckGUI add
 }
 
 void MainComponent::resized()
@@ -26,5 +26,5 @@ void MainComponent::resized()
     // If you add any child components, this is where you should
     // update their positions.
 
-    clockGui.setBounds(getWidth()/2 - 100, getHeight()/2 - 100, 200, 50);
+    controlDeckGui.setBounds(0, 0, 200, 50); //controlDeckGUI size (not size of the metronome!)
 }

@@ -8,7 +8,8 @@
 #include <Identifiers.h>
 #include <random>
 
-class Clock : public SPAudioProcessor, public juce::ValueTree::Listener
+class Clock : public SPAudioProcessor,
+              public juce::ValueTree::Listener
 {
 public:
 

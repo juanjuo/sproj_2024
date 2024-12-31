@@ -3,6 +3,8 @@
 //
 #pragma once
 #include <MainComponent.h>
+#include "melatonin_inspector/melatonin_inspector.h"
+
 
 //==============================================================================
     /*
@@ -17,5 +19,7 @@
         void closeButtonPressed() override;
 
     private:
+        melatonin::Inspector inspector { *this }; //MELATONIN WINDOW
+
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainWindow)
     };

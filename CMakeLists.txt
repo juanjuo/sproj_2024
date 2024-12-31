@@ -43,6 +43,21 @@ CPMAddPackage(
         "gtest_force_shared_crt ON"
 )
 
+CPMAddPackage(
+        NAME JIVE
+        GITHUB_REPOSITORY ImJimmi/JIVE
+        VERSION 1.2.2
+        SOURCE_DIR ${LIB_DIR}/jive
+)
+
+CPMAddPackage(
+        NAME melatonin_inspector
+        GITHUB_REPOSITORY sudara/melatonin_inspector
+        GIT_TAG main
+        #VERSION main
+        SOURCE_DIR ${LIB_DIR}/melatonin_inspector
+)
+
 # This command allows running tests from the "build" folder (the one where CMake generates the project to).
 enable_testing()
 
@@ -50,4 +65,4 @@ enable_testing()
 add_subdirectory(sproj_2024)
 
 # Adds all the targets configured in the "test" folder.
-#add_subdirectory(test)
+add_subdirectory(test)

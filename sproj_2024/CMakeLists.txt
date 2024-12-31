@@ -40,7 +40,7 @@ target_sources(${PROJECT_NAME}
         main/Main.cpp
         gui/MainComponent.cpp
         gui/MainWindow.cpp
-        gui/ClockGUI.cpp
+        #gui/ControlDeckGUI.
         audio/Clock.cpp
         audio/Quantizer.cpp
         audio/Record.cpp
@@ -74,6 +74,9 @@ target_link_libraries(${PROJECT_NAME}
             juce::juce_gui_extra
             juce::juce_core
             juce::juce_dsp
+            #jive::jive_layouts
+            #jive::jive_style_sheets
+            melatonin_inspector
         PUBLIC
             juce::juce_recommended_config_flags
             juce::juce_recommended_lto_flags #link time optimization flags
@@ -85,6 +88,7 @@ target_compile_definitions(${PROJECT_NAME}
         PRIVATE
             JUCE_APPLICATION_NAME_STRING="$<TARGET_PROPERTY:${PROJECT_NAME},JUCE_PRODUCT_NAME>"
             JUCE_APPLICATION_VERSION_STRING="$<TARGET_PROPERTY:${PROJECT_NAME},JUCE_VERSION>"
+            JIVE_GUI_ITEMS_HAVE_STYLE_SHEETS=1
         PUBLIC
             JUCE_WEB_BROWSER=0
             JUCE_USE_CURL=0

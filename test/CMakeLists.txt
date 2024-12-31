@@ -7,13 +7,12 @@ enable_testing()
 
 # Creates the test console application.
 add_executable(${PROJECT_NAME}
-        source/plugin_test_cmake_test.cpp
+        audio_test/MainAudioTest.cpp
 )
 
 # Sets the necessary audio directories: ours, JUCE's, and googletest's.
 target_include_directories(${PROJECT_NAME}
         PRIVATE
-        plugin_test_cmake/include
         ${JUCE_SOURCE_DIR}/modules
         ${GOOGLETEST_SOURCE_DIR}/googletest/include
 )
@@ -21,7 +20,7 @@ target_include_directories(${PROJECT_NAME}
 # Thanks to the fact that we link against the gtest_main library, we don't have to write the main function ourselves.
 target_link_libraries(${PROJECT_NAME}
         PRIVATE
-        plugin_test_cmake
+        #sproj2024
         GTest::gtest_main #?????
 )
 
