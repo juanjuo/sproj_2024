@@ -3,6 +3,7 @@
 //
 
 #pragma once
+#include <DeckGUI.h>
 #include <juce_gui_extra/juce_gui_extra.h>
 #include <Identifiers.h>
 
@@ -10,100 +11,105 @@
 class ClockGUI final : public juce::Component
 {
 public:
-  explicit ClockGUI(juce::ValueTree& valueTree) : clockGuiValueTree(valueTree)
+  explicit ClockGUI(juce::ValueTree& valueTree, const int height)
+    : TEXTBOX_HEIGHT(height), clockGuiValueTree(valueTree)
   {
-    tempoNumerator.setFont(font);
-    tempoDenominator.setFont(font);
-    BPM.setFont(font);
+    configureTextEditor(tempoNumerator, std::to_string(*tempo_num_val));
+    configureTextEditor(tempoDenominator, std::to_string(*tempo_den_val));
+    configureTextEditor(BPM, std::to_string(*bpm));
 
-    tempoNumerator.setIndents(10, 0);
-    tempoDenominator.setIndents(10, 0);
-    BPM.setIndents(10, 0);
-
-    tempoNumerator.setTextToShowWhenEmpty(std::to_string(*tempo_num_val), juce::Colours::white);
-    tempoDenominator.setTextToShowWhenEmpty(std::to_string(*tempo_den_val), juce::Colours::white);
-    BPM.setTextToShowWhenEmpty(std::to_string(*bpm), juce::Colours::white);
-
-    tempoNumerator.setReturnKeyStartsNewLine(false);
-    tempoDenominator.setReturnKeyStartsNewLine(false);
-    BPM.setReturnKeyStartsNewLine(false);
-
+    //Different restrictions
     tempoNumerator.setInputRestrictions(1);
     tempoDenominator.setInputRestrictions(1);
     BPM.setInputRestrictions(3);
 
-    tempoNumerator.onReturnKey = [this]()
-    {
-      *tempo_num_val = tempoNumerator.getText().getIntValue();
-      if (clockGuiValueTree.isValid()) {
-        clockGuiValueTree.setProperty(SP_ID::numerator, tempoNumerator.getTextValue(), nullptr );
-        std::cout << std::to_string(*tempo_num_val) + " from clockGUI" << '\n';
-      }
-    };
-
-    tempoDenominator.onReturnKey = [this]()
-    {
-      *tempo_den_val = tempoDenominator.getText().getIntValue();
-      clockGuiValueTree.setProperty(SP_ID::denominator, tempoDenominator.getTextValue(), nullptr );
-      std::cout << std::to_string(*tempo_den_val) + " from clockGUI" << '\n';
-    };
-
-    BPM.onReturnKey = [this]()
-    {
-      *bpm = BPM.getText().getIntValue();
-      clockGuiValueTree.setProperty(SP_ID::bpm, BPM.getTextValue(), nullptr );
-      std::cout << std::to_string(*bpm) + " from clockGUI"<< '\n';
-    };
-
-    addAndMakeVisible(tempoNumerator);
-    addAndMakeVisible(tempoDenominator);
-    addAndMakeVisible(BPM);
+    configureTextEditorCallback(tempoNumerator, *tempo_num_val, SP_ID::numerator);
+    configureTextEditorCallback(tempoDenominator, *tempo_den_val, SP_ID::denominator);
+    configureTextEditorCallback(BPM, *bpm, SP_ID::bpm);
   }
 
   void resized() override
   {
-    tempoNumerator.setBounds(0, 0, 50, 50);
-    tempoDenominator.setBounds(50, 0, 50, 50);
-    BPM.setBounds(100, 0, 100, 50);
+    BPM.setBounds(CLOCK_MARGIN, 0, BPM_WIDTH, TEXTBOX_HEIGHT);
+    tempoNumerator.setBounds(CLOCK_MARGIN + BPM.getWidth(), 0, TEXTBOX_HEIGHT, TEXTBOX_HEIGHT);
+    //tempoDenominator.setBounds(50, 0, TEXTBOX_HEIGHT, TEXTBOX_HEIGHT);
+  }
+
+  void configureTextEditor(juce::TextEditor& editor, const juce::String& defaultText) {
+    editor.setFont(FONT);
+    editor.setJustification(JUSTIFICATION);
+    editor.setTextToShowWhenEmpty(defaultText, juce::Colours::white);
+    editor.setReturnKeyStartsNewLine(false);
+    editor.setCaretVisible(false);
+    editor.setColour(juce::TextEditor::backgroundColourId, juce::Colours::transparentBlack);
+    editor.setColour(juce::TextEditor::outlineColourId, juce::Colours::transparentBlack);
+    addAndMakeVisible(editor);
+
+  }
+
+  void configureTextEditorCallback(juce::TextEditor& editor, int& value, const juce::Identifier& propertyId) {
+    editor.onReturnKey = [this, &editor, &value, propertyId]() {
+      value = editor.getText().getIntValue(); //Add bounds
+      if (clockGuiValueTree.isValid()) {
+        clockGuiValueTree.setProperty(propertyId, editor.getTextValue(), nullptr);
+        std::cout << std::to_string(value) + " from clockGUI\n";
+      }
+    };
   }
 
 
-  int* getTempoNumVal()
+  int* getTempoNumVal() const
   {
     return tempo_num_val;
   }
 
-  int* getTempoDenVal()
+  int* getTempoDenVal() const
   {
     return tempo_den_val;
   }
 
-  int* getBpm()
+  int* getBpm() const
   {
     return bpm;
   }
 
 private:
+  //CLOCK POSITIONING
+  const int TEXTBOX_HEIGHT;
+  const int BPM_WIDTH = 100;
+  const int CLOCK_MARGIN = 30;
+  const float FONT_SIZE = 30.0f;
+  const juce::Justification JUSTIFICATION = {juce::Justification::centred};
+
+  //FONT
+  juce::FontOptions FONT = juce::FontOptions(FONT_SIZE, juce::Font::bold);
+  juce::Font clockFont = juce::Font(FONT);
+
+
   juce::ValueTree clockGuiValueTree;
 
+  //ValueTree VALS
   int* tempo_num_val = new int{4};
   int* tempo_den_val = new int{4};
   int* bpm = new int{120};
 
-  juce::FontOptions font = juce::FontOptions(50.0, juce::Font::bold);
-  juce::Font clockFont = juce::Font(font);
+
+
+
   juce::TextEditor tempoNumerator;
   juce::TextEditor tempoDenominator;
   juce::TextEditor BPM;
 };
 
 //Component that holds all the smaller parts of the Control Deck
-class ControlDeckGUI final : public juce::Component
+class ControlDeckGUI final : public juce::Component,
+                             public DeckGUI
+
 {
 public:
-  const int WINDOW_HEIGHT = 40;
 
-  explicit ControlDeckGUI(juce::ValueTree& valueTree) : clockGui(valueTree)
+  explicit ControlDeckGUI(juce::ValueTree& valueTree)
+    : DeckGUI(200, 40, juce::Colour::fromRGB(15, 15, 15)), clockGui(valueTree, 40)
   {
     setSize(WINDOW_HEIGHT, WINDOW_HEIGHT);
   }
@@ -117,17 +123,13 @@ public:
 
   void resized() override
   {
-    clockGui.setBounds(0, 0, 200, 400);
+    clockGui.setBounds(getLocalBounds());
   }
 
 private:
 
-  const juce::Colour BACKGROUND_COLOUR = juce::Colour::fromRGB(15, 15, 15);
-  const int BORDER_WIDTH = 2;
-
-
-  ClockGUI clockGui; //Metronome
-
+  //Metronome
+  ClockGUI clockGui;
 };
 
 

@@ -3,11 +3,15 @@
 //
 #pragma once
 #include <juce_gui_extra/juce_gui_extra.h>
+#include <DeckGUI.h>
 
-class MainDeckGUI final : public juce::Component
+class MainDeckGUI final : public juce::Component,
+                          public DeckGUI
+
 {
 public:
   explicit MainDeckGUI(juce::ValueTree& valueTree)
+    : DeckGUI(0, 0, juce::Colour::fromRGB(195, 195, 195))
   {
   }
 
@@ -20,10 +24,9 @@ public:
   void resized() override
   {
   }
+
 private:
 
-  const juce::Colour BACKGROUND_COLOUR = juce::Colour::fromRGB(195, 195, 195);
-  const int BORDER_WIDTH = 2;
 
 };
 
