@@ -34,6 +34,7 @@ void MainAudio::initGraph()
         std::make_unique<juce::AudioProcessorGraph::AudioGraphIOProcessor>
         (juce::AudioProcessorGraph::AudioGraphIOProcessor::audioOutputNode));
 
+    //initialize clock
     clock = audioGraph->addNode(std::make_unique<Clock>(mainAudioValueTree));
 
     connectAudioNodes();

@@ -12,12 +12,7 @@ get played accordingly (how is the AudioProcessor then gonna play the recorded s
 each of these tracks are then assigned a AudioProcessorPlayer and then added to an AudioGraph
 which is in charged of mixing all of the tracks together
 
-Maybe the main file should be an DeviceManager? so that then you can turn on/off the audio callbacks or the audio graph
-and then everything else builds on top.
-
-
 ADD MIDI
-
 
  */
 
