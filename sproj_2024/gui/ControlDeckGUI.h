@@ -101,13 +101,17 @@ private:
 class ControlDeckGUI final : public juce::Component
 {
 public:
+  const int WINDOW_HEIGHT = 40;
 
   explicit ControlDeckGUI(juce::ValueTree& valueTree) : clockGui(valueTree)
   {
+    setSize(WINDOW_HEIGHT, WINDOW_HEIGHT);
   }
 
   void paint(juce::Graphics &g) override
   {
+    g.fillAll(BACKGROUND_COLOUR);
+    g.drawRect(this->getLocalBounds(), BORDER_WIDTH);
     addAndMakeVisible(clockGui);
   }
 
@@ -117,6 +121,10 @@ public:
   }
 
 private:
+
+  const juce::Colour BACKGROUND_COLOUR = juce::Colour::fromRGB(15, 15, 15);
+  const int BORDER_WIDTH = 2;
+
 
   ClockGUI clockGui; //Metronome
 
