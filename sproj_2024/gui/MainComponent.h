@@ -11,6 +11,7 @@
 #include <FreeDeckGUI.h>
 #include <MainDeckGUI.h>
 #include <MixDeckGUI.h>
+#include <MenuComponent.h>
 
 //==============================================================================
 /*
@@ -34,8 +35,7 @@ private:
     FreeDeckGUI freeDeckGui;
     MixDeckGUI mixDeckGui;
 
-
-
+    MenuComponent menu;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };

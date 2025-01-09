@@ -19,3 +19,9 @@ namespace SP_ID
 
     #undef DECLARE_ID
 }
+
+enum SP_CommandID
+{
+    print = 1
+};
+
