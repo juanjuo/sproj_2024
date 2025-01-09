@@ -15,19 +15,20 @@
  * GUI:
  * - expand metronome, make number boxes behave correctly
  * - add Track Tree Structure
- * - implement looping stage??? (including playhead, drag and drop, a grid that links to the metrono)
+ * - implement looping stage (including playhead, drag and drop, a grid that links to the metrono)
  * - Project Management (load, save, name)
- * - LOOK INTO JIVE!!
  * - Use Debuggin for screen ((Put JUCE_ENABLE_REPAINT_DEBUGGING=1 in
  *   target_compile_definitions in your CMakeLists.txt))
  * - Use JUCE_LIVE_CONSTANT (lets you manipulate any value live to fine-tune them)
  *
  * AUDIO:
- * - Record
+ * - Device Manager
+ * - Recording - using device manager and writing recorded buffers to disk
+ * - Playback - using recorded buffers from disk and using device manager
  * - MIDI
  * - Playback commands (start, stop)
  * - Moving Playhead
- * -
+ * - Improve Metronome, make it identify beats and produce different tones
  *
  * LOOPER:
  * - Quantizing Commands ?? linked to the metronome

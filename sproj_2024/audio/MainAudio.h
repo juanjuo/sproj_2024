@@ -5,7 +5,7 @@
 /*
 TODO:
 
-Each track is a AudioProcessor, which is able to record audio form a Audio Device.
+Each track is an AudioProcessor, which is able to record audio form an Audio Device.
 the AudioProcessor then should save all the recorded audio in a BUFFER, which will
 get played accordingly (how is the AudioProcessor then gonna play the recorded stuff?)
 
@@ -38,16 +38,14 @@ public:
 
 private:
 
-    juce::ValueTree mainAudioValueTree;
+    juce::ValueTree valueTree;
 
     juce::AudioProcessorGraph::Node::Ptr inputNode;
     juce::AudioProcessorGraph::Node::Ptr outputNode;
 
-    juce::AudioProcessorGraph::Node::Ptr clock;
+    juce::AudioProcessorGraph::Node::Ptr metronome;
 
     std::unique_ptr<juce::AudioProcessorGraph> audioGraph;
     juce::AudioDeviceManager deviceManager;
     juce::AudioProcessorPlayer audioPlayer;
-
-
 };

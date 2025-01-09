@@ -12,6 +12,7 @@ MainComponent::MainComponent(juce::ValueTree tree) : controlDeckGui(tree), mainD
     addAndMakeVisible(freeDeckGui);
     addAndMakeVisible(mixDeckGui);
     addAndMakeVisible(mainDeckGui);
+    addAndMakeVisible(menu);
 }
 
 //==============================================================================

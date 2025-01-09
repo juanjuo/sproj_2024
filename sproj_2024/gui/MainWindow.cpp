@@ -21,7 +21,7 @@ MainWindow::MainWindow (juce::String name, juce::ValueTree tree)
     centreWithSize (getWidth(), getHeight());
     setFullScreen(true);
 
-    setVisible (true);
+    MainWindow::setVisible (true);
 
     //MELATONIN WINDOW
     // open the inspector window
