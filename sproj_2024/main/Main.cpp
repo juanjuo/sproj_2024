@@ -3,6 +3,8 @@
 #include "Identifiers.h"
 
 
+#include "jive/jive_layouts/utilities/jive_LayoutStrategy.h"
+
 
 /* TODO:
  *
@@ -42,7 +44,7 @@ class GuiAppApplication final : public juce::JUCEApplication
 {
 public:
     //==============================================================================
-    GuiAppApplication() {}
+    GuiAppApplication() = default;
 
     // We inject these as compile definitions from the CMakeLists.txt
     // If you've enabled the juce header with `juce_generate_juce_header(<thisTarget>)`
@@ -57,15 +59,28 @@ public:
         // This method is where you should put your application's initialisation code..
         juce::ignoreUnused (commandLine);
 
-        mainAudio = std::make_unique<MainAudio>(valueTree);
+        mainAudio = std::make_unique<MainAudio>(valueTree, *commandManager);
 
-        mainWindow.reset (new MainWindow (getApplicationName(), valueTree));
+        mainWindow.reset (new MainWindow (getApplicationName(), valueTree, *commandManager));
+
+
+
+
+        //std::cerr << commandManager->getNumCommands() << std::endl;
+
+        //std::cerr << commandManager->invokeDirectly(SP_CommandID::print, true) << std::endl;
+
+
     }
 
     void shutdown() override
     {
         // Add your application's shutdown code here..
         mainAudio = nullptr;
+
+        //dummyClass = nullptr;
+
+        commandManager = nullptr;
 
         mainWindow = nullptr; // (deletes our window)
     }
@@ -79,6 +94,7 @@ public:
     }
 
 private:
+    std::unique_ptr<juce::ApplicationCommandManager> commandManager = std::make_unique<juce::ApplicationCommandManager>();
     juce::ValueTree valueTree {SP_ID::MAIN_BRANCH};
     std::unique_ptr<MainWindow> mainWindow;
     std::unique_ptr<MainAudio> mainAudio;

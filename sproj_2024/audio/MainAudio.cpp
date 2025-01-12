@@ -4,7 +4,8 @@
 
 #include "MainAudio.h"
 
-MainAudio::MainAudio(juce::ValueTree v) : audioGraph(new juce::AudioProcessorGraph()), valueTree(v)
+MainAudio::MainAudio(juce::ValueTree v, juce::ApplicationCommandManager& manager)
+    : audioGraph(new juce::AudioProcessorGraph()), valueTree(v), commandManager(manager)
 {
     audioGraph->enableAllBuses();
 
@@ -14,6 +15,12 @@ MainAudio::MainAudio(juce::ValueTree v) : audioGraph(new juce::AudioProcessorGra
     initGraph();
 
     audioPlayer.setProcessor(audioGraph.get());
+    //
+    // commandManager.registerAllCommandsForTarget (this); //3 REGISTERING COMMANDS FOR THIS TARGET
+    //
+    // // this ensures that commands invoked on the DemoRunner application are correctly
+    // // forwarded to this demo
+    // commandManager.setFirstCommandTarget (nullptr);
 }
 
 MainAudio::~MainAudio()
@@ -21,6 +28,49 @@ MainAudio::~MainAudio()
     deviceManager.removeAudioCallback(&audioPlayer);
 
 }
+
+// //ApplicationCommandTarget methods
+// MainAudio::ApplicationCommandTarget *getNextCommandTarget()
+// {
+//     return nullptr;
+// }
+//
+// void MainAudio::getAllCommands(juce::Array<juce::CommandID> &c)
+// {
+//     juce::Array<juce::CommandID> commands{
+//         SP_CommandID::print
+//     };
+//     c.addArray(commands);
+// }
+//
+// void MainAudio::getCommandInfo(juce::CommandID commandID, juce::ApplicationCommandInfo &result)
+// {
+//     switch (commandID)
+//     {
+//         case SP_CommandID::print:
+//             result.setInfo("Print", "Prints something to the console", "Print", 0);
+//         result.setTicked(false);
+//         result.addDefaultKeypress('p', juce::ModifierKeys::commandModifier);
+//         break;
+//         default:
+//             break;
+//     }
+// }
+//
+// bool MainAudio::perform(const InvocationInfo &info)
+// {
+//     switch (info.commandID)
+//     {
+//         case SP_CommandID::print:
+//             std::cerr << "PRINTING TO THE SCREEN FROM AUDIO" << std::endl;
+//         break;
+//         default:
+//             return false;
+//     }
+//
+//     return true;
+// }
+// //
 
 void MainAudio::initGraph()
 {

@@ -1,8 +1,8 @@
 #include "MainComponent.h"
 
 //==============================================================================
-MainComponent::MainComponent(juce::ValueTree tree) : controlDeckGui(tree), mainDeckGui(tree),
-                                                     freeDeckGui(tree), mixDeckGui(tree)
+MainComponent::MainComponent(juce::ValueTree tree, juce::ApplicationCommandManager& manager)
+    : controlDeckGui(tree), mainDeckGui(tree), freeDeckGui(tree), mixDeckGui(tree), menu(manager)
 
 {
     if (tree.isValid()) std::cout << "is valid" << std::endl;

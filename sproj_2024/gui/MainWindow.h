@@ -14,7 +14,7 @@
     class MainWindow final : public juce::DocumentWindow
     {
     public:
-        explicit MainWindow (juce::String name, juce::ValueTree tree);
+        explicit MainWindow (juce::String name, juce::ValueTree tree, juce::ApplicationCommandManager& manager);
 
         void closeButtonPressed() override;
 

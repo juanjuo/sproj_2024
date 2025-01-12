@@ -4,7 +4,8 @@
 
 #include "Clock.h"
 
-Clock::Clock(juce::ValueTree v) : interval_val(5000), counter_val(0), note_length(2000), clockValueTree(v), clockSampleRate(44100)
+Clock::Clock(juce::ValueTree v)
+    : interval_val(5000), counter_val(0), note_length(2000), clockValueTree(v), clockSampleRate(44100)
 {
     clockValueTree.addListener(this);
 
@@ -12,23 +13,23 @@ Clock::Clock(juce::ValueTree v) : interval_val(5000), counter_val(0), note_lengt
 
     distribution = std::uniform_real_distribution<float>(0.2, 0.8);
 
-    osc.setFrequency(440.0f);
-    osc.initialise([] (float x)
-        {
-        return std::sin (x);
-        });
+    createWavetable();
 }
 
+//AudioProcessor
 void Clock::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
     juce::dsp::ProcessSpec spec { sampleRate, static_cast<juce::uint32> (samplesPerBlock), 2};
-    osc.prepare(spec);
 
     clockSampleRate = sampleRate;
 
     interval_val = milliToSamples(BPMToMilli(120), sampleRate);
 
     counter_val = 0; //reset counter
+
+    sineTone = new WavetableOscillator (sineTable);
+    int frequency = 440.0;
+    sineTone->setFrequency ((float) frequency, (float) sampleRate);
 }
 
 void Clock::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
@@ -38,12 +39,6 @@ void Clock::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& mid
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
-    //clean extra output channels
-    // for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-    // {
-    //     buffer.clear (i, 0, buffer.getNumSamples());
-    // }
-
     for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
     {
         if (++counter_val >= interval_val) counter_val = 0;
@@ -52,8 +47,9 @@ void Clock::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& mid
             for (int channel = 0; channel < totalNumOutputChannels; channel++)
             {
                 auto* channelData = buffer.getWritePointer (channel);
-                float randomFloat = distribution(generator);
-                channelData[sample] = randomFloat;
+                //float randomFloat = distribution(generator);
+                auto levelSample = sineTone->getNextSample() * level;
+                channelData[sample] = levelSample;
 
             }
         }
@@ -77,9 +73,11 @@ void Clock::releaseResources()
 
 void Clock::reset()
 {
-    osc.reset();
-}
 
+}
+//
+
+//ValueTree
 void Clock::handleAsyncUpdate()
 {
     int bpm = clockValueTree.getProperty(SP_ID::bpm);
@@ -87,6 +85,29 @@ void Clock::handleAsyncUpdate()
     std::cout << "from clock class" << std::endl;
 }
 
+void Clock::valueTreePropertyChanged(juce::ValueTree &treeWhosePropertyHasChanged, const juce::Identifier &property)
+{
+    triggerAsyncUpdate();
+}
+//
+
+//Clock
+void Clock::createWavetable()
+{
+    sineTable.setSize (1, (int) tableSize + 1);
+    auto* samples = sineTable.getWritePointer (0);
+
+    auto angleDelta = juce::MathConstants<double>::twoPi / (double) (tableSize - 1);
+    auto currentAngle = 0.0;
+
+    for (unsigned int i = 0; i < tableSize; ++i)
+    {
+        auto sample = std::sin (currentAngle);
+        samples[i] = (float) sample;
+        currentAngle += angleDelta;
+    }
+    samples[tableSize] = samples[0];
+}
 
 void Clock::setNumerator(int numerator)
 {
@@ -132,10 +153,7 @@ int Clock::milliToSamples(int milliseconds, double sampleRate)
     return static_cast<int> (samples);
 }
 
-void Clock::valueTreePropertyChanged(juce::ValueTree &treeWhosePropertyHasChanged, const juce::Identifier &property)
-{
-    triggerAsyncUpdate();
-}
+
 
 
 
