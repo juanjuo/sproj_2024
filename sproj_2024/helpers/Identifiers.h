@@ -22,6 +22,7 @@ namespace SP_ID
 
 enum SP_CommandID
 {
-    print = 1
+    print = 1,
+    printDummy
 };
 

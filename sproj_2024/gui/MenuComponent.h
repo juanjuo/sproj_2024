@@ -5,16 +5,19 @@
 #pragma once
 #include <juce_gui_basics/juce_gui_basics.h>
 #include <Identifiers.h>
+#include <DummyClass.h>
 
 class MenuComponent final : public juce::Component,
                             public juce::MenuBarModel,
                             public juce::ApplicationCommandTarget
 {
 public:
-    MenuComponent()
+    explicit MenuComponent(juce::ApplicationCommandManager& manager)
+        : commandManager(manager), dummyClass(manager)
     {
-        menuBar.reset (new juce::MenuBarComponent (this));
-        addAndMakeVisible (menuBar.get());
+
+        //menuBar.reset (new juce::MenuBarComponent (this));
+        //addAndMakeVisible (menuBar.get());
         setApplicationCommandManagerToWatch (&commandManager); //for MenuBarModel
         commandManager.registerAllCommandsForTarget (this); //3 REGISTERING COMMANDS FOR THIS TARGET
 
@@ -33,8 +36,6 @@ public:
         #if JUCE_MAC
         setMacMainMenu(this);
         #endif
-
-        setSize (500, 500);
     }
 
     ~MenuComponent() override
@@ -43,7 +44,7 @@ public:
         MenuBarModel::setMacMainMenu (nullptr);
        #endif
 
-        commandManager.setFirstCommandTarget (nullptr);
+        //commandManager.setFirstCommandTarget (nullptr);
     }
 
     //MenuBar Methods
@@ -61,6 +62,7 @@ public:
             //menu.addCommandItem(&commandManager, CommandIDs::menuPositionInsideWindow);
             #if JUCE_MAC
             menu.addCommandItem(&commandManager, SP_CommandID::print);
+            menu.addCommandItem(&commandManager, SP_CommandID::printDummy);
             #endif
         }
 
@@ -74,7 +76,9 @@ public:
     //ApplicationCommandTarget methods
     ApplicationCommandTarget *getNextCommandTarget() override
     {
-        return findFirstTargetParentComponent();
+        return &dummyClass;
+        //return findFirstTargetParentComponent();
+        //return nullptr;
     }
 
     void getAllCommands(juce::Array<juce::CommandID> &c) override
@@ -92,7 +96,9 @@ public:
             case SP_CommandID::print:
                 result.setInfo("Print", "Prints something to the console", "Print", 0);
                 result.setTicked(false);
+                //result.setActive(true);
                 result.addDefaultKeypress('p', juce::ModifierKeys::shiftModifier);
+                //commandManager.commandStatusChanged();
                 break;
             default:
                 break;
@@ -114,7 +120,9 @@ public:
     }
 
 private:
-    juce::ApplicationCommandManager commandManager;
-    std::unique_ptr<juce::MenuBarComponent> menuBar;
+    juce::ApplicationCommandManager& commandManager;
+    //std::unique_ptr<juce::MenuBarComponent> menuBar;
+
+    DummyClass dummyClass;
 };
 

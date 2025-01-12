@@ -26,9 +26,19 @@ ADD MIDI
 class MainAudio
 {
 public:
-    MainAudio(juce::ValueTree v);
+    MainAudio(juce::ValueTree v, juce::ApplicationCommandManager& manager);
 
     ~MainAudio();
+
+    // //ApplicationCommandTarget methods
+    // ApplicationCommandTarget *getNextCommandTarget() override;
+    //
+    // void getAllCommands(juce::Array<juce::CommandID> &c) override;
+    //
+    // void getCommandInfo(juce::CommandID commandID, juce::ApplicationCommandInfo &result) override;
+    //
+    // bool perform(const InvocationInfo &info) override;
+    // //
 
     void initGraph();
 
@@ -37,7 +47,6 @@ public:
     void connectAudioNodes();
 
 private:
-
     juce::ValueTree valueTree;
 
     juce::AudioProcessorGraph::Node::Ptr inputNode;
@@ -48,4 +57,6 @@ private:
     std::unique_ptr<juce::AudioProcessorGraph> audioGraph;
     juce::AudioDeviceManager deviceManager;
     juce::AudioProcessorPlayer audioPlayer;
+
+    juce::ApplicationCommandManager& commandManager;
 };
