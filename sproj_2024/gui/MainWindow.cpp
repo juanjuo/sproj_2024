@@ -10,7 +10,7 @@
         This class implements the desktop window that contains an instance of
         our MainComponent class.
     */
-MainWindow::MainWindow (juce::String name, juce::ValueTree tree, juce::ApplicationCommandManager& manager)
+MainWindow::MainWindow (juce::String name, juce::ValueTree tree, SPCommandManager& manager)
             : DocumentWindow (name, juce::Desktop::getInstance().getDefaultLookAndFeel().findColour
                            (ResizableWindow::backgroundColourId), DocumentWindow::allButtons)
 {

@@ -1,10 +1,9 @@
 #include <MainAudio.h>
 #include "MainWindow.h"
 #include "Identifiers.h"
-
+#include <SPCommandManager.h>
 
 #include "jive/jive_layouts/utilities/jive_LayoutStrategy.h"
-
 
 /* TODO:
  *
@@ -63,9 +62,6 @@ public:
 
         mainWindow.reset (new MainWindow (getApplicationName(), valueTree, *commandManager));
 
-
-
-
         //std::cerr << commandManager->getNumCommands() << std::endl;
 
         //std::cerr << commandManager->invokeDirectly(SP_CommandID::print, true) << std::endl;
@@ -94,7 +90,7 @@ public:
     }
 
 private:
-    std::unique_ptr<juce::ApplicationCommandManager> commandManager = std::make_unique<juce::ApplicationCommandManager>();
+    std::unique_ptr<SPCommandManager> commandManager = std::make_unique<SPCommandManager>();
     juce::ValueTree valueTree {SP_ID::MAIN_BRANCH};
     std::unique_ptr<MainWindow> mainWindow;
     std::unique_ptr<MainAudio> mainAudio;
