@@ -5,15 +5,15 @@
 #pragma once
 #include <juce_gui_basics/juce_gui_basics.h>
 #include <Identifiers.h>
-#include <DummyClass.h>
+#include <SPCommandManager.h>
 
 class MenuComponent final : public juce::Component,
                             public juce::MenuBarModel,
                             public juce::ApplicationCommandTarget
 {
 public:
-    explicit MenuComponent(juce::ApplicationCommandManager& manager)
-        : commandManager(manager), dummyClass(manager)
+    explicit MenuComponent(SPCommandManager& manager)
+        : commandManager(manager)
     {
 
         //menuBar.reset (new juce::MenuBarComponent (this));
@@ -36,6 +36,10 @@ public:
         #if JUCE_MAC
         setMacMainMenu(this);
         #endif
+
+        //commandManager.commandStatusChanged();
+
+        commandManager.addTargetToCommandManager(this);
     }
 
     ~MenuComponent() override
@@ -62,7 +66,7 @@ public:
             //menu.addCommandItem(&commandManager, CommandIDs::menuPositionInsideWindow);
             #if JUCE_MAC
             menu.addCommandItem(&commandManager, SP_CommandID::print);
-            menu.addCommandItem(&commandManager, SP_CommandID::printDummy);
+            //menu.addCommandItem(&commandManager, SP_CommandID::printDummy);
             #endif
         }
 
@@ -76,9 +80,7 @@ public:
     //ApplicationCommandTarget methods
     ApplicationCommandTarget *getNextCommandTarget() override
     {
-        return &dummyClass;
-        //return findFirstTargetParentComponent();
-        //return nullptr;
+        return nullptr;
     }
 
     void getAllCommands(juce::Array<juce::CommandID> &c) override
@@ -98,7 +100,6 @@ public:
                 result.setTicked(false);
                 //result.setActive(true);
                 result.addDefaultKeypress('p', juce::ModifierKeys::shiftModifier);
-                //commandManager.commandStatusChanged();
                 break;
             default:
                 break;
@@ -120,9 +121,7 @@ public:
     }
 
 private:
-    juce::ApplicationCommandManager& commandManager;
+    SPCommandManager& commandManager;
     //std::unique_ptr<juce::MenuBarComponent> menuBar;
-
-    DummyClass dummyClass;
 };
 

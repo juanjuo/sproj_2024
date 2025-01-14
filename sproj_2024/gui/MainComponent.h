@@ -12,7 +12,6 @@
 #include <MainDeckGUI.h>
 #include <MixDeckGUI.h>
 #include <MenuComponent.h>
-#include <DummyClass.h>
 
 //==============================================================================
 /*
@@ -23,7 +22,7 @@ class MainComponent final : public juce::Component
 {
 public:
 
-    explicit MainComponent(juce::ValueTree tree, juce::ApplicationCommandManager& manager);
+    explicit MainComponent(juce::ValueTree tree, SPCommandManager& manager);
 
     void paint (juce::Graphics&) override;
     void resized() override;

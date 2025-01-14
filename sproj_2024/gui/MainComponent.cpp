@@ -1,7 +1,7 @@
 #include "MainComponent.h"
 
 //==============================================================================
-MainComponent::MainComponent(juce::ValueTree tree, juce::ApplicationCommandManager& manager)
+MainComponent::MainComponent(juce::ValueTree tree, SPCommandManager& manager)
     : controlDeckGui(tree), mainDeckGui(tree), freeDeckGui(tree), mixDeckGui(tree), menu(manager)
 
 {
