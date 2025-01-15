@@ -7,22 +7,27 @@
 
 #pragma once
 #include <juce_gui_extra/juce_gui_extra.h>
+#include <juce_audio_devices/juce_audio_devices.h>
+#include <juce_audio_utils/juce_audio_utils.h>
 #include <ControlDeckGUI.h>
 #include <FreeDeckGUI.h>
 #include <MainDeckGUI.h>
 #include <MixDeckGUI.h>
 #include <MenuComponent.h>
+#include <DeviceSelectionMenu.h>
+
+
 
 //==============================================================================
 /*
     This component lives inside our window, and this is where you should put all
     your controls and content.
 */
-class MainComponent final : public juce::Component
+class MainComponent : public juce::Component
 {
 public:
 
-    explicit MainComponent(juce::ValueTree tree, SPCommandManager& manager);
+    explicit MainComponent(juce::ValueTree tree, SPCommandManager& manager, juce::AudioDeviceManager& deviceManager);
 
     void paint (juce::Graphics&) override;
     void resized() override;
@@ -35,7 +40,9 @@ private:
     FreeDeckGUI freeDeckGui;
     MixDeckGUI mixDeckGui;
 
+    //Menus
     MenuComponent menu;
+    DeviceSelectionMenu deviceSelector;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };

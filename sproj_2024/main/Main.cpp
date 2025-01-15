@@ -58,9 +58,9 @@ public:
         // This method is where you should put your application's initialisation code..
         juce::ignoreUnused (commandLine);
 
-        mainAudio = std::make_unique<MainAudio>(valueTree, *commandManager);
+        mainAudio = std::make_unique<MainAudio>(valueTree, *commandManager, *deviceManager);
 
-        mainWindow.reset (new MainWindow (getApplicationName(), valueTree, *commandManager));
+        mainWindow.reset (new MainWindow (getApplicationName(), valueTree, *commandManager, *deviceManager));
 
         //std::cerr << commandManager->getNumCommands() << std::endl;
 
@@ -73,6 +73,8 @@ public:
     {
         // Add your application's shutdown code here..
         mainAudio = nullptr;
+
+        deviceManager = nullptr;
 
         //dummyClass = nullptr;
 
@@ -91,6 +93,7 @@ public:
 
 private:
     std::unique_ptr<SPCommandManager> commandManager = std::make_unique<SPCommandManager>();
+    std::unique_ptr<juce::AudioDeviceManager> deviceManager = std::make_unique<juce::AudioDeviceManager>();
     juce::ValueTree valueTree {SP_ID::MAIN_BRANCH};
     std::unique_ptr<MainWindow> mainWindow;
     std::unique_ptr<MainAudio> mainAudio;

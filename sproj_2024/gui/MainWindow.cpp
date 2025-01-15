@@ -10,12 +10,12 @@
         This class implements the desktop window that contains an instance of
         our MainComponent class.
     */
-MainWindow::MainWindow (juce::String name, juce::ValueTree tree, SPCommandManager& manager)
+MainWindow::MainWindow (juce::String name, juce::ValueTree tree, SPCommandManager& manager, juce::AudioDeviceManager& deviceManager)
             : DocumentWindow (name, juce::Desktop::getInstance().getDefaultLookAndFeel().findColour
                            (ResizableWindow::backgroundColourId), DocumentWindow::allButtons)
 {
     setUsingNativeTitleBar (true);
-    setContentOwned (new MainComponent(tree, manager), true);
+    setContentOwned (new MainComponent(tree, manager, deviceManager), true);
 
     setResizable (true, true);
     centreWithSize (getWidth(), getHeight());

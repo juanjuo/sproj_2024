@@ -26,7 +26,7 @@ ADD MIDI
 class MainAudio
 {
 public:
-    MainAudio(juce::ValueTree v, juce::ApplicationCommandManager& manager);
+    MainAudio(juce::ValueTree v, juce::ApplicationCommandManager& manager, juce::AudioDeviceManager& audioManager);
 
     ~MainAudio();
 
@@ -55,7 +55,7 @@ private:
     juce::AudioProcessorGraph::Node::Ptr metronome;
 
     std::unique_ptr<juce::AudioProcessorGraph> audioGraph;
-    juce::AudioDeviceManager deviceManager;
+    juce::AudioDeviceManager& deviceManager;
     juce::AudioProcessorPlayer audioPlayer;
 
     juce::ApplicationCommandManager& commandManager;
