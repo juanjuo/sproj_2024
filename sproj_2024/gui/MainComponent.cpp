@@ -1,8 +1,8 @@
 #include "MainComponent.h"
 
 //==============================================================================
-MainComponent::MainComponent(juce::ValueTree tree, SPCommandManager& manager)
-    : controlDeckGui(tree), mainDeckGui(tree), freeDeckGui(tree), mixDeckGui(tree), menu(manager)
+MainComponent::MainComponent(juce::ValueTree tree, SPCommandManager& manager, juce::AudioDeviceManager& deviceManager)
+    : controlDeckGui(tree), mainDeckGui(tree), freeDeckGui(tree), mixDeckGui(tree), menu(manager), deviceSelector(deviceManager, manager)
 
 {
     if (tree.isValid()) std::cout << "is valid" << std::endl;
@@ -13,6 +13,7 @@ MainComponent::MainComponent(juce::ValueTree tree, SPCommandManager& manager)
     addAndMakeVisible(mixDeckGui);
     addAndMakeVisible(mainDeckGui);
     addAndMakeVisible(menu);
+    addChildComponent(deviceSelector);
 }
 
 //==============================================================================

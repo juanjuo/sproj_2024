@@ -3,6 +3,7 @@
 //
 
 #pragma once
+
 #include <juce_gui_basics/juce_gui_basics.h>
 #include <Identifiers.h>
 #include <SPCommandManager.h>
@@ -66,7 +67,7 @@ public:
             //menu.addCommandItem(&commandManager, CommandIDs::menuPositionInsideWindow);
             #if JUCE_MAC
             menu.addCommandItem(&commandManager, SP_CommandID::print);
-            //menu.addCommandItem(&commandManager, SP_CommandID::printDummy);
+            menu.addCommandItem(&commandManager, SP_CommandID::show_audio_device_menu);
             #endif
         }
 

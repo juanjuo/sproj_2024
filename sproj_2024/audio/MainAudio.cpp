@@ -4,8 +4,8 @@
 
 #include "MainAudio.h"
 
-MainAudio::MainAudio(juce::ValueTree v, juce::ApplicationCommandManager& manager)
-    : audioGraph(new juce::AudioProcessorGraph()), valueTree(v), commandManager(manager)
+MainAudio::MainAudio(juce::ValueTree v, juce::ApplicationCommandManager& manager, juce::AudioDeviceManager& audioManager)
+    : audioGraph(new juce::AudioProcessorGraph()), valueTree(v), commandManager(manager), deviceManager(audioManager)
 {
     audioGraph->enableAllBuses();
 

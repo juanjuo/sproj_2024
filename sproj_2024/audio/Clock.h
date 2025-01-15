@@ -6,6 +6,7 @@
 #include <SPAudioProcessor.h>
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <random>
+#include <Identifiers.h>
 
 class Clock : public SPAudioProcessor,
               public juce::ValueTree::Listener
