@@ -7,7 +7,8 @@
 #include <juce_dsp/juce_dsp.h>
 
 
-class SPAudioProcessor : public juce::AudioProcessor, public juce::AsyncUpdater
+class SPAudioProcessor : public juce::AudioProcessor,
+                         public juce::AsyncUpdater
 {
 public:
     //==============================================================================

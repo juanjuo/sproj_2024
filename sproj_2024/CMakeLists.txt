@@ -43,7 +43,6 @@ target_sources(${PROJECT_NAME}
         #gui/ControlDeckGUI.
         audio/Clock.cpp
         audio/Quantizer.cpp
-        audio/Record.cpp
         audio/SPAudioProcessor.cpp
         audio/MainAudio.cpp
             #${INCLUDE_DIR}/PluginEditor.h

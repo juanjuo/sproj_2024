@@ -7,11 +7,11 @@
 
 /*TODO:
 
-There should be one of this classes getting info from a single AudioDevice, which might
-have multiple audio inputs which can be activated/deactivated to save their input into
-a buffer. (Read about BUFFERS in JUCE)
-
-This class should also be able to
+- on a different thread using TimeSliceThread
+- must contain audioFormatWriter::ThreadedWriter
+- also contains a FileOutputStream (maybe inside record method)
+- also contains a WavFormatReader (maybe inside record method)
+- use locks to safely write the file in a background thread
 
 */
 

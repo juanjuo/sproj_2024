@@ -14,8 +14,7 @@ class DeviceSelectionMenu final : public juce::DocumentWindow,
 {
 public:
     explicit DeviceSelectionMenu(juce::AudioDeviceManager& manager, SPCommandManager& command)
-    : DocumentWindow("Audio Device Settings", juce::Desktop::getInstance().getDefaultLookAndFeel().findColour
-                       (ResizableWindow::backgroundColourId), DocumentWindow::closeButton, false), commandManager(command), audioDeviceManager(manager),
+    : DocumentWindow("Audio Device Settings", juce::Colour::fromRGB(150, 150, 150), DocumentWindow::closeButton, false), commandManager(command), audioDeviceManager(manager),
           innerComponent(new InnerComponent(manager))
     {
         audioDeviceManager.addChangeListener(this);
@@ -28,12 +27,17 @@ public:
 
         commandManager.registerAllCommandsForTarget(this);
         commandManager.addTargetToCommandManager(this);
+
+        setLookAndFeel(deviceSelectionLookAndFeel);
     }
 
     ~DeviceSelectionMenu() override
     {
         audioDeviceManager.removeChangeListener(this);
-        innerComponent = nullptr;
+        delete innerComponent;
+
+        setLookAndFeel(nullptr);
+        delete deviceSelectionLookAndFeel;
     }
 
     void paint(juce::Graphics &g) override
@@ -101,6 +105,9 @@ public:
 
             audioSetupComp.reset(new juce::AudioDeviceSelectorComponent(audioDeviceManager,
                                                                         0, 256, 0, 256, true, true, true, false));
+
+
+
             addAndMakeVisible(audioSetupComp.get());
             addAndMakeVisible(diagnosticsBox);
 
@@ -176,6 +183,8 @@ private:
     juce::AudioDeviceManager& audioDeviceManager;
 
     InnerComponent* innerComponent;
+
+    juce::LookAndFeel_V4* deviceSelectionLookAndFeel{new juce::LookAndFeel_V4(juce::LookAndFeel_V4::getGreyColourScheme())};
 
 
     void changeListenerCallback(juce::ChangeBroadcaster *) override

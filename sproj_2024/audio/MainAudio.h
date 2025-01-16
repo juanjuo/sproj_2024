@@ -22,6 +22,7 @@ ADD MIDI
 #include "juce_audio_utils/juce_audio_utils.h"
 #include "juce_audio_devices/juce_audio_devices.h"
 #include <Clock.h>
+#include <Record.h>
 
 class MainAudio
 {
