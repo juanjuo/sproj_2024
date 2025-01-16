@@ -17,42 +17,27 @@ SPAudioProcessor::SPAudioProcessor()
 {
 }
 
-SPAudioProcessor::~SPAudioProcessor()
-{
-}
+SPAudioProcessor::~SPAudioProcessor() = default;
 
 //==============================================================================
 const juce::String SPAudioProcessor::getName() const
 {
-    juce::ignoreUnused ();
-    return {};
+    return "Sproj2024";
 }
 
 bool SPAudioProcessor::acceptsMidi() const
 {
-   #if JucePlugin_WantsMidiInput
-    return true;
-   #else
-    return false;
-   #endif
+   return false;
 }
 
 bool SPAudioProcessor::producesMidi() const
 {
-   #if JucePlugin_ProducesMidiOutput
-    return true;
-   #else
-    return false;
-   #endif
+   return false;
 }
 
 bool SPAudioProcessor::isMidiEffect() const
 {
-   #if JucePlugin_IsMidiEffect
-    return true;
-   #else
-    return false;
-   #endif
+   return false;
 }
 
 double SPAudioProcessor::getTailLengthSeconds() const
@@ -78,8 +63,7 @@ void SPAudioProcessor::setCurrentProgram (int index)
 
 const juce::String SPAudioProcessor::getProgramName (int index)
 {
-    juce::ignoreUnused (index);
-    return {};
+    return "Sproj2024";
 }
 
 void SPAudioProcessor::changeProgramName (int index, const juce::String& newName)
