@@ -22,24 +22,15 @@ ADD MIDI
 #include "juce_audio_utils/juce_audio_utils.h"
 #include "juce_audio_devices/juce_audio_devices.h"
 #include <Clock.h>
-#include <Record.h>
+#include <Track.h>
+
 
 class MainAudio
 {
 public:
-    MainAudio(juce::ValueTree v, juce::ApplicationCommandManager& manager, juce::AudioDeviceManager& audioManager);
+    MainAudio(juce::ValueTree v, SPCommandManager& manager, juce::AudioDeviceManager& audioManager);
 
     ~MainAudio();
-
-    // //ApplicationCommandTarget methods
-    // ApplicationCommandTarget *getNextCommandTarget() override;
-    //
-    // void getAllCommands(juce::Array<juce::CommandID> &c) override;
-    //
-    // void getCommandInfo(juce::CommandID commandID, juce::ApplicationCommandInfo &result) override;
-    //
-    // bool perform(const InvocationInfo &info) override;
-    // //
 
     void initGraph();
 
@@ -54,10 +45,11 @@ private:
     juce::AudioProcessorGraph::Node::Ptr outputNode;
 
     juce::AudioProcessorGraph::Node::Ptr metronome;
+    juce::AudioProcessorGraph::Node::Ptr recorder;
 
     std::unique_ptr<juce::AudioProcessorGraph> audioGraph;
     juce::AudioDeviceManager& deviceManager;
     juce::AudioProcessorPlayer audioPlayer;
 
-    juce::ApplicationCommandManager& commandManager;
+    SPCommandManager& commandManager;
 };

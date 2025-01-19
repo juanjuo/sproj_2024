@@ -3,6 +3,8 @@
 #include "Identifiers.h"
 #include <SPCommandManager.h>
 
+#include <memory>
+
 #include "jive/jive_layouts/utilities/jive_LayoutStrategy.h"
 
 /* TODO:
@@ -60,7 +62,7 @@ public:
 
         mainAudio = std::make_unique<MainAudio>(valueTree, *commandManager, *deviceManager);
 
-        mainWindow.reset (new MainWindow (getApplicationName(), valueTree, *commandManager, *deviceManager));
+        mainWindow = std::make_unique<MainWindow> (getApplicationName(), valueTree, *commandManager, *deviceManager);
 
         //std::cerr << commandManager->getNumCommands() << std::endl;
 
