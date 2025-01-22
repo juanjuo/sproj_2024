@@ -3,7 +3,8 @@
 //
 
 #pragma once
-#include <Record.h>
+#include <Recorder.h>
+#include <AudioPlayer.h>
 #include <SPCommandManager.h>
 
 
@@ -11,12 +12,18 @@ class Track final : public SPAudioProcessor,
                     public juce::ApplicationCommandTarget
 {
 public:
+
+    enum class ProcessorMode
+    {
+        recorder_Type = 1,
+        player_Type
+    };
+
     Track(juce::ValueTree valueTree, SPCommandManager& manager) : commandManager(manager)
     {
         juce::ignoreUnused(valueTree);
         commandManager.registerAllCommandsForTarget(this);
         commandManager.addTargetToCommandManager(this);
-        std::cout << "Track created" << std::endl;
     }
 
     ~Track()
@@ -25,17 +32,31 @@ public:
 
     void prepareToPlay(double sampleRate, int samplesPerBlock) override
     {
-        recorder.prepareToPlay(sampleRate, samplesPerBlock);
+        if (currentType == ProcessorMode::recorder_Type)
+            recorder.prepareToPlay(sampleRate, samplesPerBlock);
+
+        if (currentType == ProcessorMode::player_Type)
+            player.prepareToPlay(sampleRate, samplesPerBlock);
     }
 
     void processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiBuffer) override
     {
-        recorder.processBlock(buffer, midiBuffer);
+
+        if (currentType == ProcessorMode::recorder_Type)
+            recorder.processBlock(buffer, midiBuffer);
+
+        if (currentType == ProcessorMode::player_Type)
+            player.processBlock(buffer, midiBuffer);
     }
 
     void releaseResources() override
     {
-        recorder.releaseResources();
+
+        if (currentType == ProcessorMode::recorder_Type)
+            recorder.releaseResources();
+
+        if (currentType == ProcessorMode::player_Type)
+            player.releaseResources();
     }
 
     void startRecording()
@@ -63,6 +84,7 @@ public:
     {
     }
 
+
     //ApplicationCommandTarget methods
 
     ApplicationCommandTarget *getNextCommandTarget() override
@@ -73,7 +95,8 @@ public:
     void getAllCommands(juce::Array<juce::CommandID> &c) override
     {
         juce::Array<juce::CommandID> commands{
-            SP_CommandID::record
+            SP_CommandID::record,
+            SP_CommandID::play
         };
         c.addArray(commands);
     }
@@ -85,10 +108,12 @@ public:
             case SP_CommandID::record:
                 result.setInfo("Record", "record and save in disk", "Audio", 0);
                 result.setTicked(false);
-            //result.setActive(true);
                 result.addDefaultKeypress('r', juce::ModifierKeys::commandModifier);
-            //commandManager.commandStatusChanged();
                 break;
+            case SP_CommandID::play:
+                result.setInfo("Play", "play recently recorded file", "Audio", 0);
+                result.setTicked(false);
+                result.addDefaultKeypress('p', juce::ModifierKeys::commandModifier);
             default:
                 break;
         }
@@ -101,14 +126,16 @@ public:
             case SP_CommandID::record:
                 if (recorder.isRecording())
                 {
-                    std::cout << recorder.isRecording() << std::endl;
                     stopRecording();
+                    currentType = ProcessorMode::player_Type;
                 } else
                 {
-                    std::cout << recorder.isRecording() << std::endl;
+                    currentType = ProcessorMode::recorder_Type;
                     startRecording();
-                    std::cout << recorder.isRecording() << std::endl;
                 }
+                break;
+            case SP_CommandID::play:
+                player.startOrStop();
                 break;
             default:
                 return false;
@@ -118,7 +145,11 @@ public:
     }
 
 private:
-    Record recorder {};
+    ProcessorMode currentType = ProcessorMode::player_Type;
+
+    Recorder recorder {};
+    AudioPlayer player {};
+
     SPCommandManager &commandManager;
     juce::File lastRecording;
 };
