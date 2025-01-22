@@ -1,4 +1,3 @@
-#include <memory>
 
 //
 // Created by Juan Diego on 10/4/24.
@@ -19,19 +18,17 @@
 */
 
 #pragma once
+#include <SPAudioProcessor.h>
 
-//#include <juce_audio_buffer/juce_audio_buffer.h>
-//#include <juce_audio_source/juce_audio_source.h>
-
-class Record final : public SPAudioProcessor
+class Recorder final : public SPAudioProcessor
 {
 public:
-    Record()
+    Recorder()
     {
         backgroundThread.startThread();
     }
 
-    ~Record() override
+    ~Recorder() override
     {
         stop();
     }

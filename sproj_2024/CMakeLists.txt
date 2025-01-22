@@ -42,7 +42,6 @@ target_sources(${PROJECT_NAME}
         gui/MainWindow.cpp
         #gui/ControlDeckGUI.
         audio/Clock.cpp
-        audio/Quantizer.cpp
         audio/SPAudioProcessor.cpp
         audio/MainAudio.cpp
             #${INCLUDE_DIR}/PluginEditor.h
@@ -53,7 +52,6 @@ target_sources(${PROJECT_NAME}
 target_include_directories(${PROJECT_NAME}
         PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/audio
-        ${CMAKE_CURRENT_SOURCE_DIR}/controller
         ${CMAKE_CURRENT_SOURCE_DIR}/gui
         ${CMAKE_CURRENT_SOURCE_DIR}/main
         ${CMAKE_CURRENT_SOURCE_DIR}/helpers

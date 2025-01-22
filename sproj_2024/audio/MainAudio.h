@@ -36,7 +36,9 @@ public:
 
     void updateGraph();
 
-    void connectAudioNodes();
+    void addNewTrack();
+
+    void connectNode(const juce::AudioProcessorGraph::Node::Ptr& node) const;
 
 private:
     juce::ValueTree valueTree;
@@ -44,12 +46,13 @@ private:
     juce::AudioProcessorGraph::Node::Ptr inputNode;
     juce::AudioProcessorGraph::Node::Ptr outputNode;
 
-    juce::AudioProcessorGraph::Node::Ptr metronome;
-    juce::AudioProcessorGraph::Node::Ptr recorder;
-
     std::unique_ptr<juce::AudioProcessorGraph> audioGraph;
     juce::AudioDeviceManager& deviceManager;
     juce::AudioProcessorPlayer audioPlayer;
 
     SPCommandManager& commandManager;
+
+    juce::AudioProcessorGraph::Node::Ptr metronome;
+
+    juce::ReferenceCountedArray<juce::AudioProcessorGraph::Node> trackArray;
 };

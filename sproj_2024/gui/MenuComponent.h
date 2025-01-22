@@ -69,6 +69,7 @@ public:
             menu.addCommandItem(&commandManager, SP_CommandID::print);
             menu.addCommandItem(&commandManager, SP_CommandID::show_audio_device_menu);
             menu.addCommandItem(&commandManager, SP_CommandID::record);
+            menu.addCommandItem(&commandManager, SP_CommandID::play);
             #endif
         }
 
