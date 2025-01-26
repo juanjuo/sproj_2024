@@ -64,7 +64,7 @@ public:
                     // And now, swap over our active writer pointer so that the audio callback will start using it..
                     const juce::ScopedLock sl(writerLock);
                     activeWriter = threadedWriter.get();
-                    std::cout << "Recording started" << std::endl;
+                    std::cout << "is Recording" << std::endl;
                 }
             }
         }

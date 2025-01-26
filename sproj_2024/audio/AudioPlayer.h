@@ -4,25 +4,55 @@
 #pragma once
 #include <SPAudioProcessor.h>
 
-class AudioPlayer final : public SPAudioProcessor
-{
+class AudioPlayer final : public SPAudioProcessor {
 public:
-    AudioPlayer()
-    {
+    explicit AudioPlayer(/*const juce::URL& audioFile*/) {
         formatManager.registerBasicFormats();
-        setAudioResource(currentAudioFile);
+        //setAudioResource(audioFile);
         lookaheadThread.startThread(juce::Thread::Priority::normal);
     }
 
-    ~AudioPlayer() override
-    {
+    ~AudioPlayer() override {
         transportSource.setSource(nullptr);
     }
 
-    void setAudioResource(juce::URL resource)
-    {
-        if (!loadURLIntoTransport(resource))
-        {
+    void startOrStop() {
+        if (transportSource.isPlaying()) {
+            transportSource.stop();
+        } else {
+            transportSource.setPosition(0);
+            transportSource.start();
+        }
+    }
+
+    //Audio Processor Methods
+
+    void prepareToPlay(double sampleRate, int samplesPerBlock) override {
+        setAudioResource(currentAudioFile);
+        transportSource.prepareToPlay(samplesPerBlock, sampleRate);
+        //setLooping(true);
+    }
+
+    void releaseResources() override {
+    }
+
+    void processBlock(juce::AudioBuffer<float> &buffer,
+                      juce::MidiBuffer &midiMessages) override {
+        // if (currentAudioFileSource == nullptr) // for example
+        // {
+        //     buffer.clear();
+        //     return;
+        // }
+        juce::AudioSourceChannelInfo bufferToFill{};
+        bufferToFill.buffer = &buffer;
+        bufferToFill.startSample = 0;
+        bufferToFill.numSamples = buffer.getNumSamples();
+        transportSource.getNextAudioBlock(bufferToFill);
+    }
+
+    void setAudioResource(juce::URL resource) {
+        if (resource.isEmpty()) return;
+        if (!loadURLIntoTransport(resource)) {
             // Failed to load the audio file!
             jassertfalse;
             return;
@@ -31,8 +61,28 @@ public:
         currentAudioFile = std::move(resource);
     }
 
-    bool loadURLIntoTransport(const juce::URL &audioURL)
-    {
+    // void setLooping(const bool shouldLoop)
+    // {
+    //     if (currentAudioFileSource == nullptr) return;
+    //     transportSource.setLooping(shouldLoop);
+    //     currentAudioFileSource->setLooping(shouldLoop);
+    // }
+    //
+    // bool isLooping() const
+    // {
+    //     return transportSource.isLooping(); //maybe won't work?
+    // }
+
+private:
+    juce::AudioFormatManager formatManager;
+    juce::TimeSliceThread lookaheadThread{"file lookahead"};
+
+    juce::URL currentAudioFile;
+    juce::AudioTransportSource transportSource;
+
+    std::unique_ptr<juce::AudioFormatReaderSource> currentAudioFileSource;
+
+    bool loadURLIntoTransport(const juce::URL &audioURL) {
         // unload the previous file source and delete it...
         transportSource.stop();
         transportSource.setSource(nullptr);
@@ -55,7 +105,9 @@ public:
 
         currentAudioFileSource = std::make_unique<juce::AudioFormatReaderSource>(reader.release(), true);
 
-        // ..and plug it into our transport source
+        currentAudioFileSource->setLooping(true); //find a better way of doing this
+
+        // ...and plug it into our transport source
         transportSource.setSource(currentAudioFileSource.get(),
                                   32768, // tells it to buffer this many samples ahead
                                   &lookaheadThread, // this is the background thread to use for reading-ahead
@@ -64,52 +116,4 @@ public:
 
         return true;
     }
-
-    void startOrStop()
-    {
-        if (transportSource.isPlaying())
-        {
-            transportSource.stop();
-        } else
-        {
-            transportSource.setPosition(0);
-            transportSource.start();
-        }
-    }
-
-    //Audio Processor Methods
-
-    void prepareToPlay(double sampleRate, int samplesPerBlock) override
-    {
-        setAudioResource(currentAudioFile);
-        transportSource.prepareToPlay(samplesPerBlock, sampleRate);
-    }
-
-    void releaseResources() override
-    {
-    }
-
-    void processBlock(juce::AudioBuffer<float> &buffer,
-                      juce::MidiBuffer &midiMessages) override
-    {
-        // if (currentAudioFileSource == nullptr) // for example
-        // {
-        //     buffer.clear();
-        //     return;
-        // }
-        juce::AudioSourceChannelInfo bufferToFill{};
-        bufferToFill.buffer      = &buffer;
-        bufferToFill.startSample = 0;
-        bufferToFill.numSamples  = buffer.getNumSamples();
-        transportSource.getNextAudioBlock (bufferToFill);
-    }
-
-private:
-    juce::AudioFormatManager formatManager;
-    juce::TimeSliceThread lookaheadThread {"file lookahead"};
-
-    juce::URL currentAudioFile {juce::File("/Users/juan/Desktop/you_look_so_good.mp3")};
-    juce::AudioTransportSource transportSource;
-
-    std::unique_ptr<juce::AudioFormatReaderSource> currentAudioFileSource;
 };
