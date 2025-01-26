@@ -2,6 +2,12 @@
 // Created by Juan Diego on 1/17/25.
 //
 
+/* TODO:
+ * maybe save all File pointers into an array and give them directly to the audioPlayer?
+ * have to change AudioTransportSource, since this class is meant to be used Asynchronously
+ *
+ */
+
 #pragma once
 #include <Recorder.h>
 #include <AudioPlayer.h>
@@ -24,18 +30,19 @@ public:
         juce::ignoreUnused(valueTree);
         commandManager.registerAllCommandsForTarget(this);
         commandManager.addTargetToCommandManager(this);
+        //player.setLooping(true); find a way to trigger looping from Track class (because of Command Target)
     }
 
     ~Track()
     {
     }
 
-    void prepareToPlay(double sampleRate, int samplesPerBlock) override
+    void prepareToPlay(double sampleRate, int samplesPerBlock) override //is there a better way to do this?
     {
-        if (currentType == ProcessorMode::recorder_Type)
+        //if (currentType == ProcessorMode::recorder_Type)
             recorder.prepareToPlay(sampleRate, samplesPerBlock);
 
-        if (currentType == ProcessorMode::player_Type)
+        //if (currentType == ProcessorMode::player_Type)
             player.prepareToPlay(sampleRate, samplesPerBlock);
     }
 
@@ -63,9 +70,10 @@ public:
     {
         auto parentDir = juce::File::getSpecialLocation(juce::File::userDesktopDirectory);
 
-        lastRecording = parentDir.getNonexistentChildFile("Sproj_demo_recording", ".wav");
+        lastRecording = parentDir.getNonexistentChildFile(createNewFileName(), ".wav");
 
         recorder.startRecording(lastRecording);
+        std::cout << lastRecording.getFileName() << std::endl;
     }
 
     void stopRecording()
@@ -78,6 +86,7 @@ public:
             if (juce::FileOutputStream outputStream{lastRecording}; outputStream.openedOk())
                 outputStream.flush();
                 std::cout << "Outputed corrently" << std::endl;
+                player.setAudioResource(juce::URL {lastRecording});
     }
 
     void cropRecording()
@@ -131,11 +140,13 @@ public:
                 } else
                 {
                     currentType = ProcessorMode::recorder_Type;
+                    std::cout << "recording mode" << std::endl;
                     startRecording();
                 }
                 break;
             case SP_CommandID::play:
                 player.startOrStop();
+                //std::cout << player.isLooping() << std::endl;
                 break;
             default:
                 return false;
@@ -147,9 +158,21 @@ public:
 private:
     ProcessorMode currentType = ProcessorMode::player_Type;
 
+    //juce::URL currentAudioFile {juce::File("/Users/juan/Desktop/Sunny.mp3")};
+
+    SPCommandManager& commandManager;
+    juce::File lastRecording;
+
     Recorder recorder {};
     AudioPlayer player {};
 
-    SPCommandManager &commandManager;
-    juce::File lastRecording;
+    int numFiles = 0; //make this global/static
+
+    juce::String createNewFileName() //maybe make this static as well??
+    {
+        std::ostringstream oss;
+        numFiles++;
+        oss << "Sproj2024_file_" << std::setw(3) << std::setfill('0') << numFiles;
+        return juce::String {oss.str()};
+    }
 };
