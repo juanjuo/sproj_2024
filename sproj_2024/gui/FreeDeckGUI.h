@@ -15,6 +15,7 @@ public:
   {
     setSize(WINDOW_HEIGHT, WINDOW_HEIGHT);
     addAndMakeVisible(resizableEdge);
+    resizableEdge.setAlwaysOnTop(true);
   }
 
   void paint (juce::Graphics& g) override
@@ -25,7 +26,8 @@ public:
 
   void resized() override
   {
-    resizableEdge.setBounds(getLocalBounds());
+    const auto rect = getLocalBounds();
+    resizableEdge.setBounds(rect.getX(), rect.getY(), rect.getWidth(), RESIZABLE_EDGE);
   }
 
 private:

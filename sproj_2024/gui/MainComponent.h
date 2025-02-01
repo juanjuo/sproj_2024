@@ -9,6 +9,7 @@
 #include <juce_gui_extra/juce_gui_extra.h>
 #include <juce_audio_devices/juce_audio_devices.h>
 #include <juce_audio_utils/juce_audio_utils.h>
+#include <RulerDeckGUI.h>
 #include <ControlDeckGUI.h>
 #include <FreeDeckGUI.h>
 #include <MainDeckGUI.h>
@@ -23,18 +24,35 @@
     This component lives inside our window, and this is where you should put all
     your controls and content.
 */
-class MainComponent : public juce::Component
+class MainComponent : public juce::Component,
+                      public juce::ApplicationCommandTarget
 {
 public:
 
     explicit MainComponent(juce::ValueTree tree, SPCommandManager& manager, juce::AudioDeviceManager& deviceManager);
 
+    void createNewTrack();
+
+    //Component methods
     void paint (juce::Graphics&) override;
     void resized() override;
     void childBoundsChanged(Component *child) override;
 
+    //ApplicationCommandTarget methods
+
+    ApplicationCommandTarget *getNextCommandTarget() override;
+
+    void getAllCommands(juce::Array<juce::CommandID> &c) override;
+
+    void getCommandInfo(const juce::CommandID commandID, juce::ApplicationCommandInfo &result) override;
+
+    bool perform(const InvocationInfo &info) override;
+
 private:
 
+    SPCommandManager& commandManager;
+
+    RulerDeckGUI rulerDeckGUI;
     ControlDeckGUI controlDeckGui;
     MainDeckGUI mainDeckGui;
     FreeDeckGUI freeDeckGui;

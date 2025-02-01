@@ -25,9 +25,10 @@ ADD MIDI
 #include <Track.h>
 
 
-class MainAudio
+class MainAudio : public juce::ApplicationCommandTarget
 {
 public:
+
     MainAudio(juce::ValueTree v, SPCommandManager& manager, juce::AudioDeviceManager& audioManager);
 
     ~MainAudio();
@@ -40,6 +41,16 @@ public:
 
     void connectNode(const juce::AudioProcessorGraph::Node::Ptr& node) const;
 
+    void pauseOrResumeProcessing();
+
+    //ApplicationCommandTarget methods
+
+    ApplicationCommandTarget *getNextCommandTarget() override;
+    void getAllCommands(juce::Array<juce::CommandID> &c) override;
+    void getCommandInfo(const juce::CommandID commandID, juce::ApplicationCommandInfo &result) override;
+    bool perform(const InvocationInfo &info) override;
+
+
 private:
     juce::ValueTree valueTree;
 
@@ -48,7 +59,11 @@ private:
 
     std::unique_ptr<juce::AudioProcessorGraph> audioGraph;
     juce::AudioDeviceManager& deviceManager;
-    juce::AudioProcessorPlayer audioPlayer;
+    std::unique_ptr<juce::AudioIODevice> device;
+    std::unique_ptr<juce::AudioProcessorPlayer> audioPlayer = std::make_unique<juce::AudioProcessorPlayer>();
+
+    double baseSampleRate;
+    bool isPlaying = true;
 
     SPCommandManager& commandManager;
 

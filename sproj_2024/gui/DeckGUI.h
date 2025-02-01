@@ -16,5 +16,6 @@ protected:
   const int WINDOW_HEIGHT;
   const juce::Colour BACKGROUND_COLOUR;
   const int BORDER_WIDTH = 2;
+  const int RESIZABLE_EDGE = 5;
 };
 
