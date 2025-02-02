@@ -2,13 +2,15 @@
 
 //==============================================================================
 MainComponent::MainComponent(juce::ValueTree tree, SPCommandManager& manager, juce::AudioDeviceManager& deviceManager)
-    : commandManager(manager), controlDeckGui(tree), mainDeckGui(tree), freeDeckGui(tree), mixDeckGui(tree), menu(manager),
+    : commandManager(manager), rulerDeckGUI(), controlDeckGui(tree), mainDeckGui(tree), freeDeckGui(tree),
+      mixDeckGui(tree), menu(manager),
       deviceSelector(deviceManager, manager)
 
 {
     if (tree.isValid()) std::cout << "is valid" << std::endl;
     setSize(600, 400);
 
+    addAndMakeVisible(rulerDeckGUI);
     addAndMakeVisible(controlDeckGui);
     addAndMakeVisible(freeDeckGui);
     addAndMakeVisible(mixDeckGui);
@@ -23,6 +25,7 @@ MainComponent::MainComponent(juce::ValueTree tree, SPCommandManager& manager, ju
 void MainComponent::createNewTrack()
 {
     mixDeckGui.addTrack();
+    mainDeckGui.addTrack();
 }
 
 //==============================================================================
@@ -38,6 +41,7 @@ void MainComponent::resized()
     // This is called when the MainComponent is resized.
     // If you add any child components, this is where you should
     // update their positions.
+    rulerDeckGUI.setBounds(getX(), getY(), getWidth(), controlDeckGui.getHeight());
     controlDeckGui.setBounds(getX(), getY(), mixDeckGui.getWidth(), controlDeckGui.getHeight());
     freeDeckGui.setBounds(getX(), getHeight() - freeDeckGui.getHeight(), getWidth(), freeDeckGui.getHeight());
     mixDeckGui.setBounds(getX(), getY() + controlDeckGui.getHeight(), mixDeckGui.getWidth(), getHeight()

@@ -10,12 +10,10 @@ class RulerDeckGUI final : public juce::Component,
 {
 public:
 
-    explicit RulerDeckGUI(juce::ValueTree& valueTree)
-      : DeckGUI(200, 200, juce::Colour::fromRGB(95,95,95))
+    explicit RulerDeckGUI()
+      : DeckGUI(200, 200, juce::Colour::fromRGB(15,15,15))
     {
         setSize(WINDOW_HEIGHT, WINDOW_HEIGHT);
-        addAndMakeVisible(resizableEdge);
-        resizableEdge.setAlwaysOnTop(true);
     }
 
     void paint (juce::Graphics& g) override
@@ -27,12 +25,9 @@ public:
     void resized() override
     {
         const auto rect = getLocalBounds();
-        resizableEdge.setBounds(rect.getX(), rect.getY(), rect.getWidth(), RESIZABLE_EDGE);
     }
 
 private:
-
-    juce::ResizableEdgeComponent resizableEdge {this, nullptr, juce::ResizableEdgeComponent::Edge::topEdge};
 
 };
 

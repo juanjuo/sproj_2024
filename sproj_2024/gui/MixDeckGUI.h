@@ -10,6 +10,7 @@
  *
  */
 
+
 class MixDeckTrack : public juce::Component,
                      public DeckGUI
 {
