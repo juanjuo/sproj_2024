@@ -31,6 +31,8 @@ public:
         commandManager.registerAllCommandsForTarget(this);
         commandManager.addTargetToCommandManager(this);
         //player.setLooping(true); find a way to trigger looping from Track class (because of Command Target)
+
+        player.setAudioSource(juce::URL {lastRecording});
     }
 
     ~Track()
@@ -48,7 +50,6 @@ public:
 
     void processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiBuffer) override
     {
-
         if (currentType == ProcessorMode::recorder_Type)
             recorder.processBlock(buffer, midiBuffer);
 
@@ -86,7 +87,7 @@ public:
             if (juce::FileOutputStream outputStream{lastRecording}; outputStream.openedOk())
                 outputStream.flush();
                 std::cout << "Outputed corrently" << std::endl;
-                player.setAudioResource(juce::URL {lastRecording});
+                player.setAudioSource(juce::URL {lastRecording});
     }
 
     void cropRecording()
@@ -123,6 +124,7 @@ public:
                 result.setInfo("Play", "play recently recorded file", "Audio", 0);
                 result.setTicked(false);
                 result.addDefaultKeypress('p', juce::ModifierKeys::commandModifier);
+                break;
             default:
                 break;
         }
@@ -158,9 +160,9 @@ public:
 private:
     ProcessorMode currentType = ProcessorMode::player_Type;
 
-    //juce::URL currentAudioFile {juce::File("/Users/juan/Desktop/Sunny.mp3")};
-
     SPCommandManager& commandManager;
+    //juce::File lastRecording {juce::File("/Users/juan/Desktop/Sunny.mp3")};
+
     juce::File lastRecording;
 
     Recorder recorder {};

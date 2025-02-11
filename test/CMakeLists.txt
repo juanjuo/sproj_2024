@@ -8,6 +8,7 @@ enable_testing()
 # Creates the test console application.
 add_executable(${PROJECT_NAME}
         audio_test/MainAudioTest.cpp
+        ../sproj_2024/gui/RulerDeckGUI.h
 )
 
 # Sets the necessary audio directories: ours, JUCE's, and googletest's.

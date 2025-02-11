@@ -28,7 +28,7 @@ public:
     //Audio Processor Methods
 
     void prepareToPlay(double sampleRate, int samplesPerBlock) override {
-        setAudioResource(currentAudioFile);
+        setAudioSource(currentAudioFile);
         transportSource.prepareToPlay(samplesPerBlock, sampleRate);
         //setLooping(true);
     }
@@ -50,15 +50,15 @@ public:
         transportSource.getNextAudioBlock(bufferToFill);
     }
 
-    void setAudioResource(juce::URL resource) {
-        if (resource.isEmpty()) return;
-        if (!loadURLIntoTransport(resource)) {
+    void setAudioSource(juce::URL source) {
+        if (source.isEmpty()) return;
+        if (!loadURLIntoTransport(source)) {
             // Failed to load the audio file!
             jassertfalse;
             return;
         }
 
-        currentAudioFile = std::move(resource);
+        currentAudioFile = std::move(source);
     }
 
     // void setLooping(const bool shouldLoop)

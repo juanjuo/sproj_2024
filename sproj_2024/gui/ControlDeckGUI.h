@@ -85,16 +85,12 @@ private:
   juce::FontOptions FONT = juce::FontOptions(FONT_SIZE, juce::Font::bold);
   juce::Font clockFont = juce::Font(FONT);
 
-
   juce::ValueTree clockGuiValueTree;
 
   //ValueTree VALS
   int* tempo_num_val = new int{4};
   int* tempo_den_val = new int{4};
   int* bpm = new int{120};
-
-
-
 
   juce::TextEditor tempoNumerator;
   juce::TextEditor tempoDenominator;

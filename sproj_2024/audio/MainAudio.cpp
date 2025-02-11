@@ -10,16 +10,23 @@ MainAudio::MainAudio(juce::ValueTree v, SPCommandManager &manager, juce::AudioDe
     audioGraph->enableAllBuses();
 
     deviceManager.initialiseWithDefaultDevices(1, 1); //1 inputs, 1 output
-    deviceManager.addAudioCallback(&audioPlayer);
+    deviceManager.addAudioCallback(audioPlayer.get());
 
     initGraph();
 
-    audioPlayer.setProcessor(audioGraph.get());
+    audioPlayer->setProcessor(audioGraph.get());
+
+    device.reset(deviceManager.getCurrentAudioDevice());
+
+    baseSampleRate = deviceManager.getAudioDeviceSetup().sampleRate;
+
+    commandManager.registerAllCommandsForTarget(this);
+    commandManager.addTargetToCommandManager(this);
 }
 
 MainAudio::~MainAudio()
 {
-    deviceManager.removeAudioCallback(&audioPlayer);
+    deviceManager.removeAudioCallback(audioPlayer.get());
 }
 
 void MainAudio::initGraph()
@@ -40,8 +47,6 @@ void MainAudio::initGraph()
     connectNode(metronome);
 
     addNewTrack();
-
-
 }
 
 void MainAudio::updateGraph()
@@ -69,6 +74,62 @@ void MainAudio::connectNode(const juce::AudioProcessorGraph::Node::Ptr &node) co
         });
     }
 }
+
+void MainAudio::pauseOrResumeProcessing() //There might be better ways of doing this?
+{
+    if (!isPlaying)
+    {
+        deviceManager.restartLastAudioDevice();
+        isPlaying = true;
+    }else
+    {
+        deviceManager.closeAudioDevice();
+        isPlaying = false;
+    }
+}
+
+//ApplicationCommandTarget methods
+
+juce::ApplicationCommandTarget* MainAudio::getNextCommandTarget()
+{
+    return nullptr;
+}
+
+void MainAudio::getAllCommands(juce::Array<juce::CommandID> &c)
+{
+    juce::Array<juce::CommandID> commands{
+        SP_CommandID::stopProcessing
+    };
+    c.addArray(commands);
+}
+
+void MainAudio::getCommandInfo(const juce::CommandID commandID, juce::ApplicationCommandInfo &result)
+{
+    switch (commandID)
+    {
+        case SP_CommandID::stopProcessing:
+            result.setInfo("Stop", "Stops playback", "Audio", 0);
+            result.setTicked(false);
+            result.addDefaultKeypress(juce::KeyPress::spaceKey, juce::ModifierKeys::noModifiers);
+            break;
+        default:
+            break;
+    }
+}
+
+bool MainAudio::perform(const InvocationInfo &info)
+{
+    switch (info.commandID)
+    {
+        case SP_CommandID::stopProcessing:
+            pauseOrResumeProcessing();
+            break;
+        default:
+            return false;
+    }
+    return true;
+}
+
 
 
 

@@ -25,6 +25,9 @@ enum SP_CommandID
     print = 1,
     show_audio_device_menu,
     record,
-    play
+    play,
+    stopProcessing,
+    createNewTrack,
+    createNewDummyClip
 };
 
