@@ -160,10 +160,10 @@ public:
 private:
     ProcessorMode currentType = ProcessorMode::player_Type;
 
-    //juce::URL currentAudioFile {juce::File("/Users/juan/Desktop/Sunny.mp3")};
-
     SPCommandManager& commandManager;
-    juce::File lastRecording {juce::File("/Users/juan/Desktop/Sunny.mp3")};
+    //juce::File lastRecording {juce::File("/Users/juan/Desktop/Sunny.mp3")};
+
+    juce::File lastRecording;
 
     Recorder recorder {};
     AudioPlayer player {};

@@ -15,21 +15,19 @@ class MixDeckTrack : public juce::Component,
                      public DeckGUI
 {
 public:
-
-    MixDeckTrack(int width, int height): DeckGUI(width, height, juce::Colour::fromRGB(144,144,144))
+    MixDeckTrack(int width, int height): DeckGUI(width, height, juce::Colour::fromRGB(144, 144, 144))
     {
         setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
     }
 
     ~MixDeckTrack()
     {
-
     }
 
-    void paint (juce::Graphics& g) override
+    void paint(juce::Graphics& g) override
     {
         g.fillAll(BACKGROUND_COLOUR);
-        g.drawRect(this->getLocalBounds(), BORDER_WIDTH);
+        g.drawRect(this->getLocalBounds(), BORDER_WIDTH - 1);
     }
 
     void resized() override
@@ -43,9 +41,8 @@ class MixDeckGUI final : public juce::Component,
                          public DeckGUI
 {
 public:
-
     explicit MixDeckGUI(juce::ValueTree& valueTree)
-        : DeckGUI(200, 200, juce::Colour::fromRGB(60,60,60))
+        : DeckGUI(200, 200, juce::Colour::fromRGB(60, 60, 60))
     {
         setSize(WINDOW_WIDTH, WINDOW_WIDTH);
         addAndMakeVisible(resizableEdge);
@@ -55,44 +52,44 @@ public:
 
     ~MixDeckGUI()
     {
-
     }
 
     void addTrack()
     {
-        addAndMakeVisible(mixDeckTracks.add(new MixDeckTrack (TRACK_WIDTH, TRACK_WIDTH)));
+        addAndMakeVisible(mixDeckTracks.add(new MixDeckTrack(TRACK_WIDTH, TRACK_WIDTH)));
         grid.items.add(mixDeckTracks.getLast()); //always returns right component?
     }
 
     void setUpGrid(const int width)
     {
         using Track = juce::Grid::TrackInfo;
-        grid.rowGap    = juce::Grid::Px(0);
+        grid.rowGap = juce::Grid::Px(0);
         grid.columnGap = juce::Grid::Px(0);
 
-        grid.templateRows = { Track (juce::Grid::Px(TRACK_HEIGHT)) };
+        grid.templateRows = {Track(juce::Grid::Px(TRACK_HEIGHT))};
 
-        grid.templateColumns = { Track (juce::Grid::Px(width)) };
+        grid.templateColumns = {Track(juce::Grid::Px(width))};
 
-        grid.autoColumns = Track (juce::Grid::Px(TRACK_WIDTH));
-        grid.autoRows    = Track (juce::Grid::Px(TRACK_HEIGHT));
+        grid.autoColumns = Track(juce::Grid::Px(TRACK_WIDTH));
+        grid.autoRows = Track(juce::Grid::Px(TRACK_HEIGHT));
 
         //grid.justifyContent = juce::Grid::JustifyContent::stretch; //technically not necessary?
         grid.autoFlow = juce::Grid::AutoFlow::row;
     }
 
-    void paint (juce::Graphics& g) override
+    void paint(juce::Graphics& g) override
     {
         g.fillAll(BACKGROUND_COLOUR);
         g.drawRect(this->getLocalBounds(), BORDER_WIDTH);
         if (!mixDeckTracks.isEmpty())
-            grid.performLayout (getLocalBounds());
+            grid.performLayout(getLocalBounds());
     }
 
     void resized() override
     {
         const auto rect = getLocalBounds();
-        resizableEdge.setBounds(rect.getX() + rect.getWidth() - RESIZABLE_EDGE, rect.getY(), RESIZABLE_EDGE, rect.getHeight());
+        resizableEdge.setBounds(rect.getX() + rect.getWidth() - RESIZABLE_EDGE, rect.getY(), RESIZABLE_EDGE,
+                                rect.getHeight());
 
         setUpGrid(rect.getWidth());
     }
@@ -100,7 +97,7 @@ public:
 private:
     juce::Grid grid;
 
-    juce::ResizableEdgeComponent resizableEdge {this, nullptr, juce::ResizableEdgeComponent::Edge::rightEdge};
+    juce::ResizableEdgeComponent resizableEdge{this, nullptr, juce::ResizableEdgeComponent::Edge::rightEdge};
 
     juce::OwnedArray<MixDeckTrack> mixDeckTracks;
 

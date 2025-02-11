@@ -27,6 +27,7 @@ enum SP_CommandID
     record,
     play,
     stopProcessing,
-    createNewTrack
+    createNewTrack,
+    createNewDummyClip
 };
 

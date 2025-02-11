@@ -72,7 +72,7 @@ public:
             menu.addCommandItem(&commandManager, SP_CommandID::play);
             menu.addCommandItem(&commandManager, SP_CommandID::stopProcessing);
             menu.addCommandItem(&commandManager, SP_CommandID::createNewTrack);
-
+            menu.addCommandItem(&commandManager, SP_CommandID::createNewDummyClip);
             #endif
         }
 
