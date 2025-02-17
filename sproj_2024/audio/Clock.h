@@ -4,12 +4,12 @@
 #pragma once
 
 #include <SPAudioProcessor.h>
-#include <juce_audio_processors/juce_audio_processors.h>
 #include <random>
 #include <Identifiers.h>
+#include <Scheduler.h>
 
-class Clock : public SPAudioProcessor,
-              public juce::ValueTree::Listener
+class Clock final : public SPAudioProcessor,
+                    public juce::ValueTree::Listener
 {
 public:
 
@@ -96,7 +96,6 @@ private:
 
     juce::ValueTree clockValueTree;
 
-
     int bpm_val{};
     int numerator_val{};
     int denominator_val{};
@@ -108,13 +107,13 @@ private:
 
     double clockSampleRate;
 
+    Scheduler scheduler;
+
     //wavetable
     const unsigned int tableSize = 1 << 7;
     float level = 0.5f;
     juce::AudioSampleBuffer sineTable;
     WavetableOscillator *sineTone;
-
-
 
     std::random_device rd;
     std::default_random_engine generator;

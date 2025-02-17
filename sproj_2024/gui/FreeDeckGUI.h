@@ -5,10 +5,12 @@
 #include <juce_gui_extra/juce_gui_extra.h>
 #include <DeckGUI.h>
 #include <DummyClip.h>
+#include <Identifiers.h>
 
 class FreeDeckGUI final : public juce::Component,
                           public DeckGUI,
-                          public juce::DragAndDropContainer
+                          public juce::DragAndDropContainer,
+                          public  juce::DragAndDropTarget
 {
 public:
   explicit FreeDeckGUI(juce::ValueTree& valueTree)
@@ -35,6 +37,24 @@ public:
   {
     const auto rect = getLocalBounds();
     resizableEdge.setBounds(rect.getX(), rect.getY(), rect.getWidth(), RESIZABLE_EDGE);
+  }
+
+  //Drag and drop methods
+
+  bool isInterestedInDragSource(const SourceDetails& dragSourceDetails) override
+  {
+    return true;
+  }
+
+  void itemDropped(const SourceDetails& dragSourceDetails) override
+  {
+    if (auto& component = dragSourceDetails.sourceComponent; isParentOf(component))
+      component->setCentrePosition(dragSourceDetails.localPosition);
+    // else
+    // {
+    //   addAndMakeVisible(component);
+    //   dragSourceDetails.sourceComponent->setCentrePosition(dragSourceDetails.localPosition);
+    // }
   }
 
 
