@@ -7,8 +7,10 @@ Since I'm using cmake for my build system, you can create IDE specific project f
 
 first you will need to copy the repository into a local folder, then call
 
-`mkdir build
-cd build
-cmake -G Xcode ..`
+`mkdir build`
+
+`cd build`
+
+`cmake -G Xcode ..`
 
 this will create a project file for Xcode. (make sure you have Cmake version 3.22 or above)
