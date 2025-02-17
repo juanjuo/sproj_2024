@@ -9,7 +9,7 @@ project(sproj2024 VERSION 0.1.0)
 # audio folder is a good practice. It helps avoid name clashes later on.
 set(AUDIO_DIR ${CMAKE_CURRENT_SOURCE_DIR}/audio)
 set(GUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/gui)
-set(CONTROLLER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/controller)
+set(HELPERS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/helpers)
 set(MAIN_DIR ${CMAKE_CURRENT_SOURCE_DIR}/main)
 
 # Adds a plugin target (that's basically what the Projucer does).
@@ -48,6 +48,8 @@ target_sources(${PROJECT_NAME}
             #${INCLUDE_DIR}/PluginProcessor.h
 )
 
+set_property(GLOBAL PROPERTY USE_FOLDERS ON) #added
+
 # Sets the audio directories of the plugin project.
 target_include_directories(${PROJECT_NAME}
         PUBLIC
@@ -55,10 +57,6 @@ target_include_directories(${PROJECT_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/gui
         ${CMAKE_CURRENT_SOURCE_DIR}/main
         ${CMAKE_CURRENT_SOURCE_DIR}/helpers
-
-
-
-
 )
 
 # Links to all necessary dependencies. The present ones are recommended by JUCE.

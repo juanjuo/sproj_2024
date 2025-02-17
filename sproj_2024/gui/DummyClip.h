@@ -27,6 +27,21 @@ public:
         setTopLeftPosition(x, y);
     }
 
+    // DummyClip(const DummyClip& clip, const juce::Point<int> point /*int x, int y*/): DeckGUI(clip.WINDOW_WIDTH, clip.WINDOW_HEIGHT, juce::Colour::fromRGB(144, 144, 144))
+    // {
+    //     setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+    //     setTopLeftPosition(point);
+    //
+    //     //probably set all of its member var//
+    // }
+
+    DummyClip(const juce::Point<int> point /*int x, int y*/): DeckGUI(200, 100, juce::Colour::fromRGB(144, 144, 144))
+    {
+        setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+        setTopLeftPosition(point);
+        //probably set all of its member var//
+    }
+
 
     juce::Point<int> calculateRandomPosition(const int width, const int height) //maybe a better way of doing this?
     {
@@ -46,11 +61,13 @@ public:
         juce::String description{"dragging clip"};
         startDragAndDrop(event, description, true);
         isBeingDragged = true;
+        //std::cout << "IS DRAGGING" << std::endl;
     }
 
     void mouseUp(const juce::MouseEvent& event) override
     {
         isBeingDragged = false;
+        //std::cout << "STOP DRAGGING" << std::endl;
     }
 
 

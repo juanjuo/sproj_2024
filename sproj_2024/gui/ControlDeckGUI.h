@@ -11,8 +11,8 @@
 class ClockGUI final : public juce::Component
 {
 public:
-  explicit ClockGUI(juce::ValueTree& valueTree, const int height)
-    : TEXTBOX_HEIGHT(height), clockGuiValueTree(valueTree)
+  explicit ClockGUI(const juce::ValueTree& valueTree, const int height)
+    : TEXTBOX_HEIGHT(height), clockGuiValueTree(valueTree.getChildWithName(SP_ID::METRONOME_BRANCH))
   {
     configureTextEditor(tempoNumerator, std::to_string(*tempo_num_val));
     configureTextEditor(tempoDenominator, std::to_string(*tempo_den_val));
@@ -47,7 +47,8 @@ public:
 
   }
 
-  void configureTextEditorCallback(juce::TextEditor& editor, int& value, const juce::Identifier& propertyId) {
+  void configureTextEditorCallback(juce::TextEditor& editor, int& value, const juce::Identifier& propertyId)
+  {
     editor.onReturnKey = [this, &editor, &value, propertyId]() {
       value = editor.getText().getIntValue(); //Add bounds
       if (clockGuiValueTree.isValid()) {

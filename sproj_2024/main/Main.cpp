@@ -4,6 +4,7 @@
 #include <SPCommandManager.h>
 
 #include <memory>
+#include <xpc/xpc.h>
 
 #include "jive/jive_layouts/utilities/jive_LayoutStrategy.h"
 
@@ -59,6 +60,10 @@ public:
     {
         // This method is where you should put your application's initialisation code..
         juce::ignoreUnused (commandLine);
+
+        valueTree.appendChild(juce::ValueTree {SP_ID::METRONOME_BRANCH}, nullptr);
+
+        valueTree.appendChild(juce::ValueTree {SP_ID::TRACK_BRANCH}, nullptr);
 
         mainAudio = std::make_unique<MainAudio>(valueTree, *commandManager, *deviceManager);
 

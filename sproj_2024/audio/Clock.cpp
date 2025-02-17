@@ -5,7 +5,7 @@
 #include "Clock.h"
 
 Clock::Clock(juce::ValueTree v)
-    : interval_val(5000), counter_val(0), note_length(2000), clockValueTree(v), clockSampleRate(44100)
+    : clockValueTree(v.getChildWithName(SP_ID::METRONOME_BRANCH)), interval_val(5000), counter_val(0), note_length(2000), clockSampleRate(44100), scheduler(v)
 {
     clockValueTree.addListener(this);
 
@@ -41,7 +41,11 @@ void Clock::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& mid
 
     for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
     {
-        if (++counter_val >= interval_val) counter_val = 0;
+        if (++counter_val >= interval_val)
+        {
+            counter_val = 0;
+            scheduler.update();
+        }
         if (counter_val < note_length)
         {
             for (int channel = 0; channel < totalNumOutputChannels; channel++)
@@ -50,7 +54,6 @@ void Clock::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& mid
                 //float randomFloat = distribution(generator);
                 auto levelSample = sineTone->getNextSample() * level;
                 channelData[sample] = levelSample;
-
             }
         }
         else
@@ -67,7 +70,6 @@ void Clock::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& mid
 
 void Clock::releaseResources()
 {
-    //do something??
 }
 
 
@@ -77,7 +79,7 @@ void Clock::reset()
 }
 //
 
-//ValueTree
+//From AudioProcessor
 void Clock::handleAsyncUpdate()
 {
     int bpm = clockValueTree.getProperty(SP_ID::bpm);
@@ -85,6 +87,7 @@ void Clock::handleAsyncUpdate()
     std::cout << "from clock class" << std::endl;
 }
 
+//ValueTree
 void Clock::valueTreePropertyChanged(juce::ValueTree &treeWhosePropertyHasChanged, const juce::Identifier &property)
 {
     triggerAsyncUpdate();
