@@ -38,14 +38,32 @@ juce_add_gui_app(${PROJECT_NAME}
 target_sources(${PROJECT_NAME}
         PRIVATE
         main/Main.cpp
+
         gui/MainComponent.cpp
         gui/MainWindow.cpp
-        #gui/ControlDeckGUI.
+        gui/ControlDeckGUI.h
+        gui/DeckGUI.h
+        gui/DeviceSelectionMenu.h
+        gui/DummyClip.h
+        gui/FreeDeckGUI.h
+        gui/MainComponent.h
+        gui/MainWindow.h
+        gui/MenuComponent.h
+        gui/MixDeckGUI.h
+        gui/RulerDeckGUI.h
+        gui/SPCommandManager.h
+
         audio/Clock.cpp
-        audio/SPAudioProcessor.cpp
         audio/MainAudio.cpp
-            #${INCLUDE_DIR}/PluginEditor.h
-            #${INCLUDE_DIR}/PluginProcessor.h
+        audio/SPAudioProcessor.cpp
+        audio/AudioPlayer.h
+        audio/Clock.h
+        audio/MainAudio.h
+        audio/Quantizer.h
+        audio/Recorder.h
+        audio/Scheduler.h
+        audio/SPAudioProcessor.h
+        audio/Track.h
 )
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON) #added
