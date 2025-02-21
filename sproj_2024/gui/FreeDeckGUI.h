@@ -13,8 +13,8 @@ class FreeDeckGUI final : public juce::Component,
                           public  juce::DragAndDropTarget
 {
 public:
-  explicit FreeDeckGUI(juce::ValueTree& valueTree)
-    : DeckGUI(200, 160, juce::Colour::fromRGB(95, 95, 95))
+  explicit FreeDeckGUI(juce::ValueTree& tree)
+    : DeckGUI(200, 160, juce::Colour::fromRGB(95, 95, 95)), valueTree(tree.getChildWithName(SP_ID::FREEDECK_BRANCH))
   {
     setSize(WINDOW_HEIGHT, WINDOW_HEIGHT);
     addAndMakeVisible(resizableEdge);
@@ -23,7 +23,10 @@ public:
 
   void createNewDummyClip()
   {
-    addAndMakeVisible(clips.add(new DummyClip(CLIP_WIDTH, CLIP_HEIGHT)));
+    juce::ValueTree newNode (SP_ID::CLIP);
+    SP::createNewID(newNode);
+    valueTree.appendChild(newNode, nullptr);
+    addAndMakeVisible(new DummyClip(CLIP_WIDTH, CLIP_HEIGHT, newNode));
     //clips.items.add(clips.getLast()); //always returns right component?
   }
 
@@ -61,10 +64,12 @@ public:
 private:
   juce::ResizableEdgeComponent resizableEdge{this, nullptr, juce::ResizableEdgeComponent::Edge::topEdge};
 
-  juce::OwnedArray<DummyClip> clips;
+  //juce::OwnedArray<DummyClip> clips;
 
   int CLIP_WIDTH = 200;
   int CLIP_HEIGHT = 100;
+
+  juce::ValueTree valueTree;
 };
 
 

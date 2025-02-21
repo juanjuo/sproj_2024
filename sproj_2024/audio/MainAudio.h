@@ -25,7 +25,8 @@ ADD MIDI
 #include <Track.h>
 
 
-class MainAudio : public juce::ApplicationCommandTarget
+class MainAudio : public juce::ApplicationCommandTarget,
+                  public juce::ValueTree::Listener
 {
 public:
 
@@ -37,7 +38,7 @@ public:
 
     void updateGraph();
 
-    void addNewTrack();
+    void addNewTrack(juce::ValueTree& node);
 
     void connectNode(const juce::AudioProcessorGraph::Node::Ptr& node) const;
 
@@ -49,6 +50,9 @@ public:
     void getAllCommands(juce::Array<juce::CommandID> &c) override;
     void getCommandInfo(const juce::CommandID commandID, juce::ApplicationCommandInfo &result) override;
     bool perform(const InvocationInfo &info) override;
+
+    //ValueTreeListener methods
+    void valueTreeChildAdded(juce::ValueTree& parentTree, juce::ValueTree& childWhichHasBeenAdded) override;
 
 
 private:
@@ -68,6 +72,8 @@ private:
     SPCommandManager& commandManager;
 
     juce::AudioProcessorGraph::Node::Ptr metronome;
+
+    Scheduler scheduler;
 
     juce::ReferenceCountedArray<juce::AudioProcessorGraph::Node> trackArray;
 };

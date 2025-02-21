@@ -29,7 +29,7 @@ class MainComponent : public juce::Component,
 {
 public:
 
-    explicit MainComponent(juce::ValueTree tree, SPCommandManager& manager, juce::AudioDeviceManager& deviceManager);
+    explicit MainComponent(juce::ValueTree& tree, SPCommandManager& manager, juce::AudioDeviceManager& deviceManager);
 
     void createNewTrack();
 
@@ -65,6 +65,8 @@ private:
     //Menus
     MenuComponent menu;
     DeviceSelectionMenu deviceSelector;
+
+    juce::ValueTree valueTree;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };

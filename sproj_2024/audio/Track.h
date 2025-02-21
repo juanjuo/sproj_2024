@@ -13,9 +13,9 @@
 #include <AudioPlayer.h>
 #include <SPCommandManager.h>
 
-
 class Track final : public SPAudioProcessor,
-                    public juce::ApplicationCommandTarget
+                    public juce::ApplicationCommandTarget,
+                    public juce::ValueTree::Listener
 {
 public:
 
@@ -25,18 +25,24 @@ public:
         player_Type
     };
 
-    Track(juce::ValueTree valueTree, SPCommandManager& manager) : commandManager(manager)
+    Track(juce::ValueTree& tree, SPCommandManager& manager) : commandManager(manager), valueTree(tree)
     {
-        juce::ignoreUnused(valueTree);
         commandManager.registerAllCommandsForTarget(this);
         commandManager.addTargetToCommandManager(this);
         //player.setLooping(true); find a way to trigger looping from Track class (because of Command Target)
 
         player.setAudioSource(juce::URL {lastRecording});
+
+        valueTree.addListener(this);
     }
 
     ~Track()
     {
+    }
+
+    void trackStartOrStop()
+    {
+        player.startOrStop();
     }
 
     void prepareToPlay(double sampleRate, int samplesPerBlock) override //is there a better way to do this?
@@ -67,7 +73,7 @@ public:
             player.releaseResources();
     }
 
-    void startRecording()
+    void startRecording() //SET VALUE TREE CLIP TO THIS VALUE
     {
         auto parentDir = juce::File::getSpecialLocation(juce::File::userDesktopDirectory);
 
@@ -157,18 +163,34 @@ public:
         return true;
     }
 
+    //ValueTreeListener methods
+
+    void valueTreePropertyChanged(juce::ValueTree& treeWhosePropertyHasChanged, const juce::Identifier&	property) override
+    {
+        if (valueTree == treeWhosePropertyHasChanged)
+            if (property == SP_ID::track_gain)
+                player.setGain(treeWhosePropertyHasChanged.getProperty(property));
+            else std::cout << "audio track property doesn't match" << std::endl;
+        else std::cout << "audio track tree doesn't match" << std::endl;
+
+    }
+
 private:
     ProcessorMode currentType = ProcessorMode::player_Type;
 
     SPCommandManager& commandManager;
-    //juce::File lastRecording {juce::File("/Users/juan/Desktop/Sunny.mp3")};
+    juce::File lastRecording {juce::File("/Users/juan/Desktop/Sunny2.wav")};
 
-    juce::File lastRecording;
+    //juce::File lastRecording;
 
     Recorder recorder {};
     AudioPlayer player {};
 
+    float gain = player.getGain();
+
     int numFiles = 0; //make this global/static
+
+    juce::ValueTree valueTree;
 
     juce::String createNewFileName() //maybe make this static as well??
     {

@@ -4,8 +4,8 @@
 
 #include "Clock.h"
 
-Clock::Clock(juce::ValueTree v)
-    : clockValueTree(v.getChildWithName(SP_ID::METRONOME_BRANCH)), interval_val(5000), counter_val(0), note_length(2000), clockSampleRate(44100), scheduler(v)
+Clock::Clock(juce::ValueTree v, SPCommandManager& cm, Scheduler& sch)
+    : clockValueTree(v.getChildWithName(SP_ID::METRONOME_BRANCH)), interval_val(5000), counter_val(0), note_length(2000), clockSampleRate(44100), scheduler(sch)
 {
     clockValueTree.addListener(this);
 
@@ -34,7 +34,6 @@ void Clock::prepareToPlay(double sampleRate, int samplesPerBlock)
 
 void Clock::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
-
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
