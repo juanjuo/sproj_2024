@@ -13,7 +13,7 @@ class Clock final : public SPAudioProcessor,
 {
 public:
 
-    explicit Clock(juce::ValueTree v);
+    explicit Clock(juce::ValueTree v, SPCommandManager& cm, Scheduler& sch);
 
     //AudioProcessor
     void prepareToPlay(double sampleRate, int samplesPerBlock) override;
@@ -107,7 +107,7 @@ private:
 
     double clockSampleRate;
 
-    Scheduler scheduler;
+    Scheduler& scheduler;
 
     //wavetable
     const unsigned int tableSize = 1 << 7;

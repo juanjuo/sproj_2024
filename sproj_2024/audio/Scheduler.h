@@ -4,12 +4,14 @@
 
 #pragma once
 #include <juce_data_structures/juce_data_structures.h>
+#include <SPCommandManager.h>
+#include <Track.h>
 
 class Scheduler final : public juce::ValueTree::Listener
 {
 public:
 
-    Scheduler(const juce::ValueTree& valueTree) : valueTree(valueTree)
+    Scheduler(const juce::ValueTree& valueTree, SPCommandManager& cm, const juce::ReferenceCountedArray<juce::AudioProcessorGraph::Node>& array) : valueTree(valueTree), commandManager(cm), trackArray(array)
     {
 
     }
@@ -22,11 +24,16 @@ public:
     void update()
     {
         count--;
+        if (count == -1)
+            trigger();
     }
 
     void trigger()
     {
-
+        auto node = trackArray.getLast();
+        auto track = dynamic_cast<Track*>(node->getProcessor());
+        if (track != nullptr)
+            track->trackStartOrStop();
     }
 
 
@@ -41,8 +48,11 @@ public:
 
 
 private:
-    int count = 0;
+    int count = 8;
 
     juce::ValueTree valueTree;
+    SPCommandManager& commandManager;
+
+    const juce::ReferenceCountedArray<juce::AudioProcessorGraph::Node>& trackArray;
 };
 

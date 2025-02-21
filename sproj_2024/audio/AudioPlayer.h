@@ -3,6 +3,7 @@
 //
 #pragma once
 #include <SPAudioProcessor.h>
+#include <juce_audio_devices/juce_audio_devices.h>
 
 class AudioPlayer final : public SPAudioProcessor {
 public:
@@ -23,6 +24,16 @@ public:
             transportSource.setPosition(0);
             transportSource.start();
         }
+    }
+
+    float getGain() const
+    {
+        return transportSource.getGain();
+    }
+
+    void setGain(const float gain)
+    {
+        transportSource.setGain(gain);
     }
 
     //Audio Processor Methods

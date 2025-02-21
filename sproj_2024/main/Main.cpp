@@ -3,9 +3,6 @@
 #include "Identifiers.h"
 #include <SPCommandManager.h>
 
-#include <memory>
-#include <xpc/xpc.h>
-
 #include "jive/jive_layouts/utilities/jive_LayoutStrategy.h"
 
 /* TODO:
@@ -64,6 +61,8 @@ public:
         valueTree.appendChild(juce::ValueTree {SP_ID::METRONOME_BRANCH}, nullptr);
 
         valueTree.appendChild(juce::ValueTree {SP_ID::TRACK_BRANCH}, nullptr);
+
+        valueTree.appendChild(juce::ValueTree {SP_ID::FREEDECK_BRANCH}, nullptr);
 
         mainAudio = std::make_unique<MainAudio>(valueTree, *commandManager, *deviceManager);
 

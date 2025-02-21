@@ -1,10 +1,10 @@
 #include "MainComponent.h"
 
 //==============================================================================
-MainComponent::MainComponent(juce::ValueTree tree, SPCommandManager& manager, juce::AudioDeviceManager& deviceManager)
+MainComponent::MainComponent(juce::ValueTree& tree, SPCommandManager& manager, juce::AudioDeviceManager& deviceManager)
     : commandManager(manager), rulerDeckGUI(), controlDeckGui(tree), mainDeckGui(tree), freeDeckGui(tree),
       mixDeckGui(tree), menu(manager),
-      deviceSelector(deviceManager, manager)
+      deviceSelector(deviceManager, manager), valueTree(tree)
 
 {
     if (tree.isValid()) std::cout << "is valid" << std::endl;
@@ -26,18 +26,23 @@ MainComponent::MainComponent(juce::ValueTree tree, SPCommandManager& manager, ju
 
 void MainComponent::createNewTrack()
 {
-    mixDeckGui.addTrack();
-    mainDeckGui.addTrack();
+    juce::ValueTree newNode (SP_ID::TRACK);
+    SP::createNewID(newNode);
+    auto trackBranch = valueTree.getChildWithName(SP_ID::TRACK_BRANCH);
+    trackBranch.appendChild(newNode, nullptr);
+    mixDeckGui.addTrack(newNode);
+    mainDeckGui.addTrack(newNode);
+
 }
 
-void MainComponent::createNewDummyClip()
+void MainComponent::createNewDummyClip() //not the fastest way of doing this (better to initialize this before hand)
 {
     freeDeckGui.createNewDummyClip();
 }
 
 void MainComponent::initializeApplication() //only for the beta release of the application
 {
-    for (int i = 0; i < 7; i++)
+    for (int i = 0; i < 1; i++)
     {
         createNewTrack();
     }
@@ -119,6 +124,7 @@ bool MainComponent::perform(const InvocationInfo &info)
         break;
     case SP_CommandID::createNewDummyClip:
         createNewDummyClip();
+        SP::printVT(valueTree);
         break;
     default:
         return false;

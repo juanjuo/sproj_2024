@@ -15,13 +15,13 @@ class DummyClip final : public juce::Component,
                         public DeckGUI
 {
 public:
-    DummyClip(const int width, const int height): DeckGUI(width, height, juce::Colour::fromRGB(144, 144, 144))
+    DummyClip(const int width, const int height, juce::ValueTree& tree): DeckGUI(width, height, juce::Colour::fromRGB(144, 144, 144)), valueTree(tree)
     {
         setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         setTopLeftPosition(calculateRandomPosition(getParentWidth(), getParentHeight()));
     }
 
-    DummyClip(const int width, const int height, const int x, const int y): DeckGUI(width, height, juce::Colour::fromRGB(144, 144, 144))
+    DummyClip(const int width, const int height, const int x, const int y, juce::ValueTree& tree): DeckGUI(width, height, juce::Colour::fromRGB(144, 144, 144)), valueTree(tree)
     {
         setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         setTopLeftPosition(x, y);
@@ -35,7 +35,7 @@ public:
     //     //probably set all of its member var//
     // }
 
-    DummyClip(const juce::Point<int> point /*int x, int y*/): DeckGUI(200, 100, juce::Colour::fromRGB(144, 144, 144))
+    DummyClip(const juce::Point<int> point, juce::ValueTree& tree): DeckGUI(200, 100, juce::Colour::fromRGB(144, 144, 144)), valueTree(tree)
     {
         setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         setTopLeftPosition(point);
@@ -54,6 +54,16 @@ public:
         int y = minY + rand() % (maxY - minY + 1);
 
         return {x, y};
+    }
+
+    void setFilePath(const juce::String& filePath)
+    {
+
+    }
+
+    juce::ValueTree& getValueTree()
+    {
+        return valueTree;
     }
 
     void mouseDrag(const juce::MouseEvent& event) override //maybe call startDragging directly?
@@ -103,4 +113,7 @@ public:
 
 private:
     bool isBeingDragged = false; //if I ever want to make the dragAndDrop look better
+
+    juce::ValueTree valueTree;
+
 };
