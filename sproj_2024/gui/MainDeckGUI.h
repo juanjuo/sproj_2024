@@ -5,6 +5,7 @@
 #include <juce_gui_extra/juce_gui_extra.h>
 #include <DeckGUI.h>
 #include <DummyClip.h>
+#include <Identifiers.h>
 
 class MainDeckGUI final : public juce::Component,
                           public DeckGUI
@@ -142,6 +143,7 @@ public:
         if (auto dummyClip = dynamic_cast<DummyClip*>(clip.get()); dummyClip != nullptr) //move ValueTree
         {
           auto tree = dummyClip->getValueTree();
+          tree.setProperty(SP_ID::clip_start_value, index, nullptr); //add starting value
           tree.getParent().removeChild(tree, nullptr);
           node.appendChild(tree, nullptr);
         }
@@ -219,11 +221,11 @@ private:
 
   juce::ValueTree valueTree;
 
-  juce::Identifier generateNameForTrack() const
-  {
-    const int numTracks = getNumChildComponents();
-    return juce::Identifier ("track_" + numTracks);
-  }
+  // juce::Identifier generateNameForTrack() const
+  // {
+  //   const int numTracks = getNumChildComponents();
+  //   return juce::Identifier ("track_" + numTracks);
+  // }
 };
 
 

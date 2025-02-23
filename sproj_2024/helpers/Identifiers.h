@@ -31,7 +31,7 @@ namespace SP_ID
     DECLARE_ID (track_gain)
 
     //clips
-    DECLARE_ID (clip_value)
+    DECLARE_ID (clip_start_value)
     DECLARE_ID (clip_filepath)
 
     #undef DECLARE_ID
