@@ -19,26 +19,21 @@ public:
     {
         setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         setTopLeftPosition(calculateRandomPosition(getParentWidth(), getParentHeight()));
+        initializeValueTree();
     }
 
     DummyClip(const int width, const int height, const int x, const int y, juce::ValueTree& tree): DeckGUI(width, height, juce::Colour::fromRGB(144, 144, 144)), valueTree(tree)
     {
         setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         setTopLeftPosition(x, y);
+        initializeValueTree();
     }
-
-    // DummyClip(const DummyClip& clip, const juce::Point<int> point /*int x, int y*/): DeckGUI(clip.WINDOW_WIDTH, clip.WINDOW_HEIGHT, juce::Colour::fromRGB(144, 144, 144))
-    // {
-    //     setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-    //     setTopLeftPosition(point);
-    //
-    //     //probably set all of its member var//
-    // }
 
     DummyClip(const juce::Point<int> point, juce::ValueTree& tree): DeckGUI(200, 100, juce::Colour::fromRGB(144, 144, 144)), valueTree(tree)
     {
         setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         setTopLeftPosition(point);
+        initializeValueTree();
         //probably set all of its member var//
     }
 
@@ -56,9 +51,10 @@ public:
         return {x, y};
     }
 
-    void setFilePath(const juce::String& filePath)
+    void initializeValueTree()
     {
-
+        valueTree.setProperty(SP_ID::clip_start_value, startingValue, nullptr);
+        valueTree.setProperty(SP_ID::clip_filepath, filePath, nullptr);
     }
 
     juce::ValueTree& getValueTree()
@@ -116,4 +112,10 @@ private:
 
     juce::ValueTree valueTree;
 
+    int startingValue = -1;
+
+
+    juce::String filePath {"/Users/juan/Desktop/Sunny2.wav"};
+
+    //juce::File filePath {juce::File("/Users/juan/Desktop/Sunny2.wav")};
 };
