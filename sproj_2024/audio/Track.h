@@ -179,9 +179,9 @@ private:
     ProcessorMode currentType = ProcessorMode::player_Type;
 
     SPCommandManager& commandManager;
-    juce::File lastRecording {juce::File("/Users/juan/Desktop/Sunny2.wav")};
+    //juce::File lastRecording {juce::File("/Users/juan/Desktop/Sunny2.wav")};
 
-    //juce::File lastRecording;
+    juce::File lastRecording;
 
     Recorder recorder {};
     AudioPlayer player {};
