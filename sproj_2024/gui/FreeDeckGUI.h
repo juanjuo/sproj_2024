@@ -26,8 +26,7 @@ public:
     juce::ValueTree newNode (SP_ID::CLIP);
     SP::createNewID(newNode);
     valueTree.appendChild(newNode, nullptr);
-    addAndMakeVisible(new DummyClip(CLIP_WIDTH, CLIP_HEIGHT, newNode));
-    //clips.items.add(clips.getLast()); //always returns right component?
+    addAndMakeVisible(new DummyClip(CLIP_WIDTH, CLIP_HEIGHT, getLocalBounds(), newNode, juce::Colour::fromRGB(rand() % 255, rand() % 255, rand() % 255)));
   }
 
   void paint(juce::Graphics& g) override

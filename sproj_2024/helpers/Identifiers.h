@@ -32,6 +32,8 @@ namespace SP_ID
 
     //clips
     DECLARE_ID (clip_start_value)
+    DECLARE_ID (clip_end_value)
+    DECLARE_ID (clip_length_value)
     DECLARE_ID (clip_filepath)
 
     #undef DECLARE_ID

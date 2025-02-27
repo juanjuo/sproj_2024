@@ -2,7 +2,7 @@
 
 //==============================================================================
 MainComponent::MainComponent(juce::ValueTree& tree, SPCommandManager& manager, juce::AudioDeviceManager& deviceManager)
-    : commandManager(manager), rulerDeckGUI(), controlDeckGui(tree), mainDeckGui(tree), freeDeckGui(tree),
+    : commandManager(manager), rulerDeckGUI(), controlDeckGui(tree), freeDeckGui(tree), mainDeckGui(tree, freeDeckGui),
       mixDeckGui(tree), menu(manager),
       deviceSelector(deviceManager, manager), valueTree(tree)
 
@@ -123,7 +123,7 @@ bool MainComponent::perform(const InvocationInfo &info)
         createNewTrack();
         break;
     case SP_CommandID::createNewDummyClip:
-        createNewDummyClip();
+        //createNewDummyClip();
         SP::printVT(valueTree);
         break;
     default:

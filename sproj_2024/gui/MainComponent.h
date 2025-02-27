@@ -58,8 +58,8 @@ private:
 
     RulerDeckGUI rulerDeckGUI;
     ControlDeckGUI controlDeckGui;
-    MainDeckGUI mainDeckGui;
     FreeDeckGUI freeDeckGui;
+    MainDeckGUI mainDeckGui;
     MixDeckGUI mixDeckGui;
 
     //Menus
