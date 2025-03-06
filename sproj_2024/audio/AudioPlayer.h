@@ -17,6 +17,8 @@ public:
         transportSource.setSource(nullptr);
     }
 
+
+    //for pausing the processing, save the last position, and when you restart you start from there
     void startOrStop() {
         if (transportSource.isPlaying()) {
             transportSource.stop();

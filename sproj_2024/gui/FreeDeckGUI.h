@@ -10,9 +10,10 @@
 class FreeDeckGUI final : public juce::Component,
                           public DeckGUI,
                           public juce::DragAndDropContainer,
-                          public  juce::DragAndDropTarget
+                          public juce::DragAndDropTarget
 {
 public:
+
   explicit FreeDeckGUI(juce::ValueTree& tree)
     : DeckGUI(200, 160, juce::Colour::fromRGB(95, 95, 95)), valueTree(tree.getChildWithName(SP_ID::FREEDECK_BRANCH))
   {

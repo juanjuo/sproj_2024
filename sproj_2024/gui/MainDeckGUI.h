@@ -6,6 +6,7 @@
 #include <DeckGUI.h>
 #include <DummyClip.h>
 #include <Identifiers.h>
+#include <juce_animation/juce_animation.h>
 
 class MainDeckTile final : public juce::Component
 {
@@ -89,11 +90,16 @@ public:
     addTiles(NUM_TILES); //add all tiles
   }
 
-  void makeTilesOccupied(int start, int end) const
+  juce::ValueTree getValueTree()
+  {
+    return node;
+  }
+
+  void updateOccupied(int start, int end, bool state) const
   {
     for (int i = start; i < end; i++)
     {
-      tileList[i]->setOccupied(true);
+      tileList[i]->setOccupied(state);
     }
   }
 
@@ -139,7 +145,7 @@ public:
       const auto end = maxTile->getTilePosition() + 1;
       if (areTilesOccupied(start, end))
       {
-        makeTilesOccupied(start, end);
+        updateOccupied(start, end, true);
 
         //setup ValueTree
         juce::ValueTree trackClipNode(SP_ID::CLIP); //add ValueTree to track
@@ -156,6 +162,7 @@ public:
         juce::Colour colour = juce::Colour::fromRGB(rand() % 255, rand() % 255, rand() % 255);
         auto trackClip = new DummyClip(totalWidth, TILE_HEIGHT, point, trackClipNode, colour);
         trackClip->setUpValueTree(start, end, "dummyClip");
+        clips.add(trackClip);
         addAndMakeVisible(trackClip);
         deckClipNode.setProperty(SP_ID::clip_length_value, end - start, nullptr); //set up length
         freeDeck.addAndMakeVisible(new DummyClip(totalWidth, TILE_HEIGHT, freeDeck.getLocalBounds(), deckClipNode,
@@ -245,15 +252,17 @@ private:
   FreeDeckGUI& freeDeck;
 
 
-  int TILE_WIDTH = 20;
+  int TILE_WIDTH = 15;
   int TILE_HEIGHT = 100;
 
-  int NUM_TILES = 32;
+  int NUM_TILES = 80;
 
   int numOfClips = -NUM_TILES + 1; //to fix issue with indexing of children //USE TILE LIST
 
 public:
   juce::Array<MainDeckTile*> tileList;
+
+  juce::Array<DummyClip*> clips;
 };
 
 
@@ -291,10 +300,31 @@ public:
 
   void mouseDown(const juce::MouseEvent& event) override
   {
-    //track->resetTiles(); //tile color not working
-    setBounds(track->getBounds()); //BUG!! size of mask is not dynamically resizing
-    addAndMakeVisible(lassoComponent);
-    lassoComponent.beginLasso(event, track);
+    if (event.mods.isCtrlDown()) // delete not working
+    {
+      auto tile = dynamic_cast<MainDeckTile*>(track->getComponentAt(event.position)); //better type checking here?
+      if (tile != nullptr)
+      {
+        for (auto clip : track->clips) // need to delete the element from the clip array afterward
+        {
+          if (clip->getBounds().contains(tile->getBounds()))
+          {
+            auto start = clip->getValueTree().getProperty(SP_ID::clip_start_value);
+            auto end = clip->getValueTree().getProperty(SP_ID::clip_end_value);
+            track->updateOccupied(start, end, false);
+            track->getValueTree().removeChild((clip)->getValueTree(), nullptr); // delete tree
+            track->removeChildComponent(clip);
+          }
+        }
+      }
+    }
+    else
+    {
+      //track->resetTiles(); //tile color not working
+      setBounds(track->getBounds()); //BUG!! size of mask is not dynamically resizing
+      addAndMakeVisible(lassoComponent);
+      lassoComponent.beginLasso(event, track);
+    }
   }
 
   void mouseDrag(const juce::MouseEvent& event) override
@@ -333,7 +363,7 @@ public:
         int end = start + length;
         if (track->areTilesOccupied(start, end))
         {
-          track->makeTilesOccupied(start, end - 1);
+          track->updateOccupied(start, end - 1, true);
           std::cout << start << std::endl; //add new track
           juce::ValueTree clipValueTree(SP_ID::CLIP);
           clipValueTree.setProperty(SP_ID::U_ID, dummyClip->getValueTree().getProperty(SP_ID::U_ID), nullptr);
@@ -361,9 +391,28 @@ class MainDeckGUI final : public juce::Component,
                           public DeckGUI
 {
 public:
-  explicit MainDeckGUI(const juce::ValueTree& v, FreeDeckGUI& fdeck)
+  enum class MainDeckMode
+  {
+    on_Screen = 0,
+    off_Screen
+  };
+
+  explicit MainDeckGUI(const juce::ValueTree& v, FreeDeckGUI& fdeck, MainDeckMode mode)
     : DeckGUI(0, 0, juce::Colour::fromRGB(195, 195, 195)), valueTree(v), freeDeck(fdeck)
   {
+    deck_mode = mode;
+    setAlwaysOnTop(true);
+    if (deck_mode == MainDeckMode::on_Screen)
+    {
+      setTopLeftPosition(0, 0);
+      currentAnimationPosition = 0.5;
+    }
+    if (deck_mode == MainDeckMode::off_Screen)
+    {
+      setTopLeftPosition(getParentWidth(), 0);
+      currentAnimationPosition = 0.0;
+    }
+
     setUpGrid(TRACK_WIDTH);
     //TRACK_WIDTH = getWidth(); //maybe?
   }
@@ -405,16 +454,84 @@ public:
 
   void resized() override
   {
+    setBounds(getParentComponent()->getBounds());
+    if (deck_mode == MainDeckMode::on_Screen)
+      setTopLeftPosition(0, 0);
+    if (deck_mode == MainDeckMode::off_Screen)
+      setTopLeftPosition(getParentWidth(), 0);
     setUpGrid(getWidth());
   }
 
+  void startPlayback()
+  {
+    //updater.addAnimator(animator, [this] { updater.removeAnimator(animator); });
+    updater.addAnimator(animator);
+
+    animator.start();
+  }
+
+  void stopPlayback()
+  {
+    animator.complete();
+  }
+
 private:
+  MainDeckMode deck_mode;
+
+  juce::ValueTree valueTree;
+
+  float currentAnimationPosition;
+
+  int calculateSpeed()
+  {
+    int bpm = valueTree.getChildWithName(SP_ID::METRONOME_BRANCH).getProperty(SP_ID::bpm);
+    if (bpm <= 0)
+    {
+      std::cerr << "BPM must be a positive integer." << std::endl;
+      return -1; // Indicate an error
+    }
+    int finalMs = static_cast<int>(60000.0f / bpm) * 160;
+    std::cout << finalMs << std::endl;
+    return static_cast<int>(60000.0f / bpm) * 160; //time in ms for every beat, multiplied by the number of beats * 2
+  }
+
+  juce::Animator animator = [&]
+  {
+    return juce::ValueAnimatorBuilder{}
+           .runningInfinitely()
+           .withEasing(juce::Easings::createLinear())
+           .withOnStartReturningValueChangedCallback(
+             [this]
+             {
+               const auto width = getParentWidth();
+               const auto limits = juce::makeAnimationLimits(width, -width);
+
+               const float newAnimationPosition = currentAnimationPosition;
+
+               return [this, limits, newAnimationPosition](auto value)
+               {
+                 auto position = std::fmod(value + newAnimationPosition, 1.0f);
+                 setTopLeftPosition(limits.lerp(position), 0); //start in the middle
+                 currentAnimationPosition = position;
+               };
+             })
+           .withOnCompleteCallback([this]
+           {
+             const auto width = getParentWidth();
+             const auto limits = juce::makeAnimationLimits(width, -width);
+             std::cout << currentAnimationPosition << std::endl;
+             setTopLeftPosition(limits.lerp(currentAnimationPosition), 0);
+           })
+           .withDurationMs(calculateSpeed())
+           .build();
+  }();
+
+  juce::VBlankAnimatorUpdater updater{this};
+
   juce::Grid grid;
 
   int TRACK_WIDTH = 1500;
   int TRACK_HEIGHT = 100;
-
-  juce::ValueTree valueTree;
 
   FreeDeckGUI& freeDeck;
 };

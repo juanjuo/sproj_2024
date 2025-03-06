@@ -52,6 +52,7 @@ target_sources(${PROJECT_NAME}
         gui/MixDeckGUI.h
         gui/RulerDeckGUI.h
         gui/SPCommandManager.h
+        gui/MainDeckHolder.h
 
         audio/Clock.cpp
         audio/MainAudio.cpp
@@ -87,6 +88,7 @@ target_link_libraries(${PROJECT_NAME}
             juce::juce_gui_extra
             juce::juce_core
             juce::juce_dsp
+            juce::juce_animation
             #jive::jive_layouts
             #jive::jive_style_sheets
             melatonin_inspector

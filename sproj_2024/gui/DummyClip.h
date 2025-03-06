@@ -4,8 +4,8 @@
 
 #pragma once
 #include <DeckGUI.h>
-
 #include "Identifiers.h"
+#include "FreeDeckGUI.h"
 
 /* BUGS!
  *
