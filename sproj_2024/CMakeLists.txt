@@ -37,10 +37,15 @@ juce_add_gui_app(${PROJECT_NAME}
 # Sets the gui files of the plugin project.
 target_sources(${PROJECT_NAME}
         PRIVATE
-        main/Main.cpp
 
-        gui/MainComponent.cpp
-        gui/MainWindow.cpp
+        audio/AudioPlayer.h
+        audio/AudioClock.h
+        audio/MainAudio.h
+        audio/Quantizer.h
+        audio/Recorder.h
+        audio/Scheduler.h
+        audio/SPAudioProcessor.h
+        audio/Track.h
         gui/ControlDeckGUI.h
         gui/DeckGUI.h
         gui/DeviceSelectionMenu.h
@@ -54,17 +59,11 @@ target_sources(${PROJECT_NAME}
         gui/SPCommandManager.h
         gui/MainDeckHolder.h
 
-        audio/Clock.cpp
+        main/Main.cpp
         audio/MainAudio.cpp
         audio/SPAudioProcessor.cpp
-        audio/AudioPlayer.h
-        audio/Clock.h
-        audio/MainAudio.h
-        audio/Quantizer.h
-        audio/Recorder.h
-        audio/Scheduler.h
-        audio/SPAudioProcessor.h
-        audio/Track.h
+        gui/MainComponent.cpp
+        gui/MainWindow.cpp
 )
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON) #added

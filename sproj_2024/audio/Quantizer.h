@@ -3,7 +3,7 @@
 //
 
 #pragma once
-#include <Clock.h>
+#include <AudioClock.h>
 
 class Quantizer
 {

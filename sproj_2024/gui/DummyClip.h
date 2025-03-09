@@ -58,7 +58,7 @@ public:
     {
         valueTree.setProperty(SP_ID::clip_start_value, startingValue, nullptr);
         valueTree.setProperty(SP_ID::clip_end_value, endValue, nullptr);
-        valueTree.setProperty(SP_ID::clip_filepath, filePath, nullptr);
+        valueTree.setProperty(SP_ID::clip_filepath, localFilePath, nullptr);
         valueTree.setProperty(SP_ID::clip_length_value, calculateLengthInBeats(startingValue, endValue), nullptr);
     }
 
@@ -66,7 +66,7 @@ public:
     {
         valueTree.setProperty(SP_ID::clip_start_value, -1, nullptr);
         valueTree.setProperty(SP_ID::clip_end_value, -1, nullptr);
-        valueTree.setProperty(SP_ID::clip_filepath, "", nullptr);
+        valueTree.setProperty(SP_ID::clip_filepath, localFilePath, nullptr);
     }
 
     juce::ValueTree& getValueTree()
@@ -76,7 +76,7 @@ public:
 
     juce::String getFilePath()
     {
-        return filePath;
+        return localFilePath;
     }
 
     void mouseDrag(const juce::MouseEvent& event) override //maybe call startDragging directly?
@@ -130,7 +130,9 @@ private:
     juce::ValueTree valueTree;
 
 
-    juce::String filePath {"/Users/juan/Desktop/Sunny2.wav"};
+    //juce::String localFilePath {" "};
+
+    juce::String localFilePath {"/Users/juan/Desktop/Sunny2.wav"};
 
     //juce::File filePath {juce::File("/Users/juan/Desktop/Sunny2.wav")};
 

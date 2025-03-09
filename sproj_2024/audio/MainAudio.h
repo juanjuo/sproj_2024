@@ -21,7 +21,7 @@ ADD MIDI
 #include "juce_audio_processors/juce_audio_processors.h"
 #include "juce_audio_utils/juce_audio_utils.h"
 #include "juce_audio_devices/juce_audio_devices.h"
-#include <Clock.h>
+#include <AudioClock.h>
 #include <Track.h>
 
 
@@ -71,9 +71,7 @@ private:
 
     SPCommandManager& commandManager;
 
-    juce::AudioProcessorGraph::Node::Ptr metronome;
-
-    Scheduler scheduler;
+    juce::AudioProcessorGraph::Node::Ptr clockNode;
 
     juce::ReferenceCountedArray<juce::AudioProcessorGraph::Node> trackArray;
 };

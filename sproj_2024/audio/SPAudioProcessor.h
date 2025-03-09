@@ -15,6 +15,8 @@ public:
     SPAudioProcessor();
     ~SPAudioProcessor() override;
 
+    void pauseOrResumeProcessing();
+
     //==============================================================================
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
@@ -25,7 +27,7 @@ public:
     using juce::AudioProcessor::processBlock;
 
     //==============================================================================
-    juce::AudioProcessorEditor* createEditor() override; //TODO: NEED TO IMPLEMENT
+    juce::AudioProcessorEditor* createEditor() override; //TODO: NEED TO DELETE
     bool hasEditor() const override;
 
     //==============================================================================
@@ -50,6 +52,9 @@ public:
 
     //FROM ASYNC UPDATER
     void handleAsyncUpdate() override;
+
+protected:
+    bool isPaused = true;
 
 
 private:

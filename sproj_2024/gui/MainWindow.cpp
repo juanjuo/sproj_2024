@@ -25,10 +25,10 @@ MainWindow::MainWindow (juce::String name, juce::ValueTree tree, SPCommandManage
 
     //MELATONIN WINDOW
     // open the inspector window
-    inspector.setVisible(true);
+    inspector.setVisible(false);
 
     // enable the inspector
-    inspector.toggle(true);
+    inspector.toggle(false);
 }
 
 void MainWindow::closeButtonPressed()

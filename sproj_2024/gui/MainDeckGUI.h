@@ -152,21 +152,22 @@ public:
         juce::ValueTree deckClipNode(SP_ID::CLIP); //add ValueTree to freedeck
         SP::createNewID(trackClipNode);
         deckClipNode.setProperty(SP_ID::U_ID, trackClipNode.getProperty(SP_ID::U_ID), nullptr);
-        freeDeckNode.appendChild(deckClipNode, nullptr);
-        //std::cout << "position: " << minTile->getTilePosition() << std::endl;
-        node.appendChild(trackClipNode, nullptr);
 
         //create components
         std::cout << "numOfBeats: " << numOfBeats << std::endl;
         const auto point = minTile->getPosition();
         juce::Colour colour = juce::Colour::fromRGB(rand() % 255, rand() % 255, rand() % 255);
         auto trackClip = new DummyClip(totalWidth, TILE_HEIGHT, point, trackClipNode, colour);
-        trackClip->setUpValueTree(start, end, "dummyClip");
+        trackClip->setUpValueTree(start, end, " ");
         clips.add(trackClip);
         addAndMakeVisible(trackClip);
         deckClipNode.setProperty(SP_ID::clip_length_value, end - start, nullptr); //set up length
         freeDeck.addAndMakeVisible(new DummyClip(totalWidth, TILE_HEIGHT, freeDeck.getLocalBounds(), deckClipNode,
                                                  colour)); //add component to freeDeck
+
+        freeDeckNode.appendChild(deckClipNode, nullptr); //add at the end so all values are updated
+        //std::cout << "position: " << minTile->getTilePosition() << std::endl;
+        node.appendChild(trackClipNode, nullptr);
       }
     }
   }
