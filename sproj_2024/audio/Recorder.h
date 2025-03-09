@@ -113,10 +113,17 @@ public:
         auto numInputChannels = getTotalNumInputChannels();
         auto numOutputChannels = getTotalNumOutputChannels();
 
+        // TO PAUSE RECORDING
+        //
+        // if (!paused)
+        //
+
         if (activeWriter.load() != nullptr)
         {
             activeWriter.load()->write(buffer.getArrayOfReadPointers(), buffer.getNumSamples());
 
+
+            // TO CREATE THUMBNAILS
             // // Create an AudioBuffer to wrap our incoming data, note that this does no allocations or copies, it simply references our input data
             // juce::AudioBuffer<float> buffer (const_cast<float**> (inputChannelData), thumbnail.getNumChannels(), numSamples);
             // thumbnail.addBlock (nextSampleNum, buffer, 0, numSamples);

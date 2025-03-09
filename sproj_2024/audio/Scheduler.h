@@ -24,7 +24,7 @@ public:
 
     void update() //is this thread safe? is this real-time safe?
     {
-        if (hashMap.size() > 0)
+        if (!hashMap.empty())
         {
             std::erase_if(hashMap, [](const auto& element) { return element.second == 0;}); //for erasing the elements that hit 0. this is really slow!
             for (auto& startPoint : hashMap)
@@ -51,21 +51,17 @@ public:
     }
 
     //ValueTree
-    void valueTreePropertyChanged(juce::ValueTree& treeWhosePropertyHasChanged, const juce::Identifier& property) override
-    {
-        if (treeWhosePropertyHasChanged.getType() == SP_ID::CLIP)
-            if (property == SP_ID::clip_start_value)
-                hashMap.emplace(treeWhosePropertyHasChanged.getProperty(SP_ID::U_ID).toString(), treeWhosePropertyHasChanged.getProperty(SP_ID::clip_start_value));
-            else std::cout << "scheduler property doesn't match" << std::endl;
-        else std::cout << "scheduler tree doesn't match" << std::endl;
-    }
+    // void valueTreePropertyChanged(juce::ValueTree& treeWhosePropertyHasChanged, const juce::Identifier& property) override
+    // {
+    //     if (treeWhosePropertyHasChanged.getType() == SP_ID::CLIP)
+    //         if (property == SP_ID::clip_start_value)
+    //         {
+    //             hashMap.emplace(treeWhosePropertyHasChanged.getProperty(SP_ID::U_ID).toString(), treeWhosePropertyHasChanged.getProperty(SP_ID::clip_start_value));
+    //             std::cout << "scheduler hashmap updated (new clip)" << std::endl;
+    //         }
+    // }
 
-    void valueTreeChildAdded(juce::ValueTree& parentTree, juce::ValueTree& childWhichHasBeenAdded) override
-    {
-        if (childWhichHasBeenAdded.getType() == SP_ID::CLIP)
-                hashMap.emplace(childWhichHasBeenAdded.getProperty(SP_ID::U_ID).toString(), childWhichHasBeenAdded.getProperty(SP_ID::clip_start_value));
-        else std::cout << "scheduler clip type doesn't match" << std::endl;
-    }
+
 
 private:
     //int count = 8;

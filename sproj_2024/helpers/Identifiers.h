@@ -23,8 +23,7 @@ namespace SP_ID
     //values
 
     //metronome
-    DECLARE_ID (numerator)
-    DECLARE_ID (denominator)
+    DECLARE_ID (grouping)
     DECLARE_ID (bpm)
 
     //track
@@ -32,6 +31,8 @@ namespace SP_ID
 
     //clips
     DECLARE_ID (clip_start_value)
+    DECLARE_ID (clip_end_value)
+    DECLARE_ID (clip_length_value)
     DECLARE_ID (clip_filepath)
 
     #undef DECLARE_ID
@@ -45,7 +46,8 @@ enum SP_CommandID
     play,
     stopProcessing,
     createNewTrack,
-    createNewDummyClip
+    createNewDummyClip,
+    startMoving
 };
 
 // helper function to move child components around, I might not need this
