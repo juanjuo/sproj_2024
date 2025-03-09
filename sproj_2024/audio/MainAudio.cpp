@@ -19,8 +19,8 @@ MainAudio::MainAudio(juce::ValueTree v, SPCommandManager &manager, juce::AudioDe
 
     baseSampleRate = deviceManager.getAudioDeviceSetup().sampleRate;
 
-    commandManager.registerAllCommandsForTarget(this);
-    commandManager.addTargetToCommandManager(this);
+    // commandManager.registerAllCommandsForTarget(this);
+    // commandManager.addTargetToCommandManager(this);
 
     valueTree.addListener(this);
 
@@ -83,49 +83,56 @@ void MainAudio::connectNode(const juce::AudioProcessorGraph::Node::Ptr &node) co
 
 void MainAudio::pauseOrResumeProcessing() //There might be better ways of doing this?
 {
+    auto clock = dynamic_cast<SPAudioProcessor*>(clockNode->getProcessor());
+    clock->pauseOrResumeProcessing();
+    for (auto track : trackArray)
+    {
+        auto processor = dynamic_cast<SPAudioProcessor*>(track->getProcessor());
+        processor->pauseOrResumeProcessing();
+    }
 }
 
 //ApplicationCommandTarget methods
 
-juce::ApplicationCommandTarget* MainAudio::getNextCommandTarget()
-{
-    return nullptr;
-}
-
-void MainAudio::getAllCommands(juce::Array<juce::CommandID> &c)
-{
-    juce::Array<juce::CommandID> commands{
-        SP_CommandID::stopProcessing
-    };
-    c.addArray(commands);
-}
-
-void MainAudio::getCommandInfo(const juce::CommandID commandID, juce::ApplicationCommandInfo &result)
-{
-    switch (commandID)
-    {
-        case SP_CommandID::stopProcessing:
-            result.setInfo("Stop", "Stops playback", "Audio", 0);
-            result.setTicked(false);
-            result.addDefaultKeypress(juce::KeyPress::spaceKey, juce::ModifierKeys::noModifiers);
-            break;
-        default:
-            break;
-    }
-}
-
-bool MainAudio::perform(const InvocationInfo &info)
-{
-    switch (info.commandID)
-    {
-        case SP_CommandID::stopProcessing:
-            pauseOrResumeProcessing();
-            break;
-        default:
-            return false;
-    }
-    return true;
-}
+// juce::ApplicationCommandTarget* MainAudio::getNextCommandTarget()
+// {
+//     return nullptr;
+// }
+//
+// void MainAudio::getAllCommands(juce::Array<juce::CommandID> &c)
+// {
+//     juce::Array<juce::CommandID> commands{
+//         SP_CommandID::startOrStopProcessing
+//     };
+//     c.addArray(commands);
+// }
+//
+// void MainAudio::getCommandInfo(const juce::CommandID commandID, juce::ApplicationCommandInfo &result)
+// {
+//     switch (commandID)
+//     {
+//         case SP_CommandID::startOrStopProcessing:
+//             result.setInfo("start or stop processing", "starts or stops playback", "Audio", 0);
+//             result.setTicked(false);
+//             result.addDefaultKeypress(juce::KeyPress::spaceKey, juce::ModifierKeys::noModifiers);
+//             break;
+//         default:
+//             break;
+//     }
+// }
+//
+// bool MainAudio::perform(const InvocationInfo &info)
+// {
+//     switch (info.commandID)
+//     {
+//         case SP_CommandID::startOrStopProcessing:
+//             pauseOrResumeProcessing();
+//             break;
+//         default:
+//             return false;
+//     }
+//     return true;
+// }
 
 // ValueTreeListener methods
 

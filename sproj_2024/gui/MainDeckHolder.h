@@ -11,7 +11,6 @@ class MainDeckHolder final : public juce::Component
 public:
     explicit MainDeckHolder()
     {
-
         //setAlpha(0);
         setOpaque(false);
         setAlwaysOnTop(false);
@@ -19,7 +18,6 @@ public:
 
     void paint(juce::Graphics& g) override
     {
-
     }
 
     void resized() override
@@ -28,22 +26,28 @@ public:
             deck->resized();
     }
 
-    void startPlayback()
+    void startOrStopAnimation()
     {
-        for (const auto component : getChildren())
+        if (isMoving)
         {
-            MainDeckGUI* deck = dynamic_cast<MainDeckGUI*>(component);
-            deck->startPlayback();
+            for (const auto component : getChildren())
+            {
+                MainDeckGUI* deck = dynamic_cast<MainDeckGUI*>(component);
+                deck->stopAnimation();
+            }
+            isMoving = false;
+        }
+        else
+        {
+            for (const auto component : getChildren())
+            {
+                MainDeckGUI* deck = dynamic_cast<MainDeckGUI*>(component);
+                deck->startAnimation();
+            }
+            isMoving = true;
         }
     }
 
-    void stopPlayback()
-    {
-        for (const auto component : getChildren())
-        {
-            MainDeckGUI* deck = dynamic_cast<MainDeckGUI*>(component);
-            deck->stopPlayback();
-        }
-    }
 private:
+    bool isMoving = false;
 };

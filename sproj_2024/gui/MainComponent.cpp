@@ -21,9 +21,6 @@ MainComponent::MainComponent(juce::ValueTree& tree, SPCommandManager& manager, j
     addAndMakeVisible(menu);
     addChildComponent(deviceSelector);
 
-    commandManager.registerAllCommandsForTarget(this);
-    commandManager.addTargetToCommandManager(this);
-
     initializeApplication();
 }
 
@@ -51,6 +48,11 @@ void MainComponent::initializeApplication() //only for the beta release of the a
     {
         createNewTrack();
     }
+}
+
+void MainComponent::startOrStopAnimation()
+{
+    mainDeckHolder.startOrStopAnimation();
 }
 
 //==============================================================================
@@ -97,8 +99,7 @@ void MainComponent::getAllCommands(juce::Array<juce::CommandID> &c)
 {
     juce::Array<juce::CommandID> commands{
         SP_CommandID::createNewTrack,
-        SP_CommandID::createNewDummyClip,
-        SP_CommandID::startMoving
+        SP_CommandID::createNewDummyClip
     };
     c.addArray(commands);
 }
@@ -117,11 +118,6 @@ void MainComponent::getCommandInfo(const juce::CommandID commandID, juce::Applic
         result.setTicked(false);
         result.addDefaultKeypress('d', juce::ModifierKeys::commandModifier);
         break;
-    case SP_CommandID::startMoving:
-        result.setInfo("start moving", "starts the animation of the MainDeckGUI", "Gui", 0);
-        result.setTicked(false);
-        result.addDefaultKeypress('m', juce::ModifierKeys::commandModifier);
-        break;
     default:
         break;
     }
@@ -137,18 +133,6 @@ bool MainComponent::perform(const InvocationInfo &info)
     case SP_CommandID::createNewDummyClip:
         //createNewDummyClip();
         SP::printVT(valueTree);
-        break;
-    case SP_CommandID::startMoving:
-        if (!isPlaybackOn)
-        {
-            mainDeckHolder.startPlayback();
-            isPlaybackOn = true;
-        }
-        else
-        {
-            mainDeckHolder.stopPlayback();
-            isPlaybackOn = false;
-        }
         break;
     default:
         return false;

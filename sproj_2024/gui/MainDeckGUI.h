@@ -463,7 +463,7 @@ public:
     setUpGrid(getWidth());
   }
 
-  void startPlayback()
+  void startAnimation()
   {
     //updater.addAnimator(animator, [this] { updater.removeAnimator(animator); });
     updater.addAnimator(animator);
@@ -471,7 +471,7 @@ public:
     animator.start();
   }
 
-  void stopPlayback()
+  void stopAnimation()
   {
     animator.complete();
   }
