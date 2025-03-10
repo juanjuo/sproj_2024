@@ -21,6 +21,9 @@ MainComponent::MainComponent(juce::ValueTree& tree, SPCommandManager& manager, j
     addAndMakeVisible(menu);
     addChildComponent(deviceSelector);
 
+    commandManager.registerAllCommandsForTarget(this);
+    commandManager.addTargetToCommandManager(this);
+
     initializeApplication();
 }
 

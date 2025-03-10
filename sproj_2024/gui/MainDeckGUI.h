@@ -465,15 +465,19 @@ public:
 
   void startAnimation()
   {
-    //updater.addAnimator(animator, [this] { updater.removeAnimator(animator); });
-    updater.addAnimator(animator);
-
-    animator.start();
+    if (lastAnimation != nullptr) //these objects are lightweight references to the same underlying instance
+    {
+      updater.removeAnimator(*lastAnimation); //no need to get deleted manually maybe?
+    }
+      lastAnimation = new juce::Animator(generateAnimation(calculateSpeed()));
+      //updater.addAnimator(animator, [this] { updater.removeAnimator(animator); });
+      updater.addAnimator(*lastAnimation);
+      lastAnimation->start();
   }
 
-  void stopAnimation()
+  void stopAnimation() const
   {
-    animator.complete();
+    lastAnimation->complete();
   }
 
 private:
@@ -482,6 +486,8 @@ private:
   juce::ValueTree valueTree;
 
   float currentAnimationPosition;
+
+  juce::Animator* lastAnimation;
 
   int calculateSpeed()
   {
@@ -496,36 +502,45 @@ private:
     return static_cast<int>(60000.0f / bpm) * 160; //time in ms for every beat, multiplied by the number of beats * 2
   }
 
-  juce::Animator animator = [&]
+  juce::Animator generateAnimation(const int speed)
   {
-    return juce::ValueAnimatorBuilder{}
-           .runningInfinitely()
-           .withEasing(juce::Easings::createLinear())
-           .withOnStartReturningValueChangedCallback(
-             [this]
+    juce::Animator animator = [&]
+    {
+      return juce::ValueAnimatorBuilder{}
+             .runningInfinitely()
+             .withEasing(juce::Easings::createLinear())
+             .withOnStartReturningValueChangedCallback(
+               [this]
+               {
+                 const auto width = getParentWidth();
+                 const auto limits = juce::makeAnimationLimits(width, -width);
+
+                 const float newAnimationPosition = currentAnimationPosition;
+
+                 return [this, limits, newAnimationPosition](auto value)
+                 {
+                   auto position = std::fmod(value + newAnimationPosition, 1.0f);
+                   setTopLeftPosition(limits.lerp(position), 0); //start in the middle
+                   if (value != 1) //can lead to bugs! if it happens to land right on 1, it will reset the whole screen
+                   {
+                     currentAnimationPosition = position;
+                   }
+                 };
+               })
+             .withOnCompleteCallback([this]
              {
                const auto width = getParentWidth();
                const auto limits = juce::makeAnimationLimits(width, -width);
-
-               const float newAnimationPosition = currentAnimationPosition;
-
-               return [this, limits, newAnimationPosition](auto value)
-               {
-                 auto position = std::fmod(value + newAnimationPosition, 1.0f);
-                 setTopLeftPosition(limits.lerp(position), 0); //start in the middle
-                 currentAnimationPosition = position;
-               };
+               std::cout << currentAnimationPosition << std::endl;
+               setTopLeftPosition(limits.lerp(currentAnimationPosition), 0);
              })
-           .withOnCompleteCallback([this]
-           {
-             const auto width = getParentWidth();
-             const auto limits = juce::makeAnimationLimits(width, -width);
-             std::cout << currentAnimationPosition << std::endl;
-             setTopLeftPosition(limits.lerp(currentAnimationPosition), 0);
-           })
-           .withDurationMs(calculateSpeed())
-           .build();
-  }();
+             .withDurationMs(speed)
+             .build();
+    }();
+
+    return animator;
+  }
+
 
   juce::VBlankAnimatorUpdater updater{this};
 
