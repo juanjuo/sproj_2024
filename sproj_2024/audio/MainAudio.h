@@ -25,8 +25,7 @@ ADD MIDI
 #include <Track.h>
 
 
-class MainAudio : public juce::ApplicationCommandTarget,
-                  public juce::ValueTree::Listener
+class MainAudio : public juce::ValueTree::Listener/*,juce::ApplicationCommandTarget*/
 {
 public:
 
@@ -45,11 +44,11 @@ public:
     void pauseOrResumeProcessing();
 
     //ApplicationCommandTarget methods
-
-    ApplicationCommandTarget *getNextCommandTarget() override;
-    void getAllCommands(juce::Array<juce::CommandID> &c) override;
-    void getCommandInfo(const juce::CommandID commandID, juce::ApplicationCommandInfo &result) override;
-    bool perform(const InvocationInfo &info) override;
+    //
+    // ApplicationCommandTarget *getNextCommandTarget() override;
+    // void getAllCommands(juce::Array<juce::CommandID> &c) override;
+    // void getCommandInfo(const juce::CommandID commandID, juce::ApplicationCommandInfo &result) override;
+    // bool perform(const InvocationInfo &info) override;
 
     //ValueTreeListener methods
     void valueTreeChildAdded(juce::ValueTree& parentTree, juce::ValueTree& childWhichHasBeenAdded) override;

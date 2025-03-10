@@ -38,6 +38,8 @@ public:
 
     void initializeApplication();
 
+    void startOrStopAnimation();
+
     //Component methods
     void paint (juce::Graphics&) override;
     void resized() override;

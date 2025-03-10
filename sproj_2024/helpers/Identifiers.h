@@ -44,10 +44,9 @@ enum SP_CommandID
     show_audio_device_menu,
     record,
     play,
-    stopProcessing,
+    startOrStopProcessing,
     createNewTrack,
     createNewDummyClip,
-    startMoving
 };
 
 // helper function to move child components around, I might not need this
