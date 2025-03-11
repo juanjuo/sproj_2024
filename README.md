@@ -21,6 +21,7 @@ first you will need to copy the repository into a local folder, then call
 
 this will create a project file for Xcode. (make sure you have Cmake version 3.22 or above)
 
-## Future Enhancements
+## TO DO:
 
-🔧 add future enhancements
+GUI:
+  Tile grouping coloring working dynamically
