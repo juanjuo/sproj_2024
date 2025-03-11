@@ -23,5 +23,7 @@ this will create a project file for Xcode. (make sure you have Cmake version 3.2
 
 ## TO DO:
 
-GUI:
+UI:
   Tile grouping coloring working dynamically
+  Save Session
+  
