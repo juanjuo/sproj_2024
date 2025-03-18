@@ -11,9 +11,9 @@
  */
 
 
-class MixDeckTrack : public juce::Component,
-                     public DeckGUI,
-                     public juce::SliderListener<juce::Slider>
+class MixDeckTrack final : public juce::Component,
+                           public DeckGUI,
+                           public juce::SliderListener<juce::Slider>
 {
 public:
     MixDeckTrack(int width, int height, juce::ValueTree& n): DeckGUI(width, height, juce::Colour::fromRGB(144, 144, 144)), node(n)
@@ -72,8 +72,8 @@ public:
         : DeckGUI(200, 200, juce::Colour::fromRGB(60, 60, 60)), valueTree(v)
     {
         setSize(WINDOW_WIDTH, WINDOW_WIDTH);
-        addAndMakeVisible(resizableEdge);
-        resizableEdge.setAlwaysOnTop(true);
+        //addAndMakeVisible(resizableEdge);
+        //resizableEdge.setAlwaysOnTop(true);
         setUpGrid(TRACK_WIDTH);
     }
 
@@ -116,8 +116,7 @@ public:
     void resized() override
     {
         const auto rect = getLocalBounds();
-        resizableEdge.setBounds(rect.getX() + rect.getWidth() - RESIZABLE_EDGE, rect.getY(), RESIZABLE_EDGE,
-                                rect.getHeight());
+        //resizableEdge.setBounds(rect.getX() + rect.getWidth() - RESIZABLE_EDGE, rect.getY(), RESIZABLE_EDGE,rect.getHeight());
 
         setUpGrid(rect.getWidth());
     }
@@ -125,7 +124,7 @@ public:
 private:
     juce::Grid grid;
 
-    juce::ResizableEdgeComponent resizableEdge{this, nullptr, juce::ResizableEdgeComponent::Edge::rightEdge};
+    //juce::ResizableEdgeComponent resizableEdge{this, nullptr, juce::ResizableEdgeComponent::Edge::rightEdge};
 
     //juce::OwnedArray<MixDeckTrack> mixDeckTracks;
 

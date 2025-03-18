@@ -4,7 +4,7 @@
 MainComponent::MainComponent(juce::ValueTree& tree, SPCommandManager& manager, juce::AudioDeviceManager& deviceManager)
     : commandManager(manager), rulerDeckGUI(), controlDeckGui(tree), freeDeckGui(tree),
       mixDeckGui(tree), menu(manager),
-      deviceSelector(deviceManager, manager), valueTree(tree)
+      deviceSelector(deviceManager, manager), valueTree(tree), mainDeckHolder(tree, freeDeckGui)
 
 {
 
@@ -16,8 +16,6 @@ MainComponent::MainComponent(juce::ValueTree& tree, SPCommandManager& manager, j
     addAndMakeVisible(freeDeckGui);
     addAndMakeVisible(mixDeckGui);
     addAndMakeVisible(mainDeckHolder);
-    mainDeckHolder.addAndMakeVisible(new MainDeckGUI(tree, freeDeckGui, MainDeckGUI::MainDeckMode::on_Screen)); //on-screen
-    mainDeckHolder.addAndMakeVisible(new MainDeckGUI(tree, freeDeckGui, MainDeckGUI::MainDeckMode::off_Screen)); //off-screen
     addAndMakeVisible(menu);
     addChildComponent(deviceSelector);
 
@@ -34,10 +32,7 @@ void MainComponent::createNewTrack()
     auto trackBranch = valueTree.getChildWithName(SP_ID::TRACK_BRANCH);
     trackBranch.appendChild(newNode, nullptr);
     mixDeckGui.addTrack(newNode);
-    for (const auto deck : mainDeckHolder.getChildren()) //better type checking?
-    {
-        dynamic_cast<MainDeckGUI*>(deck)->addTrack(newNode);
-    }
+    mainDeckHolder.addTrack(newNode);
 }
 
 void MainComponent::createNewDummyClip() //not the fastest way of doing this (better to initialize this before hand)

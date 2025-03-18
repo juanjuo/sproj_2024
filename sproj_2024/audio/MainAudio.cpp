@@ -9,7 +9,7 @@ MainAudio::MainAudio(juce::ValueTree v, SPCommandManager &manager, juce::AudioDe
 {
     audioGraph->enableAllBuses();
 
-    deviceManager.initialiseWithDefaultDevices(1, 1); //1 inputs, 1 output
+    deviceManager.initialiseWithDefaultDevices(2, 2);
     deviceManager.addAudioCallback(audioPlayer.get());
 
 

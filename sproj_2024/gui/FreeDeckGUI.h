@@ -5,7 +5,7 @@
 #include <juce_gui_extra/juce_gui_extra.h>
 #include <DeckGUI.h>
 #include <DummyClip.h>
-#include <Identifiers.h>
+#include <helpers.h>
 
 class FreeDeckGUI final : public juce::Component,
                           public DeckGUI,
@@ -20,6 +20,11 @@ public:
     setSize(WINDOW_HEIGHT, WINDOW_HEIGHT);
     addAndMakeVisible(resizableEdge);
     resizableEdge.setAlwaysOnTop(true);
+  }
+
+  juce::ValueTree getValueTree()
+  {
+    return valueTree;
   }
 
   void createNewDummyClip()
