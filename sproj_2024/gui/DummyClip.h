@@ -4,8 +4,7 @@
 
 #pragma once
 #include <DeckGUI.h>
-#include "Identifiers.h"
-#include "FreeDeckGUI.h"
+#include "helpers.h"
 
 /* BUGS!
  *
@@ -54,12 +53,12 @@ public:
         return {x, y};
     }
 
-    void setUpValueTree(const int startingValue = -1, const int endValue = -1, const juce::String& filePath = "")
+    void setUpValueTree(const int startingValue = -1, const int endValue = -1, const int length = -1, const juce::String& filePath = "")
     {
         valueTree.setProperty(SP_ID::clip_start_value, startingValue, nullptr);
         valueTree.setProperty(SP_ID::clip_end_value, endValue, nullptr);
         valueTree.setProperty(SP_ID::clip_filepath, localFilePath, nullptr);
-        valueTree.setProperty(SP_ID::clip_length_value, calculateLengthInBeats(startingValue, endValue), nullptr);
+        valueTree.setProperty(SP_ID::clip_length_value, length, nullptr);
     }
 
     void initializeValueTree()
@@ -96,8 +95,10 @@ public:
 
     void paint(juce::Graphics& g) override
     {
-        g.fillAll(BACKGROUND_COLOUR);
-        g.drawRect(this->getLocalBounds(), BORDER_WIDTH - 1);
+        g.setColour(BACKGROUND_COLOUR);
+        g.fillRect(getLocalBounds());
+        g.setColour(juce::Colours::black);
+        g.drawRect(getLocalBounds(), BORDER_WIDTH - 1);
         //setTopLeftPosition();
     }
 
@@ -138,11 +139,11 @@ private:
 
     int calculateLengthInBeats(const int start, const int end)
     {
-        return end - start;
+        return end - start; // + 1 since its 0 indexed
     }
 
     int calculateEndPosition(const int start, int length)
     {
-        return start + length;
+        return start + length ;
     }
 };

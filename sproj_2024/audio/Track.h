@@ -31,6 +31,7 @@ public:
         juce::String ID;
         int start;
         int end;
+        bool finished = false;
     };
 
     Track(juce::ValueTree& tree, SPCommandManager& manager, AudioClock* clock) : commandManager(manager),
@@ -221,18 +222,17 @@ public:
     //Change Listener Methods
     void changeListenerCallback(juce::ChangeBroadcaster* source) override
     {
-        if (currentBeat < 80) //do this during runtime
+        if (currentBeat < 160)//do this during runtime
+        {
+            std::cout << currentBeat << std::endl;
             currentBeat++;
+        }
         else
             currentBeat = 0;
 
         if (!clipData.empty())
-            for (auto& data : clipData)
+            for (auto data : clipData)
             {
-                // if (data.start != -1)
-                //     data.start--;
-                // if (data.end != -1)
-                //     data.end--;
                 if (data.start == currentBeat)
                 {
                     auto clip = valueTree.getChildWithProperty(SP_ID::U_ID, data.ID);
@@ -255,10 +255,12 @@ public:
                     {
                         stopRecording();
                         currentType = ProcessorMode::player_Type;
+                        data.finished = true;
                     }
                     else if (currentType == ProcessorMode::player_Type)
                     {
                         stopPlaying();
+                        data.finished = true;
                     }
                 }
             }
@@ -268,9 +270,9 @@ private:
     ProcessorMode currentType = ProcessorMode::player_Type;
 
     SPCommandManager& commandManager;
-    juce::File lastRecording{juce::File("/Users/juan/Desktop/Sunny2.wav")};
+    //juce::File lastRecording{juce::File("/Users/juan/Desktop/Sunny2.wav")};
 
-    //juce::File lastRecording;
+    juce::File lastRecording;
 
     Recorder recorder{};
     AudioPlayer player{};

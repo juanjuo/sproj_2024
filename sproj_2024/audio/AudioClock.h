@@ -6,7 +6,7 @@
 #include <SPAudioProcessor.h>
 #include <SPCommandManager.h>
 #include <random>
-#include <Identifiers.h>
+#include <helpers.h>
 //#include <Scheduler.h>
 
 class WavetableOscillator
@@ -98,7 +98,6 @@ public:
                 if (++counter_val >= interval_val)
                 {
                     counter_val = 0;
-                    //scheduler.update();
                     sendChangeMessage();
                 }
                 if (counter_val < note_length)
@@ -143,15 +142,20 @@ public:
     void handleAsyncUpdate() override
     {
         {
-            int bpm = clockValueTree.getProperty(SP_ID::bpm);
+            int bpm = clockValueTree.getProperty(SP_ID::metronome_bpm);
             interval_val = milliToSamples(BPMToMilli(bpm), clockSampleRate);
-            std::cout << "from clock class" << std::endl;
         }
     }
 
     void valueTreePropertyChanged(juce::ValueTree &treeWhosePropertyHasChanged, const juce::Identifier &property) override
     {
-        triggerAsyncUpdate();
+        if (treeWhosePropertyHasChanged.getType() == SP_ID::METRONOME_BRANCH)
+            if (property == SP_ID::metronome_bpm)
+                triggerAsyncUpdate();
+            if (property == SP_ID::metronome_grouping)
+                std::cout << "bar grouping changed" << std::endl;
+            if (property == SP_ID::metronome_gain)
+                level = treeWhosePropertyHasChanged.getProperty(property);
     }
 
     //
@@ -238,7 +242,7 @@ private:
 
     //wavetable
     const unsigned int tableSize = 1 << 7;
-    float level = 0.5f;
+    std::atomic<float> level = 0.5f; //must be thread safe
     juce::AudioSampleBuffer sineTable;
     WavetableOscillator *sineTone{};
 

@@ -23,8 +23,9 @@ namespace SP_ID
     //values
 
     //metronome
-    DECLARE_ID (grouping)
-    DECLARE_ID (bpm)
+    DECLARE_ID (metronome_grouping)
+    DECLARE_ID (metronome_bpm)
+    DECLARE_ID (metronome_gain)
 
     //track
     DECLARE_ID (track_gain)
