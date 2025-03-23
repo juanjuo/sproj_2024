@@ -82,6 +82,7 @@ public:
         // take a little time while remaining data gets flushed to disk, so it's best to avoid blocking
         // the audio callback while this happens.
         threadedWriter.reset();
+        std::cout << "Recording stopped" << std::endl;
     }
 
     bool isRecording() const

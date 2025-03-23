@@ -53,11 +53,11 @@ public:
         return {x, y};
     }
 
-    void setUpValueTree(const int startingValue = -1, const int endValue = -1, const int length = -1, const juce::String& filePath = "")
+    void setUpValueTree(const int startingValue = -1, const int endValue = -1, const int length = -1, const juce::String& filePath = " ")
     {
         valueTree.setProperty(SP_ID::clip_start_value, startingValue, nullptr);
         valueTree.setProperty(SP_ID::clip_end_value, endValue, nullptr);
-        valueTree.setProperty(SP_ID::clip_filepath, localFilePath, nullptr);
+        valueTree.setProperty(SP_ID::clip_filepath, filePath, nullptr);
         valueTree.setProperty(SP_ID::clip_length_value, length, nullptr);
     }
 
@@ -131,9 +131,9 @@ private:
     juce::ValueTree valueTree;
 
 
-    //juce::String localFilePath {" "};
+    juce::String localFilePath {" "};
 
-    juce::String localFilePath {"/Users/juan/Desktop/Sunny2.wav"};
+    //juce::String localFilePath {"/Users/juan/Desktop/Sunny2.wav"};
 
     //juce::File filePath {juce::File("/Users/juan/Desktop/Sunny2.wav")};
 

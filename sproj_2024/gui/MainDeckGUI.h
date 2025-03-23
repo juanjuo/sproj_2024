@@ -66,7 +66,7 @@ public:
         tile->reset();
       }
     }
-    node.removeAllChildren(nullptr);
+    //node.removeAllChildren(nullptr);
   }
 
   void paint(juce::Graphics& g) override

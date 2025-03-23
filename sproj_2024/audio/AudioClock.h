@@ -98,10 +98,19 @@ public:
                 if (++counter_val >= interval_val)
                 {
                     counter_val = 0;
-                    sendChangeMessage();
+                    if (updateHasBeenSent) //better way of resetting this flag?
+                    {
+                        updateHasBeenSent = false;
+                    }
+
                 }
                 if (counter_val < note_length)
                 {
+                    if (!updateHasBeenSent)
+                    {
+                        sendChangeMessage();
+                        updateHasBeenSent = true;
+                    }
                     for (int channel = 0; channel < totalNumOutputChannels; channel++)
                     {
                         auto* channelData = buffer.getWritePointer (channel);
@@ -226,6 +235,8 @@ public:
 private:
 
     juce::ValueTree clockValueTree;
+
+    bool updateHasBeenSent = false;
 
     int bpm_val{};
     int numerator_val{};

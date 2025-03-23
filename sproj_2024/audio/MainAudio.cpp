@@ -60,7 +60,7 @@ void MainAudio::updateGraph()
 void MainAudio::addNewTrack(juce::ValueTree& node)
 {
     auto* clock = dynamic_cast<AudioClock*>(clockNode->getProcessor());
-    const auto newTrack = audioGraph->addNode(std::make_unique<Track>(node, commandManager, clock));
+    const auto newTrack = audioGraph->addNode(std::make_unique<Track>(node, valueTree.getChildWithName(SP_ID::FREEDECK_BRANCH), commandManager, clock));
     //add as a listener to the metronome changeBroadcaster (also remember to add initialization code in the main file, instead of here)
     trackArray.add(newTrack); //don't use this!
     connectNode(newTrack);
