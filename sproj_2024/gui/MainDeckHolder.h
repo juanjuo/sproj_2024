@@ -9,7 +9,8 @@
 
 class MainDeckMask final : public juce::Component,
                            public juce::DragAndDropTarget,
-                           public juce::LassoSource<MainDeckTile*>
+                           public juce::LassoSource<MainDeckTile*>,
+                           public juce::ValueTree::Listener
 {
 public:
   explicit MainDeckMask(juce::ValueTree t, const juce::Array<MainDeckTile*>& tiles, FreeDeckGUI& fdeck) : trackValueTree(t), tileList(tiles), freeDeckGui(fdeck)
@@ -28,19 +29,23 @@ public:
     SP::createNewID(trackClipNode);
     deckClipNode.setProperty(SP_ID::U_ID, trackClipNode.getProperty(SP_ID::U_ID), nullptr);
 
+    //set up value tree for FREEDECK
+    freeDeckGui.addAndMakeVisible(new DummyClip(width, 100, freeDeckGui.getLocalBounds(), deckClipNode,
+                                                colour)); //add component to freeDeck
+    deckClipNode.setProperty(SP_ID::clip_length_value, length, nullptr); //set up length
+    deckClipNode.setProperty(SP_ID::clip_ready_to_play, 0, nullptr);
+    //deckClipNode.addListener(this);
+    freeDeckGui.getValueTree().appendChild(deckClipNode, nullptr); //add at the end so all values are updated
+
     //set up value tree for TRACK
     trackClipNode.setProperty(SP_ID::clip_start_value, start, nullptr);
     trackClipNode.setProperty(SP_ID::clip_end_value, end, nullptr);
-    trackClipNode.setProperty(SP_ID::clip_filepath, "/Users/juan/Desktop/Sunny2.wav", nullptr);
+    trackClipNode.setProperty(SP_ID::clip_filepath, " ", nullptr);
     trackClipNode.setProperty(SP_ID::clip_length_value, length, nullptr);
+    trackClipNode.setProperty(SP_ID::clip_ready_to_play, 0, nullptr);
+    //trackClipNode.addListener(this);
     trackValueTree.appendChild(trackClipNode, nullptr);
 
-    //set up value tree for FREEDECK
-    deckClipNode.setProperty(SP_ID::clip_length_value, length, nullptr); //set up length
-    freeDeckGui.addAndMakeVisible(new DummyClip(width, 100, freeDeckGui.getLocalBounds(), deckClipNode,
-                                                colour)); //add component to freeDeck
-
-    freeDeckGui.getValueTree().appendChild(deckClipNode, nullptr); //add at the end so all values are updated
     return trackClipNode;
   }
 
@@ -92,7 +97,7 @@ public:
     for (const auto tile : tilesSelected)
     {
       totalWidth = totalWidth + tile->getWidth();
-      std::cout << tile->getTilePosition() << std::endl;
+      //std::cout << tile->getTilePosition() << std::endl;
     }
     const juce::ValueTree tree = setUpClipValueTree(start, end + 1, size, totalWidth, colour);
     for (const auto tile : tilesSelected)
@@ -111,11 +116,13 @@ public:
     if (areTilesOccupied(start, length))
     {
       juce::ValueTree clipValueTree(SP_ID::CLIP);
+      //clipValueTree.addListener(this);
       clipValueTree.setProperty(SP_ID::U_ID, clip->getValueTree().getProperty(SP_ID::U_ID), nullptr);
       clipValueTree.setProperty(SP_ID::clip_filepath, clip->getValueTree().getProperty(SP_ID::clip_filepath), nullptr);
       clipValueTree.setProperty(SP_ID::clip_end_value, end, nullptr);
       clipValueTree.setProperty(SP_ID::clip_length_value, length, nullptr);
       clipValueTree.setProperty(SP_ID::clip_start_value, start, nullptr);
+      clipValueTree.setProperty(SP_ID::clip_ready_to_play, clip->getValueTree().getProperty(SP_ID::clip_ready_to_play), nullptr);
       auto colour = clip->getClipColour();
       int size = tileList.size();
       for (int i = 0; i < length; ++i)
@@ -123,8 +130,8 @@ public:
         int index = (start + i) % size;
         tileList[index]->setOccupied(true);
         tileList[index]->setClip(clipValueTree, colour);
-        trackValueTree.appendChild(clipValueTree, nullptr);
       }
+      trackValueTree.appendChild(clipValueTree, nullptr);
     }
   }
 
@@ -239,6 +246,24 @@ public:
   {
     return tilesSelected;
   }
+
+  //Value Tree Listener methods
+  // void valueTreePropertyChanged(juce::ValueTree& treeWhosePropertyHasChanged,
+  //                             const juce::Identifier& property) override
+  // {
+  //   if (property == SP_ID::clip_ready_to_play)
+  //   {
+  //     for (auto clip : trackValueTree)
+  //     {
+  //       if (clip.getProperty(SP_ID::U_ID) == treeWhosePropertyHasChanged.getProperty(SP_ID::U_ID))
+  //       {
+  //         clip.setProperty(SP_ID::clip_ready_to_play, treeWhosePropertyHasChanged.getProperty(SP_ID::clip_ready_to_play), nullptr);
+  //       }
+  //     }
+  //     // auto freeDeckClip = freeDeckGui.getValueTree().getChildWithProperty(SP_ID::U_ID, treeWhosePropertyHasChanged.getProperty(SP_ID::U_ID));
+  //     // freeDeckClip.setProperty(SP_ID::clip_ready_to_play, treeWhosePropertyHasChanged.getProperty(SP_ID::clip_ready_to_play), nullptr);
+  //   }
+  // }
 
 private:
   juce::ValueTree trackValueTree;

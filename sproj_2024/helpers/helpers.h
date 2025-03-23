@@ -35,6 +35,7 @@ namespace SP_ID
     DECLARE_ID (clip_end_value)
     DECLARE_ID (clip_length_value)
     DECLARE_ID (clip_filepath)
+    DECLARE_ID (clip_ready_to_play)
 
     #undef DECLARE_ID
 }

@@ -4,7 +4,6 @@
 
 #pragma once
 #include <DeckGUI.h>
-#include <juce_gui_extra/juce_gui_extra.h>
 #include <helpers.h>
 
 //Metronome class

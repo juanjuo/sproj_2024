@@ -42,7 +42,7 @@ void MainComponent::createNewDummyClip() //not the fastest way of doing this (be
 
 void MainComponent::initializeApplication() //only for the beta release of the application
 {
-    for (int i = 0; i < 1; i++)
+    for (int i = 0; i < 6; i++)
     {
         createNewTrack();
     }

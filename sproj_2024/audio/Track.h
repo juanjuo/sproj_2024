@@ -31,11 +31,10 @@ public:
         juce::String ID;
         int start;
         int end;
-        bool finished = false;
     };
 
-    Track(juce::ValueTree& tree, SPCommandManager& manager, AudioClock* clock) : commandManager(manager),
-        valueTree(tree)
+    Track(juce::ValueTree& tree, juce::ValueTree fdeck, SPCommandManager& manager, AudioClock* clock)
+    : commandManager(manager), trackValueTree(tree), freeDeckValueTree(fdeck)
     {
         commandManager.registerAllCommandsForTarget(this);
         commandManager.addTargetToCommandManager(this);
@@ -43,8 +42,19 @@ public:
 
         player.setAudioSource(juce::URL{lastRecording});
 
-        valueTree.addListener(this);
+        trackValueTree.addListener(this);
         clock->addChangeListener(this);
+    }
+
+    void updateAllClipValueTrees(juce::ValueTree node) const
+    {
+        for (auto clip : trackValueTree)
+        {
+            if (clip.getProperty(SP_ID::U_ID) == node.getProperty(SP_ID::U_ID))
+            {
+                clip.setProperty(SP_ID::clip_ready_to_play, 1, nullptr);
+            }
+        }
     }
 
     ~Track()
@@ -66,16 +76,10 @@ public:
     }
 
 
-    void startRecording() //SET VALUE TREE CLIP TO THIS VALUE
+    void startRecording(const juce::File& file) //SET VALUE TREE CLIP TO THIS VALUE
     {
-        currentType = ProcessorMode::recorder_Type;
-        auto parentDir = juce::File::getSpecialLocation(juce::File::userDesktopDirectory);
-
-        auto fileName = createNewFileName();
-
-        lastRecording = parentDir.getNonexistentChildFile(fileName, ".wav");
-
-        recorder.startRecording(lastRecording);
+        lastRecording = file;
+        recorder.startRecording(file);
         //std::cout << lastRecording.getFileName() << std::endl;
     }
 
@@ -88,7 +92,6 @@ public:
         if (juce::FileInputStream inputStream(lastRecording); inputStream.openedOk())
             if (juce::FileOutputStream outputStream{lastRecording}; outputStream.openedOk())
                 outputStream.flush();
-        currentType = ProcessorMode::player_Type;
         //std::cout << "Outputed corrently" << std::endl;
         //player.setAudioSource(juce::URL {lastRecording});
     }
@@ -176,12 +179,12 @@ public:
             {
                 currentType = ProcessorMode::recorder_Type;
                 std::cout << "recording mode" << std::endl;
-                startRecording();
+                //startRecording();
             }
             break;
         case SP_CommandID::play:
-        //player.startOrStop();
-        //std::cout << player.isLooping() << std::endl;
+            //player.startOrStop();
+            //std::cout << player.isLooping() << std::endl;
             break;
         default:
             return false;
@@ -195,7 +198,7 @@ public:
     void valueTreePropertyChanged(juce::ValueTree& treeWhosePropertyHasChanged,
                                   const juce::Identifier& property) override
     {
-        if (valueTree == treeWhosePropertyHasChanged)
+        if (trackValueTree == treeWhosePropertyHasChanged)
             if (property == SP_ID::track_gain)
                 player.setGain(treeWhosePropertyHasChanged.getProperty(property));
             else std::cout << "audio track property doesn't match" << std::endl;
@@ -209,8 +212,18 @@ public:
                 auto id = childWhichHasBeenAdded.getProperty(SP_ID::U_ID).toString();
                 auto startValue = childWhichHasBeenAdded.getProperty(SP_ID::clip_start_value);
                 auto endValue = childWhichHasBeenAdded.getProperty(SP_ID::clip_end_value);
+                if (childWhichHasBeenAdded.getProperty(SP_ID::clip_filepath) == " ")
+                {
+                    //set up a new file for clip
+                    auto parentDir = juce::File::getSpecialLocation(juce::File::userDesktopDirectory);
+                    auto fileName = createNewFileName();
+                    auto filePath = parentDir.getNonexistentChildFile(fileName, ".wav");
+                    childWhichHasBeenAdded.setProperty(SP_ID::clip_filepath, filePath.getFullPathName(), nullptr);
+                    auto freeDeckClip = freeDeckValueTree.getChildWithProperty(SP_ID::U_ID, id);
+                    freeDeckClip.setProperty(SP_ID::clip_filepath, filePath.getFullPathName(), nullptr);
+                }
                 clipData.push_back({id, startValue, endValue});
-                std::cout << "scheduler hashmap updated (clip added)" << std::endl;
+                // std::cout << "scheduler hashmap updated (clip added)" << std::endl;
                 for (const auto& data : clipData)
                 {
                     std::cout << "Key: " << data.ID << ", start value: " << data.start << ", end value: "
@@ -222,48 +235,54 @@ public:
     //Change Listener Methods
     void changeListenerCallback(juce::ChangeBroadcaster* source) override
     {
-        if (currentBeat < 160)//do this during runtime
-        {
-            std::cout << currentBeat << std::endl;
-            currentBeat++;
-        }
-        else
-            currentBeat = 0;
-
         if (!clipData.empty())
+        {
             for (auto data : clipData)
             {
+                auto clip = trackValueTree.getChildWithProperty(SP_ID::U_ID, data.ID);
                 if (data.start == currentBeat)
                 {
-                    auto clip = valueTree.getChildWithProperty(SP_ID::U_ID, data.ID);
-                    if (clip.getProperty(SP_ID::clip_filepath) == " ") //better way of checking if a filepath is valid?
+                    if (clip.getProperty(SP_ID::clip_ready_to_play).equals(0)) //better way of checking if a filepath is valid?
                     {
-                        startRecording();
-                        clip.setProperty(SP_ID::clip_filepath, lastRecording.getFullPathName(), nullptr);
                         currentType = ProcessorMode::recorder_Type;
+                        juce::String file = clip.getProperty(SP_ID::clip_filepath).toString();
+                        startRecording(file);
+                        //clip.setProperty(SP_ID::clip_filepath, lastRecording.getFullPathName(), nullptr);
                     }
-                    else if (currentType == ProcessorMode::player_Type)
+                    else if (clip.getProperty(SP_ID::clip_ready_to_play).equals(1))
                     {
-                        juce::String file = clip.getProperty(SP_ID::clip_filepath);
+                        currentType = ProcessorMode::player_Type;
+                        juce::String file = clip.getProperty(SP_ID::clip_filepath).toString();
                         startPlaying(file);
                     }
                 }
-
                 if (data.end == currentBeat)
                 {
                     if (currentType == ProcessorMode::recorder_Type)
                     {
                         stopRecording();
-                        currentType = ProcessorMode::player_Type;
-                        data.finished = true;
+                        updateAllClipValueTrees(clip);
+                        freeDeckValueTree.getChildWithProperty(SP_ID::U_ID, clip.getProperty(SP_ID::U_ID)).setProperty(SP_ID::clip_ready_to_play, 1, nullptr);
+
                     }
                     else if (currentType == ProcessorMode::player_Type)
                     {
                         stopPlaying();
-                        data.finished = true;
                     }
                 }
             }
+            std::erase_if(clipData, [this](const auto& element) { return element.end == currentBeat; });
+            //for erasing the elements that hit 0. this is really slow!
+        }
+
+
+        currentBeat++;
+        if (currentBeat == 160) //do this during runtime
+        {
+
+            currentBeat = 0;
+            //std::cout << currentBeat << std::endl;
+        }
     }
 
 private:
@@ -281,7 +300,8 @@ private:
 
     int numFiles = 0; //make this global/static
 
-    juce::ValueTree valueTree;
+    juce::ValueTree trackValueTree;
+    juce:: ValueTree freeDeckValueTree;
 
     std::vector<ClipData> clipData; //to hold all clip values and ID
 
