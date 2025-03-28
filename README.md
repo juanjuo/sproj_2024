@@ -1,4 +1,5 @@
-# sproj_2024
+# Ratatat-app
+
 ## Overview
 This project is a **DAW-like application for live looping**, designed to provide intuitive control over clip rearrangement and musical structure in real time. Unlike traditional DAWs, this application prioritizes flexibility in live performance, allowing musicians to manipulate loops dynamically.
 
@@ -20,10 +21,3 @@ first you will need to copy the repository into a local folder, then call
 `cmake -G Xcode ..`
 
 this will create a project file for Xcode. (make sure you have Cmake version 3.22 or above)
-
-## TO DO:
-
-UI:
-  Tile grouping coloring working dynamically
-  Save Session
-  
