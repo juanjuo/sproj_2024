@@ -5,25 +5,37 @@
 #include <SPAudioProcessor.h>
 #include <juce_audio_devices/juce_audio_devices.h>
 
-class AudioPlayer final : public SPAudioProcessor {
+class AudioPlayer final : public SPAudioProcessor
+{
 public:
-    explicit AudioPlayer(/*const juce::URL& audioFile*/) {
+    explicit AudioPlayer(/*const juce::URL& audioFile*/)
+    {
         formatManager.registerBasicFormats();
         //setAudioResource(audioFile);
         lookaheadThread.startThread(juce::Thread::Priority::normal);
     }
 
-    ~AudioPlayer() override {
+    ~AudioPlayer() override
+    {
         transportSource.setSource(nullptr);
     }
 
-    void startOrStop() {
-        if (transportSource.isPlaying()) {
-            transportSource.stop();
-        } else {
+
+    //for pausing the processing, save the last position, and when you restart you start from there
+
+    void startPlayer()
+    {
+        if (!transportSource.isPlaying())
+        {
             transportSource.setPosition(0);
             transportSource.start();
         }
+    }
+
+    void stopPlayer()
+    {
+        if (transportSource.isPlaying())
+            transportSource.stop();
     }
 
     float getGain() const
@@ -36,19 +48,27 @@ public:
         transportSource.setGain(gain);
     }
 
+    double getCurrentPlaybackPosition()
+    {
+        return transportSource.getCurrentPosition();
+    }
+
     //Audio Processor Methods
 
-    void prepareToPlay(double sampleRate, int samplesPerBlock) override {
+    void prepareToPlay(double sampleRate, int samplesPerBlock) override
+    {
         setAudioSource(currentAudioFile);
         transportSource.prepareToPlay(samplesPerBlock, sampleRate);
         //setLooping(true);
     }
 
-    void releaseResources() override {
+    void releaseResources() override
+    {
     }
 
-    void processBlock(juce::AudioBuffer<float> &buffer,
-                      juce::MidiBuffer &midiMessages) override {
+    void processBlock(juce::AudioBuffer<float>& buffer,
+                      juce::MidiBuffer& midiMessages) override
+    {
         // if (currentAudioFileSource == nullptr) // for example
         // {
         //     buffer.clear();
@@ -61,9 +81,11 @@ public:
         transportSource.getNextAudioBlock(bufferToFill);
     }
 
-    void setAudioSource(juce::URL source) {
+    void setAudioSource(juce::URL source)
+    {
         if (source.isEmpty()) return;
-        if (!loadURLIntoTransport(source)) {
+        if (!loadURLIntoTransport(source))
+        {
             // Failed to load the audio file!
             jassertfalse;
             return;
@@ -93,7 +115,8 @@ private:
 
     std::unique_ptr<juce::AudioFormatReaderSource> currentAudioFileSource;
 
-    bool loadURLIntoTransport(const juce::URL &audioURL) {
+    bool loadURLIntoTransport(const juce::URL& audioURL)
+    {
         // unload the previous file source and delete it...
         transportSource.stop();
         transportSource.setSource(nullptr);

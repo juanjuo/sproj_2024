@@ -5,7 +5,7 @@
 #pragma once
 
 #include <juce_gui_basics/juce_gui_basics.h>
-#include <Identifiers.h>
+#include <helpers.h>
 #include <SPCommandManager.h>
 
 class MenuComponent final : public juce::Component,
@@ -70,7 +70,7 @@ public:
             menu.addCommandItem(&commandManager, SP_CommandID::show_audio_device_menu);
             menu.addCommandItem(&commandManager, SP_CommandID::record);
             menu.addCommandItem(&commandManager, SP_CommandID::play);
-            menu.addCommandItem(&commandManager, SP_CommandID::stopProcessing);
+            menu.addCommandItem(&commandManager, SP_CommandID::startOrStopProcessing);
             menu.addCommandItem(&commandManager, SP_CommandID::createNewTrack);
             menu.addCommandItem(&commandManager, SP_CommandID::createNewDummyClip);
             #endif

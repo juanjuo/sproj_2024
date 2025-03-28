@@ -23,16 +23,19 @@ namespace SP_ID
     //values
 
     //metronome
-    DECLARE_ID (numerator)
-    DECLARE_ID (denominator)
-    DECLARE_ID (bpm)
+    DECLARE_ID (metronome_grouping)
+    DECLARE_ID (metronome_bpm)
+    DECLARE_ID (metronome_gain)
 
     //track
     DECLARE_ID (track_gain)
 
     //clips
     DECLARE_ID (clip_start_value)
+    DECLARE_ID (clip_end_value)
+    DECLARE_ID (clip_length_value)
     DECLARE_ID (clip_filepath)
+    DECLARE_ID (clip_ready_to_play)
 
     #undef DECLARE_ID
 }
@@ -43,9 +46,9 @@ enum SP_CommandID
     show_audio_device_menu,
     record,
     play,
-    stopProcessing,
+    startOrStopProcessing,
     createNewTrack,
-    createNewDummyClip
+    createNewDummyClip,
 };
 
 // helper function to move child components around, I might not need this

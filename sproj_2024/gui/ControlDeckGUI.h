@@ -4,35 +4,41 @@
 
 #pragma once
 #include <DeckGUI.h>
-#include <juce_gui_extra/juce_gui_extra.h>
-#include <Identifiers.h>
+#include <helpers.h>
 
 //Metronome class
-class ClockGUI final : public juce::Component
+class ClockGUI : public juce::Component,
+                 public juce::SliderListener<juce::Slider>
 {
 public:
   explicit ClockGUI(const juce::ValueTree& valueTree, const int height)
-    : TEXTBOX_HEIGHT(height), clockGuiValueTree(valueTree.getChildWithName(SP_ID::METRONOME_BRANCH))
+    : TEXTBOX_HEIGHT(height / 2), valueTree(valueTree.getChildWithName(SP_ID::METRONOME_BRANCH))
   {
-    configureTextEditor(tempoNumerator, std::to_string(*tempo_num_val));
-    configureTextEditor(tempoDenominator, std::to_string(*tempo_den_val));
-    configureTextEditor(BPM, std::to_string(*bpm));
+    configureTextEditor(groupingNum, std::to_string(grouping));
+    configureTextEditor(BPM, std::to_string(bpm));
 
     //Different restrictions
-    tempoNumerator.setInputRestrictions(1);
-    tempoDenominator.setInputRestrictions(1);
+    groupingNum.setInputRestrictions(1);
     BPM.setInputRestrictions(3);
 
-    configureTextEditorCallback(tempoNumerator, *tempo_num_val, SP_ID::numerator);
-    configureTextEditorCallback(tempoDenominator, *tempo_den_val, SP_ID::denominator);
-    configureTextEditorCallback(BPM, *bpm, SP_ID::bpm);
+    configureTextEditorCallback(groupingNum, grouping, SP_ID::metronome_grouping);
+    configureTextEditorCallback(BPM, bpm, SP_ID::metronome_bpm);
+
+    addAndMakeVisible(slider);
+    slider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
+    slider.setBounds(getLocalBounds().reduced(5));
+    slider.setRange(0.0, 2.0, 0.1);
+    slider.setValue(initialGain);
+    slider.addListener(this);
+
+    initializeValueTree();
   }
 
   void resized() override
   {
     BPM.setBounds(CLOCK_MARGIN, 0, BPM_WIDTH, TEXTBOX_HEIGHT);
-    tempoNumerator.setBounds(CLOCK_MARGIN + BPM.getWidth(), 0, TEXTBOX_HEIGHT, TEXTBOX_HEIGHT);
-    //tempoDenominator.setBounds(50, 0, TEXTBOX_HEIGHT, TEXTBOX_HEIGHT);
+    groupingNum.setBounds(CLOCK_MARGIN + BPM.getWidth(), 0, TEXTBOX_HEIGHT, TEXTBOX_HEIGHT);
+    slider.setBounds(0, TEXTBOX_HEIGHT, getWidth(), TEXTBOX_HEIGHT);
   }
 
   void configureTextEditor(juce::TextEditor& editor, const juce::String& defaultText) {
@@ -44,41 +50,49 @@ public:
     editor.setColour(juce::TextEditor::backgroundColourId, juce::Colours::transparentBlack);
     editor.setColour(juce::TextEditor::outlineColourId, juce::Colours::transparentBlack);
     addAndMakeVisible(editor);
-
   }
 
   void configureTextEditorCallback(juce::TextEditor& editor, int& value, const juce::Identifier& propertyId)
   {
     editor.onReturnKey = [this, &editor, &value, propertyId]() {
       value = editor.getText().getIntValue(); //Add bounds
-      if (clockGuiValueTree.isValid()) {
-        clockGuiValueTree.setProperty(propertyId, editor.getTextValue(), nullptr);
+      if (valueTree.isValid()) {
+        valueTree.setProperty(propertyId, editor.getTextValue(), nullptr);
         std::cout << std::to_string(value) + " from clockGUI\n";
       }
     };
   }
 
-
-  int* getTempoNumVal() const
+  void initializeValueTree()
   {
-    return tempo_num_val;
+    valueTree.setProperty(SP_ID::metronome_bpm, bpm, nullptr);
+    valueTree.setProperty(SP_ID::metronome_grouping, grouping, nullptr);
+    valueTree.setProperty(SP_ID::metronome_gain, initialGain, nullptr);
   }
 
-  int* getTempoDenVal() const
+
+  int getGroupingNum() const
   {
-    return tempo_den_val;
+    return grouping;
   }
 
-  int* getBpm() const
+  int getBpm() const
   {
     return bpm;
+  }
+
+  //Slider Listener
+
+  void sliderValueChanged(juce::Slider* slider) override
+  {
+    valueTree.setProperty(SP_ID::metronome_gain, slider->getValue(), nullptr);
   }
 
 private:
   //CLOCK POSITIONING
   const int TEXTBOX_HEIGHT;
   const int BPM_WIDTH = 100;
-  const int CLOCK_MARGIN = 30;
+  const int CLOCK_MARGIN = 20;
   const float FONT_SIZE = 30.0f;
   const juce::Justification JUSTIFICATION = {juce::Justification::centred};
 
@@ -86,16 +100,20 @@ private:
   juce::FontOptions FONT = juce::FontOptions(FONT_SIZE, juce::Font::bold);
   juce::Font clockFont = juce::Font(FONT);
 
-  juce::ValueTree clockGuiValueTree;
+  juce::ValueTree valueTree;
 
   //ValueTree VALS
-  int* tempo_num_val = new int{4};
-  int* tempo_den_val = new int{4};
-  int* bpm = new int{120};
+  int grouping = 4;
+  int bpm = 120;
 
-  juce::TextEditor tempoNumerator;
-  juce::TextEditor tempoDenominator;
+  juce::TextEditor groupingNum;
   juce::TextEditor BPM;
+
+  float initialGain = 0.5f;
+
+
+  //volume slider
+  juce::Slider slider;
 };
 
 //Component that holds all the smaller parts of the Control Deck
@@ -106,7 +124,7 @@ class ControlDeckGUI final : public juce::Component,
 public:
 
   explicit ControlDeckGUI(juce::ValueTree& valueTree)
-    : DeckGUI(200, 40, juce::Colour::fromRGB(15, 15, 15)), clockGui(valueTree, 40)
+    : DeckGUI(200, 80, juce::Colour::fromRGB(15, 15, 15)), clockGui(valueTree, 80)
   {
     setSize(WINDOW_HEIGHT, WINDOW_HEIGHT);
   }

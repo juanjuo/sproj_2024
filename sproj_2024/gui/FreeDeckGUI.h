@@ -5,14 +5,15 @@
 #include <juce_gui_extra/juce_gui_extra.h>
 #include <DeckGUI.h>
 #include <DummyClip.h>
-#include <Identifiers.h>
+#include <helpers.h>
 
 class FreeDeckGUI final : public juce::Component,
                           public DeckGUI,
                           public juce::DragAndDropContainer,
-                          public  juce::DragAndDropTarget
+                          public juce::DragAndDropTarget
 {
 public:
+
   explicit FreeDeckGUI(juce::ValueTree& tree)
     : DeckGUI(200, 160, juce::Colour::fromRGB(95, 95, 95)), valueTree(tree.getChildWithName(SP_ID::FREEDECK_BRANCH))
   {
@@ -21,13 +22,17 @@ public:
     resizableEdge.setAlwaysOnTop(true);
   }
 
+  juce::ValueTree getValueTree()
+  {
+    return valueTree;
+  }
+
   void createNewDummyClip()
   {
     juce::ValueTree newNode (SP_ID::CLIP);
     SP::createNewID(newNode);
     valueTree.appendChild(newNode, nullptr);
-    addAndMakeVisible(new DummyClip(CLIP_WIDTH, CLIP_HEIGHT, newNode));
-    //clips.items.add(clips.getLast()); //always returns right component?
+    addAndMakeVisible(new DummyClip(CLIP_WIDTH, CLIP_HEIGHT, getLocalBounds(), newNode, juce::Colour::fromRGB(rand() % 255, rand() % 255, rand() % 255)));
   }
 
   void paint(juce::Graphics& g) override

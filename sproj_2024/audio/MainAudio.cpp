@@ -5,11 +5,11 @@
 #include "MainAudio.h"
 
 MainAudio::MainAudio(juce::ValueTree v, SPCommandManager &manager, juce::AudioDeviceManager &audioManager)
-    : audioGraph(new juce::AudioProcessorGraph()), valueTree(v), commandManager(manager), deviceManager(audioManager), scheduler(v, manager, audioGraph->getNodes())
+    : audioGraph(new juce::AudioProcessorGraph()), valueTree(v), commandManager(manager), deviceManager(audioManager)
 {
     audioGraph->enableAllBuses();
 
-    deviceManager.initialiseWithDefaultDevices(1, 1); //1 inputs, 1 output
+    deviceManager.initialiseWithDefaultDevices(2, 2);
     deviceManager.addAudioCallback(audioPlayer.get());
 
 
@@ -19,8 +19,8 @@ MainAudio::MainAudio(juce::ValueTree v, SPCommandManager &manager, juce::AudioDe
 
     baseSampleRate = deviceManager.getAudioDeviceSetup().sampleRate;
 
-    commandManager.registerAllCommandsForTarget(this);
-    commandManager.addTargetToCommandManager(this);
+    // commandManager.registerAllCommandsForTarget(this);
+    // commandManager.addTargetToCommandManager(this);
 
     valueTree.addListener(this);
 
@@ -45,11 +45,12 @@ void MainAudio::initGraph()
         (juce::AudioProcessorGraph::AudioGraphIOProcessor::audioOutputNode));
 
     //initialize metronome
-    metronome = audioGraph->addNode(std::make_unique<Clock>(valueTree, commandManager, scheduler));
 
-    connectNode(metronome);
+    clockNode = audioGraph->addNode(std::make_unique<AudioClock>(valueTree, commandManager));
+    //would it be better to keep a reference to this AudioClock object to give to tracks later?
 
-    //addNewTrack();
+    connectNode(clockNode);
+
 }
 
 void MainAudio::updateGraph()
@@ -58,8 +59,10 @@ void MainAudio::updateGraph()
 
 void MainAudio::addNewTrack(juce::ValueTree& node)
 {
-    const auto newTrack = audioGraph->addNode(std::make_unique<Track>(node, commandManager));
-    trackArray.add(newTrack);
+    auto* clock = dynamic_cast<AudioClock*>(clockNode->getProcessor());
+    const auto newTrack = audioGraph->addNode(std::make_unique<Track>(node, valueTree.getChildWithName(SP_ID::FREEDECK_BRANCH), commandManager, clock));
+    //add as a listener to the metronome changeBroadcaster (also remember to add initialization code in the main file, instead of here)
+    trackArray.add(newTrack); //don't use this!
     connectNode(newTrack);
 }
 
@@ -80,65 +83,66 @@ void MainAudio::connectNode(const juce::AudioProcessorGraph::Node::Ptr &node) co
 
 void MainAudio::pauseOrResumeProcessing() //There might be better ways of doing this?
 {
-    if (!isPlaying)
+    auto clock = dynamic_cast<SPAudioProcessor*>(clockNode->getProcessor());
+    clock->pauseOrResumeProcessing();
+    for (auto track : trackArray)
     {
-        deviceManager.restartLastAudioDevice();
-        isPlaying = true;
-    }else
-    {
-        deviceManager.closeAudioDevice();
-        isPlaying = false;
+        auto processor = dynamic_cast<SPAudioProcessor*>(track->getProcessor());
+        processor->pauseOrResumeProcessing();
     }
 }
 
 //ApplicationCommandTarget methods
 
-juce::ApplicationCommandTarget* MainAudio::getNextCommandTarget()
-{
-    return nullptr;
-}
-
-void MainAudio::getAllCommands(juce::Array<juce::CommandID> &c)
-{
-    juce::Array<juce::CommandID> commands{
-        SP_CommandID::stopProcessing
-    };
-    c.addArray(commands);
-}
-
-void MainAudio::getCommandInfo(const juce::CommandID commandID, juce::ApplicationCommandInfo &result)
-{
-    switch (commandID)
-    {
-        case SP_CommandID::stopProcessing:
-            result.setInfo("Stop", "Stops playback", "Audio", 0);
-            result.setTicked(false);
-            result.addDefaultKeypress(juce::KeyPress::spaceKey, juce::ModifierKeys::noModifiers);
-            break;
-        default:
-            break;
-    }
-}
-
-bool MainAudio::perform(const InvocationInfo &info)
-{
-    switch (info.commandID)
-    {
-        case SP_CommandID::stopProcessing:
-            pauseOrResumeProcessing();
-            break;
-        default:
-            return false;
-    }
-    return true;
-}
+// juce::ApplicationCommandTarget* MainAudio::getNextCommandTarget()
+// {
+//     return nullptr;
+// }
+//
+// void MainAudio::getAllCommands(juce::Array<juce::CommandID> &c)
+// {
+//     juce::Array<juce::CommandID> commands{
+//         SP_CommandID::startOrStopProcessing
+//     };
+//     c.addArray(commands);
+// }
+//
+// void MainAudio::getCommandInfo(const juce::CommandID commandID, juce::ApplicationCommandInfo &result)
+// {
+//     switch (commandID)
+//     {
+//         case SP_CommandID::startOrStopProcessing:
+//             result.setInfo("start or stop processing", "starts or stops playback", "Audio", 0);
+//             result.setTicked(false);
+//             result.addDefaultKeypress(juce::KeyPress::spaceKey, juce::ModifierKeys::noModifiers);
+//             break;
+//         default:
+//             break;
+//     }
+// }
+//
+// bool MainAudio::perform(const InvocationInfo &info)
+// {
+//     switch (info.commandID)
+//     {
+//         case SP_CommandID::startOrStopProcessing:
+//             pauseOrResumeProcessing();
+//             break;
+//         default:
+//             return false;
+//     }
+//     return true;
+// }
 
 // ValueTreeListener methods
 
 void MainAudio::valueTreeChildAdded(juce::ValueTree& parentTree, juce::ValueTree& childWhichHasBeenAdded)
 {
     if (parentTree.hasType(SP_ID::TRACK_BRANCH) && childWhichHasBeenAdded.hasType(SP_ID::TRACK))
+    {
         addNewTrack(childWhichHasBeenAdded);
+        std::cout << "audio track added from the audio module!" << std::endl;
+    }
     else std::cout << "main audio parent tree does not match" << std::endl;
 }
 

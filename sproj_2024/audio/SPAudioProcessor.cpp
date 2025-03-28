@@ -19,6 +19,11 @@ SPAudioProcessor::SPAudioProcessor()
 
 SPAudioProcessor::~SPAudioProcessor() = default;
 
+void SPAudioProcessor::pauseOrResumeProcessing()
+{
+    if (isPaused) isPaused = false; else isPaused = true;
+}
+
 //==============================================================================
 const juce::String SPAudioProcessor::getName() const
 {

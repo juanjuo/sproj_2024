@@ -4,6 +4,7 @@
 
 #pragma once
 #include <DeckGUI.h>
+#include "helpers.h"
 
 /* BUGS!
  *
@@ -15,26 +16,27 @@ class DummyClip final : public juce::Component,
                         public DeckGUI
 {
 public:
-    DummyClip(const int width, const int height, juce::ValueTree& tree): DeckGUI(width, height, juce::Colour::fromRGB(144, 144, 144)), valueTree(tree)
+
+    //for creating clips for FreeDeck
+    DummyClip(const int width, const int height, const juce::Rectangle<int> parentBounds, juce::ValueTree& tree, juce::Colour colour): DeckGUI(width, height, colour), valueTree(tree)
     {
-        setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-        setTopLeftPosition(calculateRandomPosition(getParentWidth(), getParentHeight()));
+        setSize(width, height);
+        setTopLeftPosition(calculateRandomPosition(parentBounds.getWidth(), parentBounds.getHeight()));
         initializeValueTree();
     }
 
-    DummyClip(const int width, const int height, const int x, const int y, juce::ValueTree& tree): DeckGUI(width, height, juce::Colour::fromRGB(144, 144, 144)), valueTree(tree)
+    // for creating clips on MainDeck
+    DummyClip(const int width, const int height, const juce::Point<int> point, juce::ValueTree& tree, juce::Colour colour): DeckGUI(width, height, colour), valueTree(tree)
     {
-        setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-        setTopLeftPosition(x, y);
-        initializeValueTree();
-    }
-
-    DummyClip(const juce::Point<int> point, juce::ValueTree& tree): DeckGUI(200, 100, juce::Colour::fromRGB(144, 144, 144)), valueTree(tree)
-    {
-        setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+        setSize(width, height);
         setTopLeftPosition(point);
         initializeValueTree();
         //probably set all of its member var//
+    }
+
+    juce::Colour getClipColour() const
+    {
+        return BACKGROUND_COLOUR;
     }
 
 
@@ -51,15 +53,29 @@ public:
         return {x, y};
     }
 
-    void initializeValueTree()
+    void setUpValueTree(const int startingValue = -1, const int endValue = -1, const int length = -1, const juce::String& filePath = " ")
     {
         valueTree.setProperty(SP_ID::clip_start_value, startingValue, nullptr);
+        valueTree.setProperty(SP_ID::clip_end_value, endValue, nullptr);
         valueTree.setProperty(SP_ID::clip_filepath, filePath, nullptr);
+        valueTree.setProperty(SP_ID::clip_length_value, length, nullptr);
+    }
+
+    void initializeValueTree()
+    {
+        valueTree.setProperty(SP_ID::clip_start_value, -1, nullptr);
+        valueTree.setProperty(SP_ID::clip_end_value, -1, nullptr);
+        valueTree.setProperty(SP_ID::clip_filepath, localFilePath, nullptr);
     }
 
     juce::ValueTree& getValueTree()
     {
         return valueTree;
+    }
+
+    juce::String getFilePath()
+    {
+        return localFilePath;
     }
 
     void mouseDrag(const juce::MouseEvent& event) override //maybe call startDragging directly?
@@ -79,8 +95,10 @@ public:
 
     void paint(juce::Graphics& g) override
     {
-        g.fillAll(BACKGROUND_COLOUR);
-        g.drawRect(this->getLocalBounds(), BORDER_WIDTH - 1);
+        g.setColour(BACKGROUND_COLOUR);
+        g.fillRect(getLocalBounds());
+        g.setColour(juce::Colours::black);
+        g.drawRect(getLocalBounds(), BORDER_WIDTH - 1);
         //setTopLeftPosition();
     }
 
@@ -112,10 +130,20 @@ private:
 
     juce::ValueTree valueTree;
 
-    int startingValue = -1;
 
+    juce::String localFilePath {" "};
 
-    juce::String filePath {"/Users/juan/Desktop/Sunny2.wav"};
+    //juce::String localFilePath {"/Users/juan/Desktop/Sunny2.wav"};
 
     //juce::File filePath {juce::File("/Users/juan/Desktop/Sunny2.wav")};
+
+    int calculateLengthInBeats(const int start, const int end)
+    {
+        return end - start; // + 1 since its 0 indexed
+    }
+
+    int calculateEndPosition(const int start, int length)
+    {
+        return start + length ;
+    }
 };

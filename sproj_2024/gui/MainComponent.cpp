@@ -2,11 +2,12 @@
 
 //==============================================================================
 MainComponent::MainComponent(juce::ValueTree& tree, SPCommandManager& manager, juce::AudioDeviceManager& deviceManager)
-    : commandManager(manager), rulerDeckGUI(), controlDeckGui(tree), mainDeckGui(tree), freeDeckGui(tree),
+    : commandManager(manager), rulerDeckGUI(), controlDeckGui(tree), freeDeckGui(tree),
       mixDeckGui(tree), menu(manager),
-      deviceSelector(deviceManager, manager), valueTree(tree)
+      deviceSelector(deviceManager, manager), valueTree(tree), mainDeckHolder(tree, freeDeckGui)
 
 {
+
     if (tree.isValid()) std::cout << "is valid" << std::endl;
     setSize(600, 400);
 
@@ -14,7 +15,7 @@ MainComponent::MainComponent(juce::ValueTree& tree, SPCommandManager& manager, j
     addAndMakeVisible(controlDeckGui);
     addAndMakeVisible(freeDeckGui);
     addAndMakeVisible(mixDeckGui);
-    addAndMakeVisible(mainDeckGui);
+    addAndMakeVisible(mainDeckHolder);
     addAndMakeVisible(menu);
     addChildComponent(deviceSelector);
 
@@ -31,8 +32,7 @@ void MainComponent::createNewTrack()
     auto trackBranch = valueTree.getChildWithName(SP_ID::TRACK_BRANCH);
     trackBranch.appendChild(newNode, nullptr);
     mixDeckGui.addTrack(newNode);
-    mainDeckGui.addTrack(newNode);
-
+    mainDeckHolder.addTrack(newNode);
 }
 
 void MainComponent::createNewDummyClip() //not the fastest way of doing this (better to initialize this before hand)
@@ -42,10 +42,15 @@ void MainComponent::createNewDummyClip() //not the fastest way of doing this (be
 
 void MainComponent::initializeApplication() //only for the beta release of the application
 {
-    for (int i = 0; i < 1; i++)
+    for (int i = 0; i < 6; i++)
     {
         createNewTrack();
     }
+}
+
+void MainComponent::startOrStopAnimation()
+{
+    mainDeckHolder.startOrStopAnimation();
 }
 
 //==============================================================================
@@ -66,8 +71,9 @@ void MainComponent::resized()
     freeDeckGui.setBounds(getX(), getHeight() - freeDeckGui.getHeight(), getWidth(), freeDeckGui.getHeight());
     mixDeckGui.setBounds(getX(), getY() + controlDeckGui.getHeight(), mixDeckGui.getWidth(), getHeight()
                          - controlDeckGui.getHeight() - freeDeckGui.getHeight());
-    mainDeckGui.setBounds(getX() + mixDeckGui.getWidth(), getY() + controlDeckGui.getHeight(), getWidth()
+    mainDeckHolder.setBounds(getX() + mixDeckGui.getWidth(), getY() + controlDeckGui.getHeight(), getWidth()
                             - mixDeckGui.getWidth(), getHeight() - freeDeckGui.getHeight() - controlDeckGui.getHeight());
+    mainDeckHolder.resized();
 }
 
 void MainComponent::childBoundsChanged(Component *child)
@@ -76,7 +82,7 @@ void MainComponent::childBoundsChanged(Component *child)
     freeDeckGui.setBounds(getX(), getHeight() - freeDeckGui.getHeight(), getWidth(), freeDeckGui.getHeight());
     mixDeckGui.setBounds(getX(), getY() + controlDeckGui.getHeight(), mixDeckGui.getWidth(), getHeight()
                          - controlDeckGui.getHeight() - freeDeckGui.getHeight());
-    mainDeckGui.setBounds(getX() + mixDeckGui.getWidth(), getY() + controlDeckGui.getHeight(), getWidth()
+    mainDeckHolder.setBounds(getX() + mixDeckGui.getWidth(), getY() + controlDeckGui.getHeight(), getWidth()
                             - mixDeckGui.getWidth(), getHeight() - freeDeckGui.getHeight() - controlDeckGui.getHeight());
 }
 
@@ -123,7 +129,7 @@ bool MainComponent::perform(const InvocationInfo &info)
         createNewTrack();
         break;
     case SP_CommandID::createNewDummyClip:
-        createNewDummyClip();
+        //createNewDummyClip();
         SP::printVT(valueTree);
         break;
     default:
@@ -132,4 +138,68 @@ bool MainComponent::perform(const InvocationInfo &info)
 
     return true;
 }
+
+/*
+ * APPLICATION ANIMATION SKETCH
+ *
+ * MainComponent CLASS
+ *
+ *
+ *
+ *
+ *
+ * CommandTarget:
+ * - on spacebar:
+ * - - if !isMoving
+ * - - - updater.addAnimator(MainDeckGUI.getAnimator (1), [this] { updater.removeAnimator (MainDeckGUI.getAnimator);) //start moving
+ * - - - updater.addAnimator(MainDeckGUI.getAnimator (2), [this] { updater.removeAnimator (MainDeckGUI.getAnimator);)
+ * - - - MainDeckGUI.getAnimator (1).start()
+ * - - - MainDeckGUI.getAnimator (2).start()
+ * - - else
+ * - - - MainDeckGUI.getAnimator (1).complete() //Stop moving
+ * - - - MainDeckGUI.getAnimator (1).complete()
+ *
+ *  //How can I have an infinite animation that goes from 0 to 1? (instead of just going 0 to infinity)
+ *  // I can use std::fmod from the <cmath> library
+ *
+ *
+ * members:
+ * bool isMoving
+ * VBlankAnimatorUpdater updater
+ * MainDeckHolder //the space that the MainDeckGUI's will use
+ *
+ * MainDeckGUI CLASS
+ *
+* Animator animator = ValueAnimatorBuilder {}.withEasing (Easings::createLinear())
+*                                            .runningInfinitely()
+                                             .withOnStartReturningValueChangedCallback (
+                                           [this]
+                                           {
+                                               const auto width = getParentWidth() - 2 * margin;
+                                               const auto height = 130;
+                                               setBounds (-width, margin, width, height);
+                                               setVisible (true);
+
+                                               const auto limits = makeAnimationLimits (-width, width*2);
+
+                                               return [this, limits] (auto value)
+                                               {
+                                                   const auto progress = std::clamp (shouldOpen ? value : 1.0 - value, 0.0, 1.0);
+                                                   setTopLeftPosition (roundToInt (limits.lerp ((float) progress)), margin);
+                                               };
+                                           })
+                                            .withOnCompleteCallback ( [this] {
+
+                                            })
+                                            .build();
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ */
 

@@ -21,12 +21,11 @@ ADD MIDI
 #include "juce_audio_processors/juce_audio_processors.h"
 #include "juce_audio_utils/juce_audio_utils.h"
 #include "juce_audio_devices/juce_audio_devices.h"
-#include <Clock.h>
+#include <AudioClock.h>
 #include <Track.h>
 
 
-class MainAudio : public juce::ApplicationCommandTarget,
-                  public juce::ValueTree::Listener
+class MainAudio : public juce::ValueTree::Listener/*,juce::ApplicationCommandTarget*/
 {
 public:
 
@@ -45,11 +44,11 @@ public:
     void pauseOrResumeProcessing();
 
     //ApplicationCommandTarget methods
-
-    ApplicationCommandTarget *getNextCommandTarget() override;
-    void getAllCommands(juce::Array<juce::CommandID> &c) override;
-    void getCommandInfo(const juce::CommandID commandID, juce::ApplicationCommandInfo &result) override;
-    bool perform(const InvocationInfo &info) override;
+    //
+    // ApplicationCommandTarget *getNextCommandTarget() override;
+    // void getAllCommands(juce::Array<juce::CommandID> &c) override;
+    // void getCommandInfo(const juce::CommandID commandID, juce::ApplicationCommandInfo &result) override;
+    // bool perform(const InvocationInfo &info) override;
 
     //ValueTreeListener methods
     void valueTreeChildAdded(juce::ValueTree& parentTree, juce::ValueTree& childWhichHasBeenAdded) override;
@@ -71,9 +70,7 @@ private:
 
     SPCommandManager& commandManager;
 
-    juce::AudioProcessorGraph::Node::Ptr metronome;
-
-    Scheduler scheduler;
+    juce::AudioProcessorGraph::Node::Ptr clockNode;
 
     juce::ReferenceCountedArray<juce::AudioProcessorGraph::Node> trackArray;
 };

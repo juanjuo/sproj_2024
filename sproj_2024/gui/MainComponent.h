@@ -16,6 +16,7 @@
 #include <MixDeckGUI.h>
 #include <MenuComponent.h>
 #include <DeviceSelectionMenu.h>
+#include <MainDeckHolder.h>
 
 
 
@@ -37,6 +38,8 @@ public:
 
     void initializeApplication();
 
+    void startOrStopAnimation();
+
     //Component methods
     void paint (juce::Graphics&) override;
     void resized() override;
@@ -54,12 +57,15 @@ public:
 
 private:
 
+    bool isPlaybackOn = false;
+
     SPCommandManager& commandManager;
 
     RulerDeckGUI rulerDeckGUI;
     ControlDeckGUI controlDeckGui;
-    MainDeckGUI mainDeckGui;
     FreeDeckGUI freeDeckGui;
+    MainDeckHolder mainDeckHolder;
+    //MainDeckGUI mainDeckGui;
     MixDeckGUI mixDeckGui;
 
     //Menus
