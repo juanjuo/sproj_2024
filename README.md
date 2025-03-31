@@ -1,5 +1,3 @@
-# Ratatat-app
-
 ## Overview
 This project is a **DAW-like application for live looping**, designed to provide intuitive control over clip rearrangement and musical structure in real time. Unlike traditional DAWs, this application prioritizes flexibility in live performance, allowing musicians to manipulate loops dynamically.
 
