@@ -8,7 +8,19 @@ Built entirely using the [JUCE](https://github.com/juce-framework/JUCE) framewor
 
 ## Building instructions
 
-Uses CMake as the build system, with that you can create IDE specific project files for development; here's an example of how you would do that for Xcode.
+Uses CMake as the build system, with that you can create IDE specific project file for development; here's an example of how you would do that for Xcode.
+
+This will create a project file for Xcode. (make sure you have Cmake version 3.22 or above)
+
+### Linux Requirements
+
+This could be true for MacOS as well, but on Linux distros the following dependences are required:
+
+```bash
+$ sudo apt install libwebkit2gtk-4.0-dev libasound2-dev libcurlpp-dev
+```
+
+### Step-by-step Installation
 
 First you will need to copy the repository into a local folder, then call:
 
@@ -17,7 +29,16 @@ $ mkdir build
 
 $ cd build
 
-$ cmake -G Xcode ..$
+$ ./build_tools/build
+
+$ cmake --build build
 ```
 
-This will create a project file for Xcode. (make sure you have Cmake version 3.22 or above)
+### Testing
+
+After building the project, you can move to the `build` directory and run `ctest`.
+Alternatively, you can use the build_tool `test`.
+
+Google Test can be references [here](https://google.github.io/googletest/quickstart-cmake.html)
+
+## Licensing Information
