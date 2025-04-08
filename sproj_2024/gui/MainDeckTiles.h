@@ -2,12 +2,11 @@
 // Created by Juan Diego on 3/16/25.
 //
 #pragma once
-#include <MainDeckGUI.h>
 
 class MainDeckTile final : public juce::Component
 {
 public:
-    MainDeckTile(int width, int height, const int p) : position(p)
+    MainDeckTile(const int width, const int height, const int p) : position(p)
     {
         setAlwaysOnTop(true);
         setSize(width, height);
@@ -20,7 +19,7 @@ public:
         isOccupied = false;
     }
 
-    void setClip(const juce::ValueTree tree, const juce::Colour colour)
+    void setClip(const juce::ValueTree& tree, const juce::Colour colour)
     {
         selectedColour = colour;
         valueTree = tree;
@@ -53,7 +52,7 @@ public:
         return position;
     }
 
-    juce::Rectangle<int> getTileBounds()
+    juce::Rectangle<int> getTileBounds() const
     {
         return getLocalArea(getParentComponent(), getBoundsInParent());
     }

@@ -4,32 +4,25 @@
 #pragma once
 #include <DeckGUI.h>
 
-/*TODO:
- *use Viewport to implement scrolling on these components
- *
- *
- */
-
-
 class MixDeckTrack final : public juce::Component,
                            public DeckGUI,
                            public juce::SliderListener<juce::Slider>
 {
 public:
-    MixDeckTrack(int width, int height, juce::ValueTree& n): DeckGUI(width, height, juce::Colour::fromRGB(144, 144, 144)), node(n)
+    MixDeckTrack(const int width, const int height, const juce::ValueTree& n): DeckGUI(width, height, juce::Colour::fromRGB(144, 144, 144)), node(n)
     {
         setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-        addAndMakeVisible(slider);
-        slider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
-        slider.setBounds(getLocalBounds().reduced(5));
-        slider.setRange(0.0, 2.0, 0.1);
-        slider.setValue(initialGain);
-        slider.addListener(this);
+        addAndMakeVisible(volumeSlider);
+        volumeSlider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
+        volumeSlider.setBounds(getLocalBounds().reduced(5));
+        volumeSlider.setRange(0.0, 2.0, 0.1);
+        volumeSlider.setValue(initialGain);
+        volumeSlider.addListener(this);
 
         setUpValueTree();
     }
 
-    ~MixDeckTrack()
+    ~MixDeckTrack() override
     {
     }
 
@@ -46,7 +39,7 @@ public:
 
     void resized() override
     {
-        slider.setBounds(getLocalBounds().reduced(5));
+        volumeSlider.setBounds(getLocalBounds().reduced(5));
     }
 
     //Slider Listener
@@ -59,7 +52,7 @@ public:
 private:
     float initialGain = 1;
 
-    juce::Slider slider;
+    juce::Slider volumeSlider;
 
     juce::ValueTree node;
 };
@@ -77,11 +70,11 @@ public:
         setUpGrid(TRACK_WIDTH);
     }
 
-    ~MixDeckGUI()
+    ~MixDeckGUI() override
     {
     }
 
-    void addTrack(juce::ValueTree& newNode)
+    void addTrack(const juce::ValueTree& newNode)
     {
         auto* track = new MixDeckTrack(TRACK_WIDTH, TRACK_WIDTH, newNode);
         grid.items.add(track);

@@ -10,8 +10,7 @@
         This class implements the desktop window that contains an instance of
         our MainComponent class.
     */
-MainWindow::MainWindow (juce::String name, juce::ValueTree tree, SPCommandManager& manager, juce::AudioDeviceManager& deviceManager, MainComponent* mainComponent)
-            : DocumentWindow (name, juce::Desktop::getInstance().getDefaultLookAndFeel().findColour
+MainWindow::MainWindow (const juce::String& name, MainComponent* mainComponent) : DocumentWindow (name, juce::Desktop::getInstance().getDefaultLookAndFeel().findColour
                            (ResizableWindow::backgroundColourId), DocumentWindow::allButtons)
 {
     setUsingNativeTitleBar (true);
@@ -25,10 +24,10 @@ MainWindow::MainWindow (juce::String name, juce::ValueTree tree, SPCommandManage
 
     //MELATONIN WINDOW
     // open the inspector window
-    inspector.setVisible(this);
+    //inspector.setVisible(this);
 
     // enable the inspector
-    inspector.toggle(this);
+    //inspector.toggle(this);
 }
 
 void MainWindow::closeButtonPressed()

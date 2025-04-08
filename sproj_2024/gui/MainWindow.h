@@ -3,8 +3,7 @@
 //
 #pragma once
 #include <MainComponent.h>
-#include <juce_audio_devices/juce_audio_devices.h>
-#include "melatonin_inspector/melatonin_inspector.h"
+//#include "melatonin_inspector/melatonin_inspector.h"
 
 
 //==============================================================================
@@ -15,12 +14,12 @@
     class MainWindow final : public juce::DocumentWindow
     {
     public:
-        explicit MainWindow (juce::String name, juce::ValueTree tree, SPCommandManager& manager, juce::AudioDeviceManager& deviceManager, MainComponent* mainComponent);
+        explicit MainWindow (const juce::String& name, MainComponent* mainComponent);
 
         void closeButtonPressed() override;
 
     private:
-        melatonin::Inspector inspector { *this }; //MELATONIN WINDOW
+        //melatonin::Inspector inspector { *this }; //MELATONIN WINDOW
 
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainWindow)
     };

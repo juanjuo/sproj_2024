@@ -48,7 +48,7 @@ public:
         transportSource.setGain(gain);
     }
 
-    double getCurrentPlaybackPosition()
+    double getCurrentPlaybackPosition() const
     {
         return transportSource.getCurrentPosition();
     }
@@ -69,6 +69,7 @@ public:
     void processBlock(juce::AudioBuffer<float>& buffer,
                       juce::MidiBuffer& midiMessages) override
     {
+        juce::ignoreUnused(midiMessages);
         // if (currentAudioFileSource == nullptr) // for example
         // {
         //     buffer.clear();

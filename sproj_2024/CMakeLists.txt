@@ -34,6 +34,9 @@ juce_add_gui_app(${PROJECT_NAME}
         # COMPANY_NAME ...                  # Specify the name of the app's author
         PRODUCT_NAME "Sproj2024")     # The name of the final executable, which can differ from the target name
 
+#
+#add_library(${PROJECT_NAME}_lib STATIC ${PROJECT_BINARY_DIR})
+
 # Sets the gui files of the plugin project.
 target_sources(${PROJECT_NAME}
         PRIVATE
@@ -41,9 +44,7 @@ target_sources(${PROJECT_NAME}
         audio/AudioPlayer.h
         audio/AudioClock.h
         audio/MainAudio.h
-        audio/Quantizer.h
         audio/Recorder.h
-        audio/Scheduler.h
         audio/SPAudioProcessor.h
         audio/Track.h
         gui/ControlDeckGUI.h
@@ -91,6 +92,7 @@ target_link_libraries(${PROJECT_NAME}
             #jive::jive_layouts
             #jive::jive_style_sheets
             melatonin_inspector
+            focusrite-e2e::focusrite-e2e
         PUBLIC
             juce::juce_recommended_config_flags
             juce::juce_recommended_lto_flags #link time optimization flags
@@ -99,19 +101,18 @@ target_link_libraries(${PROJECT_NAME}
 
 # These definitions are recommended by JUCE.
 target_compile_definitions(${PROJECT_NAME}
+        PUBLIC
+            JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1
+            JUCE_WEB_BROWSER=0
+            JUCE_USE_CURL=0
+
         PRIVATE
             JUCE_APPLICATION_NAME_STRING="$<TARGET_PROPERTY:${PROJECT_NAME},JUCE_PRODUCT_NAME>"
             JUCE_APPLICATION_VERSION_STRING="$<TARGET_PROPERTY:${PROJECT_NAME},JUCE_VERSION>"
-            JIVE_GUI_ITEMS_HAVE_STYLE_SHEETS=1
-        PUBLIC
-            JUCE_WEB_BROWSER=0
-            JUCE_USE_CURL=0
 )
 
 # to generate the JuceHeader.h files (for compatibility with Projucer)
-#juce_generate_juce_header(${PROJECT_NAME})
-
-
+juce_generate_juce_header(${PROJECT_NAME})
 
 
 # Enables all warnings and treats warnings as errors.

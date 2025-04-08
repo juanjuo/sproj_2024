@@ -18,7 +18,7 @@ class DummyClip final : public juce::Component,
 public:
 
     //for creating clips for FreeDeck
-    DummyClip(const int width, const int height, const juce::Rectangle<int> parentBounds, juce::ValueTree& tree, juce::Colour colour): DeckGUI(width, height, colour), valueTree(tree)
+    DummyClip(const int width, const int height, const juce::Rectangle<int> parentBounds, const juce::ValueTree& tree, const juce::Colour colour): DeckGUI(width, height, colour), valueTree(tree)
     {
         setSize(width, height);
         setTopLeftPosition(calculateRandomPosition(parentBounds.getWidth(), parentBounds.getHeight()));
@@ -26,7 +26,7 @@ public:
     }
 
     // for creating clips on MainDeck
-    DummyClip(const int width, const int height, const juce::Point<int> point, juce::ValueTree& tree, juce::Colour colour): DeckGUI(width, height, colour), valueTree(tree)
+    DummyClip(const int width, const int height, const juce::Point<int> point, const juce::ValueTree& tree, const juce::Colour colour): DeckGUI(width, height, colour), valueTree(tree)
     {
         setSize(width, height);
         setTopLeftPosition(point);
@@ -40,12 +40,12 @@ public:
     }
 
 
-    juce::Point<int> calculateRandomPosition(const int width, const int height) //maybe a better way of doing this?
+    static juce::Point<int> calculateRandomPosition(const int width, const int height) //maybe a better way of doing this?
     {
-        int minX = width * 0.05;
-        int maxX = width * 0.85;
-        int minY = height * 0.01;
-        int maxY = height * 0.15;
+        const int minX = static_cast<int> (width * 0.05);
+        const int maxX = static_cast<int> (width * 0.85);
+        const int minY = static_cast<int> (height * 0.01);
+        const int maxY = static_cast<int> (height * 0.15);
 
         int x = minX + rand() % (maxX - minX + 1);
         int y = minY + rand() % (maxY - minY + 1);
@@ -88,6 +88,7 @@ public:
 
     void mouseUp(const juce::MouseEvent& event) override
     {
+        juce::ignoreUnused(event);
         isBeingDragged = false;
         //std::cout << "STOP DRAGGING" << std::endl;
     }
@@ -111,10 +112,12 @@ public:
     {
         if (auto* dragContainer = juce::DragAndDropContainer::findParentDragContainerFor(this))
         {
-            int x, y;
+            int x = 0;
+            int y = 0;
             auto dragImage = createComponentSnapshot(getBounds(), true);
 
             auto p = juce::Point<int>(x, y) - e.getEventRelativeTo(this).position.toInt();
+            // ReSharper disable once CppDeprecatedEntity
             dragContainer->startDragging(dragDescription, this, dragImage, allowDraggingToOtherWindows, &p, &e.source);
         }
         else
@@ -137,12 +140,12 @@ private:
 
     //juce::File filePath {juce::File("/Users/juan/Desktop/Sunny2.wav")};
 
-    int calculateLengthInBeats(const int start, const int end)
+    static int calculateLengthInBeats(const int start, const int end)
     {
         return end - start; // + 1 since its 0 indexed
     }
 
-    int calculateEndPosition(const int start, int length)
+    static int calculateEndPosition(const int start, const int length)
     {
         return start + length ;
     }

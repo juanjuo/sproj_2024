@@ -5,7 +5,7 @@
 #include "MainAudio.h"
 
 MainAudio::MainAudio(juce::ValueTree v, SPCommandManager &manager, juce::AudioDeviceManager &audioManager)
-    : audioGraph(new juce::AudioProcessorGraph()), valueTree(v), commandManager(manager), deviceManager(audioManager)
+    : valueTree(v), audioGraph(new juce::AudioProcessorGraph()), deviceManager(audioManager), commandManager(manager)
 {
     audioGraph->enableAllBuses();
 
@@ -15,7 +15,7 @@ MainAudio::MainAudio(juce::ValueTree v, SPCommandManager &manager, juce::AudioDe
 
     audioPlayer->setProcessor(audioGraph.get());
 
-    device.reset(deviceManager.getCurrentAudioDevice());
+    //device->reset(deviceManager.getCurrentAudioDevice());
 
     baseSampleRate = deviceManager.getAudioDeviceSetup().sampleRate;
 
@@ -30,6 +30,7 @@ MainAudio::MainAudio(juce::ValueTree v, SPCommandManager &manager, juce::AudioDe
 MainAudio::~MainAudio()
 {
     deviceManager.removeAudioCallback(audioPlayer.get());
+    deviceManager.closeAudioDevice();
 }
 
 void MainAudio::initGraph()
@@ -46,7 +47,7 @@ void MainAudio::initGraph()
 
     //initialize metronome
 
-    clockNode = audioGraph->addNode(std::make_unique<AudioClock>(valueTree, commandManager));
+    clockNode = audioGraph->addNode(std::make_unique<AudioClock>(valueTree));
     //would it be better to keep a reference to this AudioClock object to give to tracks later?
 
     connectNode(clockNode);

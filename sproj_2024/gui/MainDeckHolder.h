@@ -3,7 +3,6 @@
 //
 
 #pragma once
-#include <juce_gui_extra/juce_gui_extra.h>
 #include <MainDeckGUI.h>
 #include <MainDeckTiles.h>
 
@@ -13,7 +12,7 @@ class MainDeckMask final : public juce::Component,
                            public juce::ValueTree::Listener
 {
 public:
-  explicit MainDeckMask(juce::ValueTree t, const juce::Array<MainDeckTile*>& tiles, FreeDeckGUI& fdeck) : trackValueTree(t), tileList(tiles), freeDeckGui(fdeck)
+  explicit MainDeckMask(const juce::ValueTree& t, const juce::Array<MainDeckTile*>& tiles, FreeDeckGUI& fdeck) : trackValueTree(t), freeDeckGui(fdeck), tileList(tiles)
   {
     lassoComponent.setColour(juce::LassoComponent<MainDeckTile*>::ColourIds::lassoFillColourId,
                              juce::Colours::blue);
@@ -22,7 +21,7 @@ public:
     setAlwaysOnTop(true);
   }
 
-  juce::ValueTree setUpClipValueTree(int start, int end, int length, int width, juce::Colour colour)
+  juce::ValueTree setUpClipValueTree(const int start, const int end, const int length, const int width, const juce::Colour colour)
   {
     juce::ValueTree trackClipNode(SP_ID::CLIP); //add ValueTree to track
     juce::ValueTree deckClipNode(SP_ID::CLIP); //add ValueTree to freedeck
@@ -49,19 +48,19 @@ public:
     return trackClipNode;
   }
 
-  void updateOccupied(bool state, int start, int length) const
+  void updateOccupied(const bool state, const int start, const int length) const
   {
     int size = tileList.size();
     for (int i = 0; i < length; ++i)
     {
-      int index = (start + i) % size; // Wrap around when reaching the end
+      const int index = (start + i) % size; // Wrap around when reaching the end
       tileList[index]->setOccupied(state);
     }
   }
 
-  bool areTilesOccupied(int start, int length) const
+  bool areTilesOccupied(const int start, const int length) const
   {
-    int size = tileList.size();
+    const int size = tileList.size();
     for (int i = 0; i < length; ++i)
     {
       int index = (start + i) % size; // Wrap around when reaching the end
@@ -73,11 +72,11 @@ public:
     return true;
   }
 
-  void removeClip()
-  {
-  }
+  // void removeClip()
+  // {
+  // }
 
-  void createNewClip(bool isBackwards)
+  void createNewClip(const bool isBackwards)
   {
     const auto colour = juce::Colour::fromRGB(rand() % 255, rand() % 255, rand() % 255);
     const auto size = tilesSelected.getNumSelected();
@@ -107,7 +106,7 @@ public:
     }
   }
 
-  void addExistingClip(DummyClip* clip, MainDeckTile* tile)
+  void addExistingClip(DummyClip* clip, const MainDeckTile* tile)
   {
     const int start = tile->getTilePosition();
     int length = clip->getValueTree().getProperty(SP_ID::clip_length_value);
@@ -210,6 +209,7 @@ public:
 
   bool isInterestedInDragSource(const SourceDetails& dragSourceDetails) override
   {
+    juce::ignoreUnused(dragSourceDetails);
     return true;
   }
 
@@ -233,6 +233,7 @@ public:
   // LassoSource methods
   void findLassoItemsInArea(juce::Array<MainDeckTile*>& itemsFound, const juce::Rectangle<int>& area) override
   {
+    juce::ignoreUnused(area);
     for (auto element : tileList)
     {
       if (lassoComponent.getScreenBounds().intersects(element->getScreenBounds()))
@@ -285,8 +286,8 @@ public:
     //setAlpha(0);
     setOpaque(false);
     setAlwaysOnTop(false);
-    const auto deck1 = new MainDeckGUI(tree, fdeck, MainDeckGUI::MainDeckMode::on_Screen);
-    const auto deck2 = new MainDeckGUI(tree, fdeck, MainDeckGUI::MainDeckMode::off_Screen);
+    const auto deck1 = new MainDeckGUI(tree, MainDeckGUI::MainDeckMode::on_Screen);
+    const auto deck2 = new MainDeckGUI(tree, MainDeckGUI::MainDeckMode::off_Screen);
     mainDecks.add(deck1);
     mainDecks.add(deck2);
     addAndMakeVisible(deck1); //on-screen
@@ -370,6 +371,7 @@ public:
 
   void paint(juce::Graphics& g) override
   {
+    juce::ignoreUnused(g);
     if (getNumChildComponents() != 0)
       grid.performLayout(getLocalBounds());
   }

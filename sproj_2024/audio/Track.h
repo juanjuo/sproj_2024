@@ -33,7 +33,7 @@ public:
         int end;
     };
 
-    Track(juce::ValueTree& tree, juce::ValueTree fdeck, SPCommandManager& manager, AudioClock* clock)
+    Track(const juce::ValueTree& tree, const juce::ValueTree& fdeck, SPCommandManager& manager, AudioClock* clock)
     : commandManager(manager), trackValueTree(tree), freeDeckValueTree(fdeck)
     {
         commandManager.registerAllCommandsForTarget(this);
@@ -46,7 +46,7 @@ public:
         clock->addChangeListener(this);
     }
 
-    void updateAllClipValueTrees(juce::ValueTree node) const
+    void updateAllClipValueTrees(const juce::ValueTree& node) const
     {
         for (auto clip : trackValueTree)
         {
@@ -57,7 +57,7 @@ public:
         }
     }
 
-    ~Track()
+    ~Track() override
     {
     }
 
@@ -201,7 +201,6 @@ public:
         if (trackValueTree == treeWhosePropertyHasChanged)
             if (property == SP_ID::track_gain)
                 player.setGain(treeWhosePropertyHasChanged.getProperty(property));
-            else std::cout << "audio track property doesn't match" << std::endl;
     }
 
     void valueTreeChildAdded(juce::ValueTree& parentTree, juce::ValueTree& childWhichHasBeenAdded) override
@@ -235,6 +234,7 @@ public:
     //Change Listener Methods
     void changeListenerCallback(juce::ChangeBroadcaster* source) override
     {
+        juce::ignoreUnused(source);
         if (!clipData.empty())
         {
             for (auto data : clipData)

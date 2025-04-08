@@ -24,7 +24,6 @@ public:
 
     void resized() override
     {
-        const auto rect = getLocalBounds();
     }
 
 private:

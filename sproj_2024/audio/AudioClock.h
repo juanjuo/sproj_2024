@@ -7,7 +7,6 @@
 #include <SPCommandManager.h>
 #include <random>
 #include <helpers.h>
-//#include <Scheduler.h>
 
 class WavetableOscillator
 {
@@ -57,14 +56,14 @@ class AudioClock final : public SPAudioProcessor,
 {
 public:
 
-    explicit AudioClock(juce::ValueTree v, SPCommandManager& cm/*, Scheduler& sch*/)
+    explicit AudioClock(const juce::ValueTree& v)
     : clockValueTree(v.getChildWithName(SP_ID::METRONOME_BRANCH)), interval_val(5000), counter_val(0), note_length(2000), clockSampleRate(44100)/*, scheduler(sch)*/
     {
         clockValueTree.addListener(this);
 
         generator = std::default_random_engine(rd());
 
-        distribution = std::uniform_real_distribution<float>(0.2, 0.8);
+        distribution = std::uniform_real_distribution(0.2f, 0.8f);
 
         createWavetable();
     }
@@ -72,7 +71,9 @@ public:
     //AudioProcessor
     void prepareToPlay(double sampleRate, int samplesPerBlock) override
     {
-        juce::dsp::ProcessSpec spec { sampleRate, static_cast<juce::uint32> (samplesPerBlock), 2};
+        //juce::dsp::ProcessSpec spec { sampleRate, static_cast<juce::uint32> (samplesPerBlock), 2};
+
+        juce::ignoreUnused(samplesPerBlock);
 
         clockSampleRate = sampleRate;
 
@@ -87,10 +88,12 @@ public:
 
     void processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessage) override
     {
+        juce::ignoreUnused(midiMessage);
+
         if (!isPaused)
         {
             juce::ScopedNoDenormals noDenormals;
-            auto totalNumInputChannels  = getTotalNumInputChannels();
+            //auto totalNumInputChannels  = getTotalNumInputChannels();
             auto totalNumOutputChannels = getTotalNumOutputChannels();
 
             for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
@@ -197,7 +200,7 @@ public:
         denominator_val = denominator;
     }
 
-    void setInterval(float interval)
+    void setInterval(const int interval)
     {
         interval_val = interval;
     }
@@ -207,23 +210,23 @@ public:
         bpm_val = bpm;
     }
 
-    float BPMToMilli(int bpm)
+    static int BPMToMilli(const int bpm)
     {
         if (bpm <= 0) {
             std::cerr << "BPM must be a positive integer." << std::endl;
             return -1; // Indicate an error
         }
-        return 60000.0f / bpm; // Convert BPM to milliseconds
+        return static_cast<int> (60000.0f / bpm); // Convert BPM to milliseconds
     }
 
-    int milliToSamples(int milliseconds, double sampleRate)
+    static int milliToSamples(const int milliseconds, const double sampleRate)
     {
-        double samples = sampleRate * (milliseconds / 1000.0);
+        const double samples = sampleRate * (milliseconds / 1000.0);
         return static_cast<int> (samples);
     }
 
 
-    float milliToBPM(float milliseconds)
+    static float milliToBPM(float milliseconds)
     {
         if (milliseconds <= 0) {
             std::cerr << "Milliseconds must be a positive value." << std::endl;
@@ -238,9 +241,9 @@ private:
 
     bool updateHasBeenSent = false;
 
-    int bpm_val{};
-    int numerator_val{};
-    int denominator_val{};
+    int bpm_val;
+    int numerator_val;
+    int denominator_val;
 
     int interval_val;
     int counter_val;
@@ -248,8 +251,6 @@ private:
     int note_length;
 
     double clockSampleRate;
-
-    //Scheduler& scheduler;
 
     //wavetable
     const unsigned int tableSize = 1 << 7;
@@ -261,6 +262,5 @@ private:
     std::default_random_engine generator;
 
     std::uniform_real_distribution<float> distribution;
-
 };
 
