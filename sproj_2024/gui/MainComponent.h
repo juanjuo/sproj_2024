@@ -12,7 +12,6 @@
 #include <RulerDeckGUI.h>
 #include <ControlDeckGUI.h>
 #include <FreeDeckGUI.h>
-#include <MainDeckGUI.h>
 #include <MixDeckGUI.h>
 #include <MenuComponent.h>
 #include <DeviceSelectionMenu.h>
@@ -25,12 +24,14 @@
     This component lives inside our window, and this is where you should put all
     your controls and content.
 */
-class MainComponent : public juce::Component,
-                      public juce::ApplicationCommandTarget
+class MainComponent final : public juce::Component,
+                            public juce::ApplicationCommandTarget
 {
 public:
 
-    explicit MainComponent(juce::ValueTree& tree, SPCommandManager& manager, juce::AudioDeviceManager& deviceManager);
+    explicit MainComponent(const juce::ValueTree& tree, SPCommandManager& manager, juce::AudioDeviceManager& deviceManager);
+
+    //~MainComponent() override;
 
     void createNewTrack();
 
@@ -61,16 +62,17 @@ private:
 
     SPCommandManager& commandManager;
 
-    RulerDeckGUI rulerDeckGUI;
-    ControlDeckGUI controlDeckGui;
-    FreeDeckGUI freeDeckGui;
-    MainDeckHolder mainDeckHolder;
-    //MainDeckGUI mainDeckGui;
-    MixDeckGUI mixDeckGui;
+    juce::AudioDeviceManager& deviceManager;
 
-    //Menus
-    MenuComponent menu;
-    DeviceSelectionMenu deviceSelector;
+    std::shared_ptr<RulerDeckGUI> rulerDeckGUI;
+    std::shared_ptr<ControlDeckGUI> controlDeckGui;
+    std::shared_ptr<FreeDeckGUI> freeDeckGui;
+    std::shared_ptr<MainDeckHolder> mainDeckHolder;
+    std::shared_ptr<MixDeckGUI> mixDeckGui;
+
+    // Menus
+    std::shared_ptr<MenuComponent> menu;
+    std::shared_ptr<DeviceSelectionMenu> deviceSelector;
 
     juce::ValueTree valueTree;
 

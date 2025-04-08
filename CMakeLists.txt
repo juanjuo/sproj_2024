@@ -43,12 +43,12 @@ CPMAddPackage(
         "gtest_force_shared_crt ON"
 )
 
-CPMAddPackage(
-        NAME JIVE
-        GITHUB_REPOSITORY ImJimmi/JIVE
-        VERSION 1.2.2
-        SOURCE_DIR ${LIB_DIR}/jive
-)
+#CPMAddPackage(
+#        NAME JIVE
+#        GITHUB_REPOSITORY ImJimmi/JIVE
+#        VERSION 1.2.2
+#        SOURCE_DIR ${LIB_DIR}/jive
+#)
 
 CPMAddPackage(
         NAME melatonin_inspector
@@ -57,6 +57,22 @@ CPMAddPackage(
         #VERSION main
         SOURCE_DIR ${LIB_DIR}/melatonin_inspector
 )
+
+CPMAddPackage(
+        NAME juce-end-to-end
+        GITHUB_REPOSITORY FocusriteGroup/juce-end-to-end
+        VERSION 1.0.0
+        SOURCE_DIR ${LIB_DIR}/je2e
+)
+
+CPMAddPackage(
+        NAME jest
+        GITHUB_REPOSITORY jestjs/jest
+        VERSION 29.7.0
+        SOURCE_DIR ${LIB_DIR}/jest
+)
+
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
 # This command allows running tests from the "build" folder (the one where CMake generates the project to).
 enable_testing()

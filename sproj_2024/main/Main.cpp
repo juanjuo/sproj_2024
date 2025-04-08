@@ -2,8 +2,7 @@
 #include "MainWindow.h"
 #include "helpers.h"
 #include <SPCommandManager.h>
-
-#include "jive/jive_layouts/utilities/jive_LayoutStrategy.h"
+#include "focusrite/e2e/TestCentre.h"
 
 /* TODO:
  *
@@ -55,7 +54,7 @@ public:
     //==============================================================================
     void initialise(const juce::String& commandLine) override
     {
-        // This method is where you should put your application's initialisation code..
+        // This method is where you should put your application's initialisation code...
         juce::ignoreUnused(commandLine);
 
         valueTree.appendChild(juce::ValueTree{SP_ID::METRONOME_BRANCH}, nullptr);
@@ -68,8 +67,7 @@ public:
 
         mainComponent = std::make_unique<MainComponent>(valueTree, *commandManager, *deviceManager);
 
-        mainWindow = std::make_unique<MainWindow>(getApplicationName(), valueTree, *commandManager, *deviceManager,
-                                                  mainComponent.get());
+        mainWindow = std::make_unique<MainWindow>(getApplicationName(), mainComponent.get());
 
         commandManager->registerAllCommandsForTarget(this);
         commandManager->addTargetToCommandManager(this);
@@ -77,20 +75,20 @@ public:
         //std::cerr << commandManager->getNumCommands() << std::endl;
 
         //std::cerr << commandManager->invokeDirectly(SP_CommandID::print, true) << std::endl;
+
+        testCentre = focusrite::e2e::TestCentre::create();
     }
 
     void shutdown() override
     {
-        // Add your application's shutdown code here..
+        // Add your application's shutdown code here...
+        mainComponent = nullptr;
+        mainWindow = nullptr;
+        commandManager = nullptr;
         mainAudio = nullptr;
-
         deviceManager = nullptr;
 
-        //dummyClass = nullptr;
-
-        commandManager = nullptr;
-
-        mainWindow = nullptr; // (deletes our window)
+        testCentre.reset();
     }
 
     //==============================================================================
@@ -103,12 +101,12 @@ public:
 
     //ApplicationCommandTarget methods
 
-    juce::ApplicationCommandTarget* getNextCommandTarget()
+    juce::ApplicationCommandTarget* getNextCommandTarget() override
     {
         return nullptr;
     }
 
-    void getAllCommands(juce::Array<juce::CommandID>& c)
+    void getAllCommands(juce::Array<juce::CommandID>& c) override
     {
         juce::Array<juce::CommandID> commands{
             SP_CommandID::startOrStopProcessing
@@ -116,7 +114,7 @@ public:
         c.addArray(commands);
     }
 
-    void getCommandInfo(const juce::CommandID commandID, juce::ApplicationCommandInfo& result)
+    void getCommandInfo(const juce::CommandID commandID, juce::ApplicationCommandInfo& result) override
     {
         switch (commandID)
         {
@@ -130,7 +128,7 @@ public:
         }
     }
 
-    bool perform(const InvocationInfo& info)
+    bool perform(const InvocationInfo& info) override
     {
         switch (info.commandID)
         {
@@ -145,12 +143,16 @@ public:
     }
 
 private:
-    std::unique_ptr<SPCommandManager> commandManager = std::make_unique<SPCommandManager>();
     std::unique_ptr<juce::AudioDeviceManager> deviceManager = std::make_unique<juce::AudioDeviceManager>();
-    juce::ValueTree valueTree{SP_ID::MAIN_BRANCH};
-    std::unique_ptr<MainComponent> mainComponent;
     std::unique_ptr<MainAudio> mainAudio;
+    std::unique_ptr<SPCommandManager> commandManager = std::make_unique<SPCommandManager>();
+    std::unique_ptr<MainComponent> mainComponent;
     std::unique_ptr<MainWindow> mainWindow;
+    juce::ValueTree valueTree{SP_ID::MAIN_BRANCH};
+
+    //End-to-End Testing
+    std::unique_ptr<focusrite::e2e::TestCentre> testCentre;
+
 };
 
 //==============================================================================

@@ -4,16 +4,15 @@
 
 #pragma once
 #include <juce_gui_basics/juce_gui_basics.h>
-#include <helpers.h>
 
-class SPCommandManager : public juce::ApplicationCommandManager
+class SPCommandManager final : public juce::ApplicationCommandManager
 {
 public:
-    SPCommandManager() : juce::ApplicationCommandManager(), targets()
+    SPCommandManager()
     {
     }
 
-    ~SPCommandManager() = default;
+    ~SPCommandManager() override = default;
 
     void addTargetToCommandManager(juce::ApplicationCommandTarget* target)
     {
@@ -21,25 +20,28 @@ public:
     }
 
     //Looks for the target that corresponds to this commandID
-    juce::ApplicationCommandTarget* getFirstCommandTarget (juce::CommandID commandID) override
+    juce::ApplicationCommandTarget* getFirstCommandTarget(juce::CommandID commandID) override
     {
-        for (int i = 0; i < targets.size(); i++)
+        if (targets.size() > 0)
         {
-            juce::Array<juce::CommandID> targetCommands;
-             targets[i]->getAllCommands(targetCommands);
-            if (targetCommands.contains(commandID))
+            for (int i = 0; i < targets.size(); i++)
             {
-                return targets[i];
+                juce::Array<juce::CommandID> targetCommands;
+                targets[i]->getAllCommands(targetCommands);
+                if (targetCommands.contains(commandID))
+                {
+                    return targets[i];
+                }
             }
         }
-
-        std::cout << "Command not found" << std::endl;
+        else
+        {
+            std::cout << "Command not found" << std::endl;
+        }
         return nullptr;
     }
 
 private:
     juce::Array<juce::ApplicationCommandTarget*> targets; //owned array?
-
-
 };
 

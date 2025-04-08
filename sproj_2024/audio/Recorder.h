@@ -94,6 +94,7 @@ public:
 
     void prepareToPlay(double sampleRate, int samplesPerBlock) override
     {
+        juce::ignoreUnused(samplesPerBlock);
         trackSampleRate = sampleRate;
     }
 
@@ -110,8 +111,9 @@ public:
     void processBlock(juce::AudioBuffer<float> &buffer,
                                         juce::MidiBuffer &midiMessages) override
     {
+        juce::ignoreUnused(midiMessages);
         const juce::ScopedLock sl(writerLock);
-        auto numInputChannels = getTotalNumInputChannels();
+        //auto numInputChannels = getTotalNumInputChannels();
         auto numOutputChannels = getTotalNumOutputChannels();
 
         // TO PAUSE RECORDING
@@ -142,7 +144,7 @@ private:
     std::unique_ptr<juce::AudioFormatWriter::ThreadedWriter> threadedWriter;
     // the FIFO used to buffer the incoming data
     double trackSampleRate = 0.0;
-    juce::int64 nextSampleNum = 0;
+    //juce::int64 nextSampleNum = 0;
 
     juce::CriticalSection writerLock;
     std::atomic<juce::AudioFormatWriter::ThreadedWriter *> activeWriter{nullptr};

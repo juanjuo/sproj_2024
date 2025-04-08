@@ -14,8 +14,8 @@ class FreeDeckGUI final : public juce::Component,
 {
 public:
 
-  explicit FreeDeckGUI(juce::ValueTree& tree)
-    : DeckGUI(200, 160, juce::Colour::fromRGB(95, 95, 95)), valueTree(tree.getChildWithName(SP_ID::FREEDECK_BRANCH))
+  explicit FreeDeckGUI(const juce::ValueTree& tree)
+    : DeckGUI(200, 218, juce::Colour::fromRGB(95, 95, 95)), valueTree(tree.getChildWithName(SP_ID::FREEDECK_BRANCH))
   {
     setSize(WINDOW_HEIGHT, WINDOW_HEIGHT);
     addAndMakeVisible(resizableEdge);
@@ -51,6 +51,7 @@ public:
 
   bool isInterestedInDragSource(const SourceDetails& dragSourceDetails) override
   {
+    juce::ignoreUnused(dragSourceDetails);
     return true;
   }
 
@@ -58,18 +59,11 @@ public:
   {
     if (auto& component = dragSourceDetails.sourceComponent; isParentOf(component))
       component->setCentrePosition(dragSourceDetails.localPosition);
-    // else
-    // {
-    //   addAndMakeVisible(component);
-    //   dragSourceDetails.sourceComponent->setCentrePosition(dragSourceDetails.localPosition);
-    // }
   }
 
 
 private:
   juce::ResizableEdgeComponent resizableEdge{this, nullptr, juce::ResizableEdgeComponent::Edge::topEdge};
-
-  //juce::OwnedArray<DummyClip> clips;
 
   int CLIP_WIDTH = 200;
   int CLIP_HEIGHT = 100;

@@ -21,17 +21,17 @@ ADD MIDI
 #include "juce_audio_processors/juce_audio_processors.h"
 #include "juce_audio_utils/juce_audio_utils.h"
 #include "juce_audio_devices/juce_audio_devices.h"
-#include <AudioClock.h>
+#include <SPCommandManager.h>
 #include <Track.h>
 
 
-class MainAudio : public juce::ValueTree::Listener/*,juce::ApplicationCommandTarget*/
+class MainAudio final : public juce::ValueTree::Listener/*,juce::ApplicationCommandTarget*/
 {
 public:
 
     MainAudio(juce::ValueTree v, SPCommandManager& manager, juce::AudioDeviceManager& audioManager);
 
-    ~MainAudio();
+    ~MainAudio() override;
 
     void initGraph();
 
@@ -62,15 +62,11 @@ private:
 
     std::unique_ptr<juce::AudioProcessorGraph> audioGraph;
     juce::AudioDeviceManager& deviceManager;
-    std::unique_ptr<juce::AudioIODevice> device;
+    //juce::AudioIODevice* device;
     std::unique_ptr<juce::AudioProcessorPlayer> audioPlayer = std::make_unique<juce::AudioProcessorPlayer>();
-
     double baseSampleRate;
-    bool isPlaying = true;
-
+    //bool isPlaying = true;
     SPCommandManager& commandManager;
-
     juce::AudioProcessorGraph::Node::Ptr clockNode;
-
     juce::ReferenceCountedArray<juce::AudioProcessorGraph::Node> trackArray;
 };

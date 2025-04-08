@@ -3,7 +3,6 @@
 //
 #pragma once
 #include <DeckGUI.h>
-#include <DummyClip.h>
 #include <helpers.h>
 #include <juce_animation/juce_animation.h>
 #include <MainDeckTiles.h>
@@ -16,8 +15,7 @@ class MainDeckTrack final : public juce::Component,
 {
 public:
   //represents every individual tile in the grid where audio files can be positioned
-  MainDeckTrack(int width, int height, juce::ValueTree& n, juce::ValueTree freeDeck, FreeDeckGUI& fdeck,
-                const juce::Array<MainDeckTile*>& tiles)
+  MainDeckTrack(const int width, const int height, const juce::ValueTree& n, const juce::Array<MainDeckTile*>& tiles)
     : DeckGUI(width, height, juce::Colour::fromRGB(195, 195, 195)), node(n), tileList(tiles)
   {
     setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -33,7 +31,7 @@ public:
 
   void addTiles()
   {
-    for (auto tile : tileList)
+    for (const auto tile : tileList)
     {
       addAndMakeVisible(tile);
       grid.items.add(tile);
@@ -59,7 +57,7 @@ public:
 
   void resetTrack() //deletes all clips held by this track
   {
-    for (auto tile : tileList)
+    for (const auto tile : tileList)
     {
       if (tile->getOccupied())
       {
@@ -91,14 +89,13 @@ public:
     //setUpGrid();
   }
 
-private
-:
+private:
   juce::Grid grid;
 
   juce::ValueTree node; //this track's value tree
   juce::Array<MainDeckTile*> tileList;
 
-  int TILE_WIDTH = 15;
+  //int TILE_WIDTH = 15;
   int TILE_HEIGHT = 100;
 
   const int NUM_TILES = 80;
@@ -117,8 +114,8 @@ public:
     off_Screen
   };
 
-  explicit MainDeckGUI(const juce::ValueTree& v, FreeDeckGUI& fdeck, MainDeckMode mode)
-    : DeckGUI(0, 0, juce::Colour::fromRGB(195, 195, 195)), valueTree(v), freeDeck(fdeck)
+  explicit MainDeckGUI(const juce::ValueTree& v, const MainDeckMode mode)
+    : DeckGUI(0, 0, juce::Colour::fromRGB(195, 195, 195)), valueTree(v)
   {
     deck_mode = mode;
     setAlwaysOnTop(true);
@@ -142,8 +139,7 @@ public:
   void addTrack(juce::ValueTree& newNode, const juce::Array<MainDeckTile*>& tiles)
   {
     newNode.addListener(this);
-    auto* track = new MainDeckTrack(TRACK_WIDTH, TRACK_HEIGHT, newNode,
-                                    valueTree.getChildWithName(SP_ID::FREEDECK_BRANCH), freeDeck, tiles);
+    auto* track = new MainDeckTrack(TRACK_WIDTH, TRACK_HEIGHT, newNode, tiles);
     grid.items.add(track);
     addAndMakeVisible(track);
   }
@@ -232,9 +228,9 @@ private:
 
   juce::Animator* lastAnimation;
 
-  int calculateSpeed()
+  int calculateSpeed() const
   {
-    int bpm = valueTree.getChildWithName(SP_ID::METRONOME_BRANCH).getProperty(SP_ID::metronome_bpm);
+    const int bpm = valueTree.getChildWithName(SP_ID::METRONOME_BRANCH).getProperty(SP_ID::metronome_bpm);
     if (bpm <= 0)
     {
       //std::cerr << "BPM must be a positive integer." << std::endl;
@@ -295,7 +291,7 @@ private:
   int TRACK_WIDTH = 1500;
   int TRACK_HEIGHT = 100;
 
-  FreeDeckGUI& freeDeck;
+  //FreeDeckGUI& freeDeck;
 };
 
 
