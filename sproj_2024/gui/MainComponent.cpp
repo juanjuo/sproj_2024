@@ -29,10 +29,10 @@ MainComponent::MainComponent(const juce::ValueTree& tree, SPCommandManager& mana
     initializeApplication();
 }
 
-// MainComponent::~MainComponent()
-// {
-//     //deleteAllChildren();
-// }
+MainComponent::~MainComponent()
+{
+
+}
 
 void MainComponent::createNewTrack()
 {
@@ -51,7 +51,7 @@ void MainComponent::createNewDummyClip() //not the fastest way of doing this (be
 
 void MainComponent::initializeApplication() //only for the beta release of the application
 {
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < 0; i++)
     {
         createNewTrack();
     }

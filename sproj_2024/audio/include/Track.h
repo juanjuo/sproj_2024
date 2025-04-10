@@ -10,7 +10,7 @@
 
 #pragma once
 #include <Recorder.h>
-#include <AudioPlayer.h>
+#include <include/AudioPlayer.h>
 #include <SPCommandManager.h>
 #include <AudioClock.h>
 
