@@ -2,7 +2,7 @@
 // Created by Juan Diego on 10/29/24.
 //
 
-#include "MainAudio.h"
+#include "../include/MainAudio.h"
 
 MainAudio::MainAudio(juce::ValueTree v, SPCommandManager &manager, juce::AudioDeviceManager &audioManager)
     : valueTree(v), audioGraph(new juce::AudioProcessorGraph()), deviceManager(audioManager), commandManager(manager)

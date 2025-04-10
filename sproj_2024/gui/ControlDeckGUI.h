@@ -5,6 +5,7 @@
 #pragma once
 #include <DeckGUI.h>
 #include <helpers.h>
+#include "focusrite/e2e/ComponentSearch.h"
 
 //Metronome class
 class ClockGUI final : public juce::Component,
@@ -30,6 +31,8 @@ public:
     volumeSlider.setRange(0.0, 2.0, 0.1);
     volumeSlider.setValue(initialGain);
     volumeSlider.addListener(this);
+
+    focusrite::e2e::ComponentSearch::setTestId (volumeSlider, "test_metronome_volume_slider"); //for testing
 
     initializeValueTree();
   }

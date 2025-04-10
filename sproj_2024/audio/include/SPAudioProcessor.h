@@ -3,8 +3,8 @@
 //
 #pragma once
 
-#include <juce_audio_processors/juce_audio_processors.h>
-#include <juce_dsp/juce_dsp.h>
+#include <../../../cmake-build-debug/lib/juce/modules/juce_audio_processors/juce_audio_processors.h>
+#include <../../../cmake-build-debug/lib/juce/modules/juce_dsp/juce_dsp.h>
 
 
 class SPAudioProcessor : public juce::AudioProcessor,

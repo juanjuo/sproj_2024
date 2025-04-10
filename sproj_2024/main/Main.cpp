@@ -148,11 +148,10 @@ private:
     std::unique_ptr<SPCommandManager> commandManager = std::make_unique<SPCommandManager>();
     std::unique_ptr<MainComponent> mainComponent;
     std::unique_ptr<MainWindow> mainWindow;
-    juce::ValueTree valueTree{SP_ID::MAIN_BRANCH};
+    juce::ValueTree valueTree {SP_ID::MAIN_BRANCH};
 
     //End-to-End Testing
     std::unique_ptr<focusrite::e2e::TestCentre> testCentre;
-
 };
 
 //==============================================================================

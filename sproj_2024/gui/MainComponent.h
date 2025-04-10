@@ -31,7 +31,7 @@ public:
 
     explicit MainComponent(const juce::ValueTree& tree, SPCommandManager& manager, juce::AudioDeviceManager& deviceManager);
 
-    //~MainComponent() override;
+    ~MainComponent() override;
 
     void createNewTrack();
 

@@ -7,16 +7,18 @@ enable_testing()
 
 # Creates the test console application.
 add_executable(${PROJECT_NAME}
-        audio_test/MainAudioTest.cpp
+        unit_tests/MainAudioTest.cpp
 )
+
 #Sets the necessary audio directories: ours, JUCE's, and googletest's.
 target_include_directories(${PROJECT_NAME}
         PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/../sproj_2024/audio
-        ${CMAKE_CURRENT_SOURCE_DIR}/../sproj_2024/gui
-        ${CMAKE_CURRENT_SOURCE_DIR}/../sproj_2024/helpers
+#        ${CMAKE_CURRENT_SOURCE_DIR}/../sproj_2024/audio
+#        ${CMAKE_CURRENT_SOURCE_DIR}/../sproj_2024/gui
+#        ${CMAKE_CURRENT_SOURCE_DIR}/../sproj_2024/helpers
         ${JUCE_SOURCE_DIR}/modules
 )
+
 #target_compile_definitions(${PROJECT_NAME}
 #        PUBLIC
 #        JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1
