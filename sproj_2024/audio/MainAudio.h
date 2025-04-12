@@ -18,11 +18,11 @@ ADD MIDI
 
 #pragma once
 
-#include "../../../cmake-build-debug/lib/juce/modules/juce_audio_processors/juce_audio_processors.h"
-#include "../../../cmake-build-debug/lib/juce/modules/juce_audio_utils/juce_audio_utils.h"
-#include "../../../cmake-build-debug/lib/juce/modules/juce_audio_devices/juce_audio_devices.h"
-#include <../../gui/SPCommandManager.h>
-#include <../Track.h>
+#include "juce_audio_processors/juce_audio_processors.h"
+#include "juce_audio_utils/juce_audio_utils.h"
+#include "juce_audio_devices/juce_audio_devices.h"
+#include <SPCommandManager.h>
+#include "Track.h"
 
 
 class MainAudio final : public juce::ValueTree::Listener/*,juce::ApplicationCommandTarget*/

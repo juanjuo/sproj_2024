@@ -18,7 +18,7 @@
 */
 
 #pragma once
-#include <SPAudioProcessor.h>
+#include "SPAudioProcessor.h"
 
 class Recorder final : public SPAudioProcessor
 {

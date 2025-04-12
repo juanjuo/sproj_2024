@@ -2,8 +2,8 @@
 // Created by Juan Diego on 1/19/25.
 //
 #pragma once
-#include <../SPAudioProcessor.h>
-#include <../../../cmake-build-debug/lib/juce/modules/juce_audio_devices/juce_audio_devices.h>
+#include "SPAudioProcessor.h"
+#include <../../cmake-build-debug/lib/juce/modules/juce_audio_devices/juce_audio_devices.h>
 
 class AudioPlayer final : public SPAudioProcessor
 {

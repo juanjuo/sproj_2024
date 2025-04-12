@@ -7,7 +7,7 @@ project(sproj2024 VERSION 0.1.0)
 
 # Adding a directory with the library/application name as a subfolder of the
 # audio folder is a good practice. It helps avoid name clashes later on.
-set(AUDIO_DIR ${CMAKE_CURRENT_SOURCE_DIR}/sproj_audio)
+set(AUDIO_DIR ${CMAKE_CURRENT_SOURCE_DIR}/audio)
 set(GUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/gui)
 set(HELPERS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/helpers)
 set(MAIN_DIR ${CMAKE_CURRENT_SOURCE_DIR}/main)
@@ -40,12 +40,12 @@ juce_add_gui_app(${PROJECT_NAME}
 
 target_sources(${PROJECT_NAME}
         PRIVATE
-        sproj_audio/AudioPlayer.h
-        sproj_audio/AudioClock.h
-        sproj_audio/MainAudio.h
-        sproj_audio/Recorder.h
-        sproj_audio/SPAudioProcessor.h
-        sproj_audio/Track.h
+        audio/AudioPlayer.h
+        audio/AudioClock.h
+        audio/MainAudio.h
+        audio/Recorder.h
+        audio/SPAudioProcessor.h
+        audio/Track.h
         gui/ControlDeckGUI.h
         gui/DeckGUI.h
         gui/DeviceSelectionMenu.h
@@ -60,8 +60,8 @@ target_sources(${PROJECT_NAME}
         gui/MainDeckHolder.h
 
         main/Main.cpp
-        sproj_audio/MainAudio.cpp
-        sproj_audio/SPAudioProcessor.cpp
+        audio/MainAudio.cpp
+        audio/SPAudioProcessor.cpp
         gui/MainComponent.cpp
         gui/MainWindow.cpp
 )
@@ -71,7 +71,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON) #added
 # Sets the audio directories of the plugin project.
 target_include_directories(${PROJECT_NAME}
         PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/sproj_audio
+        ${CMAKE_CURRENT_SOURCE_DIR}/audio
         ${CMAKE_CURRENT_SOURCE_DIR}/gui
         ${CMAKE_CURRENT_SOURCE_DIR}/main
         ${CMAKE_CURRENT_SOURCE_DIR}/helpers

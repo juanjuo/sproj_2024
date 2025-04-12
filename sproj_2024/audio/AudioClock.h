@@ -3,7 +3,7 @@
 //
 #pragma once
 
-#include <SPAudioProcessor.h>
+#include "SPAudioProcessor.h"
 #include <SPCommandManager.h>
 #include <random>
 #include <helpers.h>
