@@ -2,7 +2,7 @@
 // Created by Juan Diego on 10/23/24.
 //
 
-#include "../include/SPAudioProcessor.h"
+#include "SPAudioProcessor.h"
 
 //==============================================================================
 SPAudioProcessor::SPAudioProcessor()

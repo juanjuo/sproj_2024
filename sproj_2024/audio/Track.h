@@ -9,10 +9,11 @@
  */
 
 #pragma once
-#include <Recorder.h>
-#include <include/AudioPlayer.h>
+#include "Recorder.h"
+#include "AudioPlayer.h"
 #include <SPCommandManager.h>
-#include <AudioClock.h>
+#include "AudioClock.h"
+#include <helpers.h>
 
 class Track final : public SPAudioProcessor,
                     public juce::ApplicationCommandTarget,

@@ -24,10 +24,11 @@
 // static MainAudioTest test;
 
 #include <gtest/gtest.h>
-// #include <Track.h>
-// #include <FreeDeckGUI.h>
-// #include <SPCommandManager.h>
-// #include <AudioClock.h>
+#include "sproj_2024_lib/audio/Track.h"
+#include <sproj_2024_lib/gui/FreeDeckGUI.h>
+#include <sproj_2024_lib/gui/SPCommandManager.h>
+#include <sproj_2024_lib/audio/AudioClock.h>
+#include <sproj_2024_lib/audio/MainAudio.h>
 
 
 TEST(MainAudioTest, Test1)
@@ -45,11 +46,26 @@ TEST(MainAudioTest, Test2)
     EXPECT_EQ(2 * 2, 4);
 }
 
-// TEST(MainAudioTest, AudioTrack)
-// {
-//     juce::ValueTree tree = juce::ValueTree {"dummy_tree"};
-//     FreeDeckGUI deckGui {tree};
-//     SPCommandManager commandManager;
-//     AudioClock clock {tree};
-//     Track track {tree, tree, commandManager, (&clock)};
-// }
+TEST(MainAudioTest, MainAudio_ConnectNode_Test)
+{
+    //initialize Track
+    juce::ValueTree tree = juce::ValueTree {"dummy_tree"};
+    SPCommandManager commandManager;
+    AudioClock clock {tree};
+
+    //Initialize Main Audio
+    juce::AudioDeviceManager deviceManager;
+    MainAudio mainAudio {tree, commandManager, deviceManager};
+
+    //add new track
+    auto audioGraph = mainAudio.getAudioGraph();
+    auto trackNode = audioGraph->addNode(std::make_unique<Track>(tree, tree, commandManager, (&clock)));
+
+    mainAudio.connectNode(trackNode);
+
+    auto inputNode = mainAudio.getInputNode();
+    auto outputNode = mainAudio.getOutputNode();
+
+    ASSERT_TRUE(audioGraph->isConnected(inputNode->nodeID, trackNode->nodeID));
+    ASSERT_TRUE(audioGraph->isConnected( trackNode->nodeID, outputNode->nodeID));
+}

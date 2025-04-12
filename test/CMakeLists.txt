@@ -19,6 +19,8 @@ target_include_directories(${PROJECT_NAME}
         ${JUCE_SOURCE_DIR}/modules
 )
 
+juce_add_module(${CMAKE_CURRENT_SOURCE_DIR}/../sproj_2024_lib ALIAS_NAMESPACE sproj)
+
 #target_compile_definitions(${PROJECT_NAME}
 #        PUBLIC
 #        JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1
@@ -67,8 +69,16 @@ target_include_directories(${PROJECT_NAME}
 # Thanks to the fact that we link against the gtest_main library, we don't have to write the main function ourselves.
 target_link_libraries(${PROJECT_NAME}
         PRIVATE
+        juce::juce_audio_devices
+        juce::juce_audio_processors
+        juce::juce_audio_utils
+        juce::juce_gui_extra
+        juce::juce_core
+        juce::juce_dsp
+        juce::juce_animation
         GTest::gtest_main
         focusrite-e2e::focusrite-e2e
+        sproj::sproj_2024_lib
 )
 
 # Adds googletest-specific CMake commands at our disposal.
