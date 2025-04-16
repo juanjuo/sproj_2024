@@ -16,29 +16,16 @@ public:
     explicit MenuComponent(SPCommandManager& manager)
         : commandManager(manager)
     {
-
-        //menuBar.reset (new juce::MenuBarComponent (this));
-        //addAndMakeVisible (menuBar.get());
         setApplicationCommandManagerToWatch (&commandManager); //for MenuBarModel
-        commandManager.registerAllCommandsForTarget (this); //3 REGISTERING COMMANDS FOR THIS TARGET
-
-        // this ensures that commands invoked on the DemoRunner application are correctly
-        // forwarded to this demo
+        commandManager.registerAllCommandsForTarget (this); //REGISTERING COMMANDS FOR THIS TARGET
         commandManager.setFirstCommandTarget (this);
 
-        // this lets the command manager use keypresses that arrive in our window to send out commands
-        addKeyListener (commandManager.getKeyMappings()); //4 ADD KEY MAPPINGS
-
-        // addChildComponent (menuHeader);
-        // addAndMakeVisible (outerCommandTarget);
-        // addAndMakeVisible (sidePanel);
+        addKeyListener (commandManager.getKeyMappings()); //ADD KEY MAPPINGS
 
         setWantsKeyboardFocus (true);
         #if JUCE_MAC
         setMacMainMenu(this);
         #endif
-
-        //commandManager.commandStatusChanged();
 
         commandManager.addTargetToCommandManager(this);
     }
@@ -48,8 +35,6 @@ public:
        #if JUCE_MAC
         MenuBarModel::setMacMainMenu (nullptr);
        #endif
-
-        //commandManager.setFirstCommandTarget (nullptr);
     }
 
     //MenuBar Methods
@@ -64,7 +49,6 @@ public:
 
         if (menuIndex == 0)
         {
-            //menu.addCommandItem(&commandManager, CommandIDs::menuPositionInsideWindow);
             #if JUCE_MAC
             menu.addCommandItem(&commandManager, SP_CommandID::print);
             menu.addCommandItem(&commandManager, SP_CommandID::show_audio_device_menu);
@@ -79,7 +63,7 @@ public:
         return menu;
     }
 
-    void menuItemSelected(int /*menuItemID*/, int /*topLevelMenuIndex*/) override
+    void menuItemSelected(int menuItemID, int topLevelMenuIndex) override
     {
     }
 
@@ -128,6 +112,5 @@ public:
 
 private:
     SPCommandManager& commandManager;
-    //std::unique_ptr<juce::MenuBarComponent> menuBar;
 };
 

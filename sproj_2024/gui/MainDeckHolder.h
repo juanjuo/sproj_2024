@@ -5,6 +5,7 @@
 #pragma once
 #include <MainDeckGUI.h>
 #include <MainDeckTiles.h>
+#include <focusrite/e2e/ComponentSearch.h>
 
 class MainDeckMask final : public juce::Component,
                            public juce::DragAndDropTarget,
@@ -33,7 +34,6 @@ public:
                                                 colour)); //add component to freeDeck
     deckClipNode.setProperty(SP_ID::clip_length_value, length, nullptr); //set up length
     deckClipNode.setProperty(SP_ID::clip_ready_to_play, 0, nullptr);
-    //deckClipNode.addListener(this);
     freeDeckGui.getValueTree().appendChild(deckClipNode, nullptr); //add at the end so all values are updated
 
     //set up value tree for TRACK
@@ -71,10 +71,6 @@ public:
     }
     return true;
   }
-
-  // void removeClip()
-  // {
-  // }
 
   void createNewClip(const bool isBackwards)
   {
@@ -115,7 +111,6 @@ public:
     if (areTilesOccupied(start, length))
     {
       juce::ValueTree clipValueTree(SP_ID::CLIP);
-      //clipValueTree.addListener(this);
       clipValueTree.setProperty(SP_ID::U_ID, clip->getValueTree().getProperty(SP_ID::U_ID), nullptr);
       clipValueTree.setProperty(SP_ID::clip_filepath, clip->getValueTree().getProperty(SP_ID::clip_filepath), nullptr);
       clipValueTree.setProperty(SP_ID::clip_end_value, end, nullptr);
@@ -134,28 +129,8 @@ public:
     }
   }
 
-  // void updateOccupied(int start, int end, bool state) const
-  // {
-  //   for (int i = start; i < end; i++)
-  //   {
-  //     tileList[i]->setOccupied(state);
-  //   }
-  // }
-  //
-  // bool areTilesOccupied(int start, int end) const
-  // {
-  //   bool canPerform = true;
-  //   for (int i = start; i < end; i++)
-  //   {
-  //     if (tileList[i]->getOccupied())
-  //       canPerform = false;
-  //   }
-  //   return canPerform;
-  // }
-
   void resized() override
   {
-    //setBounds(trackValueTree->getBounds());
   }
 
   void mouseDown(const juce::MouseEvent& event) override
@@ -171,29 +146,6 @@ public:
 
   void mouseUp(const juce::MouseEvent& event) override
   {
-    // if (event.mods.isCtrlDown()) // delete not working
-    // {
-    //   auto tile = dynamic_cast<MainDeckTile*>(track->getComponentAt(event.position)); //better type checking here?
-    //   if (tile != nullptr)
-    //   {
-    //     for (int i = 0; i < track->clips.size(); i++) // need to delete the element from the clip array afterward
-    //     {
-    //       DummyClip* clip = track->clips[i];
-    //       if (clip->getBounds().contains(tile->getBounds()))
-    //       {
-    //         auto start = clip->getValueTree().getProperty(SP_ID::clip_start_value);
-    //         auto end = clip->getValueTree().getProperty(SP_ID::clip_end_value);
-    //         track->updateOccupied(start, end, false);
-    //         track->getValueTree().removeChild((clip)->getValueTree(), nullptr); // delete tree
-    //         track->removeChildComponent(clip);
-    //         track->clips.remove(i);
-    //       }
-    //     }
-    //   }
-    //   lassoComponent.endLasso();
-    // }
-    // else
-    // {
     auto mouseStart = event.getMouseDownPosition();
     auto mouseEnd = event.getPosition();
     bool isBackwards = mouseStart.x > mouseEnd.x;
@@ -202,11 +154,9 @@ public:
         createNewClip(isBackwards);
     lassoComponent.endLasso();
     removeChildComponent(&lassoComponent);
-    //}
   }
 
   //Drag and drop methods
-
   bool isInterestedInDragSource(const SourceDetails& dragSourceDetails) override
   {
     juce::ignoreUnused(dragSourceDetails);
@@ -248,24 +198,6 @@ public:
     return tilesSelected;
   }
 
-  //Value Tree Listener methods
-  // void valueTreePropertyChanged(juce::ValueTree& treeWhosePropertyHasChanged,
-  //                             const juce::Identifier& property) override
-  // {
-  //   if (property == SP_ID::clip_ready_to_play)
-  //   {
-  //     for (auto clip : trackValueTree)
-  //     {
-  //       if (clip.getProperty(SP_ID::U_ID) == treeWhosePropertyHasChanged.getProperty(SP_ID::U_ID))
-  //       {
-  //         clip.setProperty(SP_ID::clip_ready_to_play, treeWhosePropertyHasChanged.getProperty(SP_ID::clip_ready_to_play), nullptr);
-  //       }
-  //     }
-  //     // auto freeDeckClip = freeDeckGui.getValueTree().getChildWithProperty(SP_ID::U_ID, treeWhosePropertyHasChanged.getProperty(SP_ID::U_ID));
-  //     // freeDeckClip.setProperty(SP_ID::clip_ready_to_play, treeWhosePropertyHasChanged.getProperty(SP_ID::clip_ready_to_play), nullptr);
-  //   }
-  // }
-
 private:
   juce::ValueTree trackValueTree;
 
@@ -283,7 +215,6 @@ class MainDeckHolder final : public juce::Component
 public:
   explicit MainDeckHolder(const juce::ValueTree& tree, FreeDeckGUI& fdeck) : freeDeckGui(fdeck)
   {
-    //setAlpha(0);
     setOpaque(false);
     setAlwaysOnTop(false);
     const auto deck1 = new MainDeckGUI(tree, MainDeckGUI::MainDeckMode::on_Screen);
@@ -308,7 +239,6 @@ public:
     grid.autoColumns = Track(juce::Grid::Px(TRACK_WIDTH));
     grid.autoRows = Track(juce::Grid::Px(TRACK_HEIGHT));
 
-    //grid.justifyContent = juce::Grid::JustifyContent::stretch; //technically not necessary?
     grid.autoFlow = juce::Grid::AutoFlow::row;
   }
 
@@ -344,6 +274,7 @@ public:
     mainDecks[0]->addTrack(tree, firstHalf);
     mainDecks[1]->addTrack(tree, secondHalf);
     auto mask = new MainDeckMask(tree, tiles, freeDeckGui);
+    focusrite::e2e::ComponentSearch::setTestId (*mask, "test_mask"); //for testing
     mask->setSize(getWidth(), TRACK_HEIGHT);
     grid.items.add(mask); //always returns right component?
     addAndMakeVisible(mask);

@@ -8,6 +8,8 @@ enable_testing()
 # Creates the test console application.
 add_executable(${PROJECT_NAME}
         unit_tests/MainAudioTest.cpp
+        unit_tests/AudioClockTest.cpp
+        unit_tests/TrackTest.cpp
 )
 
 #Sets the necessary audio directories: ours, JUCE's, and googletest's.

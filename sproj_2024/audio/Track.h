@@ -2,12 +2,6 @@
 // Created by Juan Diego on 1/17/25.
 //
 
-/* TODO:
- * maybe save all File pointers into an array and give them directly to the audioPlayer?
- * have to change AudioTransportSource, since this class is meant to be used Asynchronously
- *
- */
-
 #pragma once
 #include "Recorder.h"
 #include "AudioPlayer.h"
@@ -15,6 +9,10 @@
 #include "AudioClock.h"
 #include <helpers.h>
 
+/*  Track
+ *
+ *  Higher level class for handling recording and playback, as well as the scheduling of clips
+ */
 class Track final : public SPAudioProcessor,
                     public juce::ApplicationCommandTarget,
                     public juce::ValueTree::Listener,
@@ -27,6 +25,7 @@ public:
         player_Type
     };
 
+    // To hold Clip data
     struct ClipData
     {
         juce::String ID;
@@ -39,7 +38,6 @@ public:
     {
         commandManager.registerAllCommandsForTarget(this);
         commandManager.addTargetToCommandManager(this);
-        //player.setLooping(true); find a way to trigger looping from Track class (because of Command Target)
 
         player.setAudioSource(juce::URL{lastRecording});
 
@@ -47,6 +45,7 @@ public:
         clock->addChangeListener(this);
     }
 
+    // when a clip has been recorded, update it's 'ready to play' status
     void updateAllClipValueTrees(const juce::ValueTree& node) const
     {
         for (auto clip : trackValueTree)
@@ -76,36 +75,28 @@ public:
         player.stopPlayer();
     }
 
-
-    void startRecording(const juce::File& file) //SET VALUE TREE CLIP TO THIS VALUE
+    void startRecording(const juce::File& file)
     {
         lastRecording = file;
         recorder.startRecording(file);
-        //std::cout << lastRecording.getFileName() << std::endl;
     }
 
     void stopRecording()
     {
         recorder.stop();
 
-        //std::cout << "Recording ended" << std::endl;
-
         if (juce::FileInputStream inputStream(lastRecording); inputStream.openedOk())
             if (juce::FileOutputStream outputStream{lastRecording}; outputStream.openedOk())
                 outputStream.flush();
-        //std::cout << "Outputed corrently" << std::endl;
-        //player.setAudioSource(juce::URL {lastRecording});
     }
 
-    void prepareToPlay(double sampleRate, int samplesPerBlock) override //is there a better way to do this?
+    void prepareToPlay(double sampleRate, int samplesPerBlock) override
     {
-        //if (currentType == ProcessorMode::recorder_Type)
         recorder.prepareToPlay(sampleRate, samplesPerBlock);
-
-        //if (currentType == ProcessorMode::player_Type)
         player.prepareToPlay(sampleRate, samplesPerBlock);
     }
 
+    //This method is the one in charged of changing the functionality of the track, by bypassing the buffer
     void processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiBuffer) override
     {
         if (!isPaused)
@@ -132,7 +123,6 @@ public:
     }
 
     //ApplicationCommandTarget methods
-
     ApplicationCommandTarget* getNextCommandTarget() override
     {
         return nullptr;
@@ -140,7 +130,7 @@ public:
 
     void getAllCommands(juce::Array<juce::CommandID>& c) override
     {
-        juce::Array<juce::CommandID> commands{
+        const juce::Array<juce::CommandID> commands{
             SP_CommandID::record,
             SP_CommandID::play
         };
@@ -185,7 +175,6 @@ public:
             break;
         case SP_CommandID::play:
             //player.startOrStop();
-            //std::cout << player.isLooping() << std::endl;
             break;
         default:
             return false;
@@ -195,7 +184,7 @@ public:
     }
 
     //ValueTreeListener methods
-
+    //Update Track Gain
     void valueTreePropertyChanged(juce::ValueTree& treeWhosePropertyHasChanged,
                                   const juce::Identifier& property) override
     {
@@ -204,6 +193,7 @@ public:
                 player.setGain(treeWhosePropertyHasChanged.getProperty(property));
     }
 
+    // Parse clip data from ValueTree into clipData struct
     void valueTreeChildAdded(juce::ValueTree& parentTree, juce::ValueTree& childWhichHasBeenAdded) override
     {
         if (parentTree.getType() == SP_ID::TRACK)
@@ -224,15 +214,19 @@ public:
                 }
                 clipData.push_back({id, startValue, endValue});
                 // std::cout << "scheduler hashmap updated (clip added)" << std::endl;
-                for (const auto& data : clipData)
-                {
-                    std::cout << "Key: " << data.ID << ", start value: " << data.start << ", end value: "
-                        << data.end << std::endl;
-                }
+                // for (const auto& data : clipData)
+                // {
+                //     std::cout << "Key: " << data.ID << ", start value: " << data.start << ", end value: "
+                //         << data.end << std::endl;
+                // }
             }
     }
 
     //Change Listener Methods
+    /* Scheduler
+     *
+     *  This method is called by the clock every beat, and searches through the clipData vector for clips ready to be recorded/played
+     */
     void changeListenerCallback(juce::ChangeBroadcaster* source) override
     {
         juce::ignoreUnused(source);
@@ -276,9 +270,8 @@ public:
             //for erasing the elements that hit 0. this is really slow!
         }
 
-
         currentBeat++;
-        if (currentBeat == 160) //do this during runtime
+        if (currentBeat == 160) //For further implementations: do this during runtime
         {
 
             currentBeat = 0;
@@ -290,7 +283,6 @@ private:
     ProcessorMode currentType = ProcessorMode::player_Type;
 
     SPCommandManager& commandManager;
-    //juce::File lastRecording{juce::File("/Users/juan/Desktop/Sunny2.wav")};
 
     juce::File lastRecording;
 
@@ -299,7 +291,7 @@ private:
 
     float gain = player.getGain();
 
-    int numFiles = 0; //make this global/static
+    int numFiles = 0;
 
     juce::ValueTree trackValueTree;
     juce:: ValueTree freeDeckValueTree;
@@ -308,7 +300,7 @@ private:
 
     int currentBeat = 0;
 
-    juce::String createNewFileName() //maybe make this static as well??
+    juce::String createNewFileName()
     {
         std::ostringstream oss;
         numFiles++;

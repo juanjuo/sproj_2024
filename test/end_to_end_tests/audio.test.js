@@ -12,17 +12,35 @@ beforeEach(async () => {
 afterEach(async () => {
     await app.quit();
 }, 10 * SECONDS);
+
 it('metronome_gain', async () =>{
     await app.setSliderValue("test_metronome_volume_slider", 2);
     const value = await app.getSliderValue("test_metronome_volume_slider")
     expect(value).toEqual(2);
-
 });
 
-it('metronome_gain', async () =>{
-    await app.setSliderValue("test_metronome_volume_slider", 2);
-    const value = await app.getSliderValue("test_metronome_volume_slider")
+it('track_gain', async () =>{
+    await app.setSliderValue("test_track_volume_slider", 2);
+    const value = await app.getSliderValue("test_track_volume_slider")
     expect(value).toEqual(2);
+});
+
+// it('component_focus', async () =>{
+//     const component = await app.getFocusedComponent()
+//     expect(component).toEqual("test_mask");
+// });
+
+it('command_manager_menu', async () =>{
+    let isActive = await app.getComponentVisibility("test_deviceSelector")
+    expect(isActive).toEqual(false);
+
+    await app.keyPress("l", "command")
+    isActive = await app.getComponentVisibility("test_deviceSelector")
+    expect(isActive).toEqual(true);
+});
+
+it('command_manager_start_processing', async () =>{
+
 });
 
 

@@ -64,8 +64,6 @@ private:
 
     juce::ValueTree valueTree;
 
-    //juce::Colour selectedColour = juce::Colours::green
-
     juce::Colour selectedColour = juce::Colour::fromRGBA(0, 0, 0, 0);
 };
 

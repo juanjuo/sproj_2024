@@ -3,15 +3,19 @@
 //
 #pragma once
 #include "SPAudioProcessor.h"
-#include <../../cmake-build-debug/lib/juce/modules/juce_audio_devices/juce_audio_devices.h>
+#include <juce_audio_devices/juce_audio_devices.h>
 
+
+/* AudioPlayer
+ *
+ * Controls Playback of files
+ */
 class AudioPlayer final : public SPAudioProcessor
 {
 public:
-    explicit AudioPlayer(/*const juce::URL& audioFile*/)
+    explicit AudioPlayer()
     {
-        formatManager.registerBasicFormats();
-        //setAudioResource(audioFile);
+        formatManager.registerBasicFormats(); //WAV files manager
         lookaheadThread.startThread(juce::Thread::Priority::normal);
     }
 
@@ -19,9 +23,6 @@ public:
     {
         transportSource.setSource(nullptr);
     }
-
-
-    //for pausing the processing, save the last position, and when you restart you start from there
 
     void startPlayer()
     {
@@ -53,28 +54,20 @@ public:
         return transportSource.getCurrentPosition();
     }
 
-    //Audio Processor Methods
-
+    //Audio Processor methods
     void prepareToPlay(double sampleRate, int samplesPerBlock) override
     {
         setAudioSource(currentAudioFile);
         transportSource.prepareToPlay(samplesPerBlock, sampleRate);
-        //setLooping(true);
-    }
-
-    void releaseResources() override
-    {
+        //setLooping(true); //for further implementation
     }
 
     void processBlock(juce::AudioBuffer<float>& buffer,
                       juce::MidiBuffer& midiMessages) override
     {
         juce::ignoreUnused(midiMessages);
-        // if (currentAudioFileSource == nullptr) // for example
-        // {
-        //     buffer.clear();
-        //     return;
-        // }
+
+        //create buffer for transportSource
         juce::AudioSourceChannelInfo bufferToFill{};
         bufferToFill.buffer = &buffer;
         bufferToFill.startSample = 0;
@@ -95,6 +88,7 @@ public:
         currentAudioFile = std::move(source);
     }
 
+    //FOR FUTURE IMPLEMENTATION
     // void setLooping(const bool shouldLoop)
     // {
     //     if (currentAudioFileSource == nullptr) return;
@@ -104,7 +98,7 @@ public:
     //
     // bool isLooping() const
     // {
-    //     return transportSource.isLooping(); //maybe won't work?
+    //     return transportSource.isLooping();
     // }
 
 private:
