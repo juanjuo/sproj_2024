@@ -7,7 +7,6 @@
 #include <juce_audio_utils/juce_audio_utils.h>
 #include <SPCommandManager.h>
 
-//==============================================================================
 class DeviceSelectionMenu final : public juce::DocumentWindow,
                                   public juce::ChangeListener,
                                   public juce::ApplicationCommandTarget
@@ -94,8 +93,6 @@ public:
 
         return true;
     }
-
-    //
 
     class InnerComponent final : public juce::Component
     {

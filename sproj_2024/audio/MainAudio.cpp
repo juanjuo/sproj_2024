@@ -12,15 +12,9 @@ MainAudio::MainAudio(juce::ValueTree v, SPCommandManager &manager, juce::AudioDe
     deviceManager.initialiseWithDefaultDevices(2, 2);
     deviceManager.addAudioCallback(audioPlayer.get());
 
-
     audioPlayer->setProcessor(audioGraph.get());
 
-    //device->reset(deviceManager.getCurrentAudioDevice());
-
     baseSampleRate = deviceManager.getAudioDeviceSetup().sampleRate;
-
-    // commandManager.registerAllCommandsForTarget(this);
-    // commandManager.addTargetToCommandManager(this);
 
     valueTree.addListener(this);
 
@@ -54,10 +48,6 @@ void MainAudio::initGraph()
 
 }
 
-void MainAudio::updateGraph()
-{
-}
-
 void MainAudio::addNewTrack(juce::ValueTree& node)
 {
     auto* clock = dynamic_cast<AudioClock*>(clockNode->getProcessor());
@@ -67,6 +57,9 @@ void MainAudio::addNewTrack(juce::ValueTree& node)
     connectNode(newTrack);
 }
 
+/*
+ * Connect a node to the input and output channels
+ */
 void MainAudio::connectNode(const juce::AudioProcessorGraph::Node::Ptr &node) const
 {
     for (int channel = 0; channel < 2; ++channel)

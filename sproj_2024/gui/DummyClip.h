@@ -6,11 +6,6 @@
 #include <DeckGUI.h>
 #include "helpers.h"
 
-/* BUGS!
- *
- * when dragging objects that are on top of the MixDeck the buffered image doesn't show correctly
- *
- */
 
 class DummyClip final : public juce::Component,
                         public DeckGUI
@@ -100,7 +95,6 @@ public:
         g.fillRect(getLocalBounds());
         g.setColour(juce::Colours::black);
         g.drawRect(getLocalBounds(), BORDER_WIDTH - 1);
-        //setTopLeftPosition();
     }
 
     void resized() override
@@ -117,6 +111,7 @@ public:
             auto dragImage = createComponentSnapshot(getBounds(), true);
 
             auto p = juce::Point<int>(x, y) - e.getEventRelativeTo(this).position.toInt();
+
             // ReSharper disable once CppDeprecatedEntity
             dragContainer->startDragging(dragDescription, this, dragImage, allowDraggingToOtherWindows, &p, &e.source);
         }
@@ -129,16 +124,12 @@ public:
     }
 
 private:
-    bool isBeingDragged = false; //if I ever want to make the dragAndDrop look better
+    bool isBeingDragged = false;
 
     juce::ValueTree valueTree;
 
 
     juce::String localFilePath {" "};
-
-    //juce::String localFilePath {"/Users/juan/Desktop/Sunny2.wav"};
-
-    //juce::File filePath {juce::File("/Users/juan/Desktop/Sunny2.wav")};
 
     static int calculateLengthInBeats(const int start, const int end)
     {

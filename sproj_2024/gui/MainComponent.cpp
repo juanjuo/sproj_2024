@@ -1,6 +1,6 @@
 #include "MainComponent.h"
+#include <focusrite/e2e/ComponentSearch.h>
 
-//==============================================================================
 MainComponent::MainComponent(const juce::ValueTree& tree, SPCommandManager& manager, juce::AudioDeviceManager& dmanager)
     : commandManager(manager), deviceManager(dmanager), valueTree(tree)
 
@@ -22,6 +22,8 @@ MainComponent::MainComponent(const juce::ValueTree& tree, SPCommandManager& mana
     addAndMakeVisible(mainDeckHolder.get());
     addAndMakeVisible(menu.get());
     addChildComponent(deviceSelector.get());
+
+    focusrite::e2e::ComponentSearch::setTestId(*deviceSelector, "test_deviceSelector"); //for testing
 
     commandManager.registerAllCommandsForTarget(this);
     commandManager.addTargetToCommandManager(this);
@@ -49,9 +51,9 @@ void MainComponent::createNewDummyClip() //not the fastest way of doing this (be
     freeDeckGui->createNewDummyClip();
 }
 
-void MainComponent::initializeApplication() //only for the beta release of the application
+void MainComponent::initializeApplication() //only for sproj version of application
 {
-    for (int i = 0; i < 0; i++)
+    for (int i = 0; i < 1; i++)
     {
         createNewTrack();
     }
@@ -62,7 +64,6 @@ void MainComponent::startOrStopAnimation()
     mainDeckHolder->startOrStopAnimation();
 }
 
-//==============================================================================
 void MainComponent::paint(juce::Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
@@ -71,9 +72,6 @@ void MainComponent::paint(juce::Graphics& g)
 
 void MainComponent::resized()
 {
-    // This is called when the MainComponent is resized.
-    // If you add any child components, this is where you should
-    // update their positions.
     rulerDeckGUI->setBounds(getX(), getY(), getWidth(), controlDeckGui->getHeight());
     controlDeckGui->setBounds(getX(), getY(), mixDeckGui->getWidth(), controlDeckGui->getHeight());
     freeDeckGui->setBounds(getX(), getHeight() - freeDeckGui->getHeight(), getWidth(), freeDeckGui->getHeight());

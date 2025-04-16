@@ -3,6 +3,7 @@
 //
 #pragma once
 #include <DeckGUI.h>
+#include <focusrite/e2e/ComponentSearch.h>
 
 class MixDeckTrack final : public juce::Component,
                            public DeckGUI,
@@ -18,6 +19,8 @@ public:
         volumeSlider.setRange(0.0, 2.0, 0.1);
         volumeSlider.setValue(initialGain);
         volumeSlider.addListener(this);
+
+        focusrite::e2e::ComponentSearch::setTestId (volumeSlider, "test_track_volume_slider"); //for testing
 
         setUpValueTree();
     }
@@ -43,7 +46,6 @@ public:
     }
 
     //Slider Listener
-
     void sliderValueChanged(juce::Slider* slider) override
     {
         node.setProperty(SP_ID::track_gain, slider->getValue(), nullptr);
@@ -65,8 +67,6 @@ public:
         : DeckGUI(200, 200, juce::Colour::fromRGB(60, 60, 60)), valueTree(v)
     {
         setSize(WINDOW_WIDTH, WINDOW_WIDTH);
-        //addAndMakeVisible(resizableEdge);
-        //resizableEdge.setAlwaysOnTop(true);
         setUpGrid(TRACK_WIDTH);
     }
 
@@ -93,8 +93,6 @@ public:
 
         grid.autoColumns = Track(juce::Grid::Px(TRACK_WIDTH));
         grid.autoRows = Track(juce::Grid::Px(TRACK_HEIGHT));
-
-        //grid.justifyContent = juce::Grid::JustifyContent::stretch; //technically not necessary?
         grid.autoFlow = juce::Grid::AutoFlow::row;
     }
 
@@ -109,7 +107,6 @@ public:
     void resized() override
     {
         const auto rect = getLocalBounds();
-        //resizableEdge.setBounds(rect.getX() + rect.getWidth() - RESIZABLE_EDGE, rect.getY(), RESIZABLE_EDGE,rect.getHeight());
 
         setUpGrid(rect.getWidth());
     }
@@ -118,8 +115,6 @@ private:
     juce::Grid grid;
 
     //juce::ResizableEdgeComponent resizableEdge{this, nullptr, juce::ResizableEdgeComponent::Edge::rightEdge};
-
-    //juce::OwnedArray<MixDeckTrack> mixDeckTracks;
 
     juce::ValueTree valueTree;
 

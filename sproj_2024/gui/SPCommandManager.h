@@ -42,6 +42,6 @@ public:
     }
 
 private:
-    juce::Array<juce::ApplicationCommandTarget*> targets; //owned array?
+    juce::Array<juce::ApplicationCommandTarget*> targets;
 };
 

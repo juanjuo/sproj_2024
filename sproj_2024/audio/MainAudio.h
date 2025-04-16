@@ -24,8 +24,11 @@ ADD MIDI
 #include <SPCommandManager.h>
 #include "Track.h"
 
-
-class MainAudio final : public juce::ValueTree::Listener/*,juce::ApplicationCommandTarget*/
+/*  MainAudio
+ *
+ *  This class holds a list of tracks, representing their processing in an AudioGraph
+ */
+class MainAudio final : public juce::ValueTree::Listener
 {
 public:
 
@@ -35,38 +38,28 @@ public:
 
     void initGraph();
 
-    void updateGraph();
-
     void addNewTrack(juce::ValueTree& node);
 
     void connectNode(const juce::AudioProcessorGraph::Node::Ptr& node) const;
 
     void pauseOrResumeProcessing();
 
-    //ApplicationCommandTarget methods
-    //
-    // ApplicationCommandTarget *getNextCommandTarget() override;
-    // void getAllCommands(juce::Array<juce::CommandID> &c) override;
-    // void getCommandInfo(const juce::CommandID commandID, juce::ApplicationCommandInfo &result) override;
-    // bool perform(const InvocationInfo &info) override;
-
     //ValueTreeListener methods
     void valueTreeChildAdded(juce::ValueTree& parentTree, juce::ValueTree& childWhichHasBeenAdded) override;
-
 
 private:
     juce::ValueTree valueTree;
 
     juce::AudioProcessorGraph::Node::Ptr inputNode;
     juce::AudioProcessorGraph::Node::Ptr outputNode;
-
-    std::unique_ptr<juce::AudioProcessorGraph> audioGraph;
-    juce::AudioDeviceManager& deviceManager;
-    //juce::AudioIODevice* device;
-    std::unique_ptr<juce::AudioProcessorPlayer> audioPlayer = std::make_unique<juce::AudioProcessorPlayer>();
-    double baseSampleRate;
-    //bool isPlaying = true;
-    SPCommandManager& commandManager;
     juce::AudioProcessorGraph::Node::Ptr clockNode;
+    std::unique_ptr<juce::AudioProcessorGraph> audioGraph;
     juce::ReferenceCountedArray<juce::AudioProcessorGraph::Node> trackArray;
+
+    juce::AudioDeviceManager& deviceManager;
+    std::unique_ptr<juce::AudioProcessorPlayer> audioPlayer = std::make_unique<juce::AudioProcessorPlayer>();
+
+    double baseSampleRate;
+
+    SPCommandManager& commandManager;
 };

@@ -11,7 +11,6 @@
 class MainDeckTrack final : public juce::Component,
                             public DeckGUI,
                             public juce::DragAndDropContainer
-  //public juce::ChangeListener
 {
 public:
   //represents every individual tile in the grid where audio files can be positioned
@@ -51,7 +50,6 @@ public:
     grid.autoColumns = Track(juce::Grid::Fr(NUM_TILES));
     grid.autoRows = Track(juce::Grid::Px(TILE_HEIGHT));
 
-    //grid.justifyContent = juce::Grid::JustifyContent::stretch; //technically not necessary?
     grid.autoFlow = juce::Grid::AutoFlow::column;
   }
 
@@ -64,7 +62,6 @@ public:
         tile->reset();
       }
     }
-    //node.removeAllChildren(nullptr);
   }
 
   void paint(juce::Graphics& g) override
@@ -86,7 +83,6 @@ public:
 
   void resized() override
   {
-    //setUpGrid();
   }
 
 private:
@@ -95,11 +91,8 @@ private:
   juce::ValueTree node; //this track's value tree
   juce::Array<MainDeckTile*> tileList;
 
-  //int TILE_WIDTH = 15;
   int TILE_HEIGHT = 100;
-
   const int NUM_TILES = 80;
-
   const int NUM_BARS = 20;
 };
 
@@ -133,7 +126,6 @@ public:
     setUpGrid(TRACK_WIDTH);
 
     setPaintingIsUnclipped(true);
-    //TRACK_WIDTH = getWidth(); //maybe?
   }
 
   void addTrack(juce::ValueTree& newNode, const juce::Array<MainDeckTile*>& tiles)
@@ -143,12 +135,6 @@ public:
     grid.items.add(track);
     addAndMakeVisible(track);
   }
-
-  // void childBoundsChanged(Component* child) override //to update mask bounds! BUG
-  // {
-  //   for (auto mask : masks)
-  //     mask->resized();
-  // }
 
   void setUpGrid(const int width)
   {
@@ -163,12 +149,7 @@ public:
     grid.autoColumns = Track(juce::Grid::Px(TRACK_WIDTH));
     grid.autoRows = Track(juce::Grid::Px(TRACK_HEIGHT));
 
-    //grid.justifyContent = juce::Grid::JustifyContent::stretch; //technically not necessary?
     grid.autoFlow = juce::Grid::AutoFlow::row;
-
-    //update masks position
-    // for (auto mask : masks)
-    //   mask->resized();
   }
 
   void resetAllTracks() //for when animation re starts
@@ -207,7 +188,6 @@ public:
       updater.removeAnimator(*lastAnimation); //no need to get deleted manually maybe?
     }
     lastAnimation = new juce::Animator(generateAnimation(calculateSpeed()));
-    //updater.addAnimator(animator, [this] { updater.removeAnimator(animator); });
     updater.addAnimator(*lastAnimation);
     lastAnimation->start();
   }
@@ -222,8 +202,6 @@ private:
 
   juce::ValueTree valueTree;
 
-  //bool isEmpty = true; //checks whether this Main Deck has any track with clips
-
   float currentAnimationPosition;
 
   juce::Animator* lastAnimation;
@@ -233,7 +211,6 @@ private:
     const int bpm = valueTree.getChildWithName(SP_ID::METRONOME_BRANCH).getProperty(SP_ID::metronome_bpm);
     if (bpm <= 0)
     {
-      //std::cerr << "BPM must be a positive integer." << std::endl;
       return -1; // Indicate an error
     }
     int finalMs = static_cast<int>(60000.0f / bpm) * 160;
@@ -290,8 +267,6 @@ private:
 
   int TRACK_WIDTH = 1500;
   int TRACK_HEIGHT = 100;
-
-  //FreeDeckGUI& freeDeck;
 };
 
 

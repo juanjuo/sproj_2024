@@ -1,10 +1,3 @@
-
-
-// CMake builds don't use an AppConfig.h, so it's safe to audio juce module headers
-// directly. If you need to remain compatible with Projucer-generated builds, and
-// have called `juce_generate_juce_header(<thisTarget>)` in your CMakeLists.txt,
-// you could `#audio <JuceHeader.h>` here instead, to make all your module headers visible.
-
 #pragma once
 #include <juce_gui_extra/juce_gui_extra.h>
 #include <juce_audio_devices/juce_audio_devices.h>
@@ -17,13 +10,6 @@
 #include <DeviceSelectionMenu.h>
 #include <MainDeckHolder.h>
 
-
-
-//==============================================================================
-/*
-    This component lives inside our window, and this is where you should put all
-    your controls and content.
-*/
 class MainComponent final : public juce::Component,
                             public juce::ApplicationCommandTarget
 {
@@ -34,11 +20,8 @@ public:
     ~MainComponent() override;
 
     void createNewTrack();
-
     void createNewDummyClip();
-
     void initializeApplication();
-
     void startOrStopAnimation();
 
     //Component methods
@@ -47,17 +30,12 @@ public:
     void childBoundsChanged(Component *child) override;
 
     //ApplicationCommandTarget methods
-
     ApplicationCommandTarget *getNextCommandTarget() override;
-
     void getAllCommands(juce::Array<juce::CommandID> &c) override;
-
     void getCommandInfo(const juce::CommandID commandID, juce::ApplicationCommandInfo &result) override;
-
     bool perform(const InvocationInfo &info) override;
 
 private:
-
     bool isPlaybackOn = false;
 
     SPCommandManager& commandManager;

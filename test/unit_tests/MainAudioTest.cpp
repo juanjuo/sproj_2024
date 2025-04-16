@@ -2,49 +2,12 @@
 // Created by Juan Diego on 4/9/25.
 //
 
-// #include <MainAudio.h>
-// #include "juce_audio_devices/juce_audio_devices.h"
-//
-// class MainAudioTest  : public juce::UnitTest
-// {
-// public:
-//     MainAudioTest()  : UnitTest ("Foobar testing") {}
-//
-//     void runTest() override
-//     {
-//         beginTest ("Part 1");
-//
-//         beginTest ("Part 2");
-//     }
-// };
-//
-// // Creating a static instance will automatically add the instance to the array
-// // returned by UnitTest::getAllTests(), so the test will be included when you call
-// // UnitTestRunner::runAllTests()
-// static MainAudioTest test;
-
 #include <gtest/gtest.h>
 #include "sproj_2024_lib/audio/Track.h"
 #include <sproj_2024_lib/gui/FreeDeckGUI.h>
 #include <sproj_2024_lib/gui/SPCommandManager.h>
 #include <sproj_2024_lib/audio/AudioClock.h>
 #include <sproj_2024_lib/audio/MainAudio.h>
-
-
-TEST(MainAudioTest, Test1)
-{
-
-    ASSERT_FALSE(false);
-
-    EXPECT_STRNE("Hello", "Sailor");
-
-    EXPECT_EQ(7 * 6, 42);
-}
-
-TEST(MainAudioTest, Test2)
-{
-    EXPECT_EQ(2 * 2, 4);
-}
 
 TEST(MainAudioTest, MainAudio_ConnectNode_Test)
 {
@@ -69,3 +32,120 @@ TEST(MainAudioTest, MainAudio_ConnectNode_Test)
     ASSERT_TRUE(audioGraph->isConnected(inputNode->nodeID, trackNode->nodeID));
     ASSERT_TRUE(audioGraph->isConnected( trackNode->nodeID, outputNode->nodeID));
 }
+
+TEST(MainAudioTest, MainAudio_AddNewTrack_1_Test)
+{
+    //initialize Track
+    juce::ValueTree tree = juce::ValueTree {"dummy_tree"};
+    SPCommandManager commandManager;
+
+    //Initialize Main Audio
+    juce::AudioDeviceManager deviceManager;
+    MainAudio mainAudio {tree, commandManager, deviceManager};
+
+    //add new track
+    mainAudio.addNewTrack(tree);
+
+    auto trackArray = mainAudio.getAudioTrackArray();
+
+    ASSERT_TRUE(trackArray.size() == 1);
+}
+
+TEST(MainAudioTest, MainAudio_AddNewTrack_2_Test)
+{
+    //initialize Track
+    juce::ValueTree tree = juce::ValueTree {"dummy_tree"};
+    SPCommandManager commandManager;
+
+    //Initialize Main Audio
+    juce::AudioDeviceManager deviceManager;
+    MainAudio mainAudio {tree, commandManager, deviceManager};
+
+    //add new track
+    for (int i = 0; i < 6; i++)
+        mainAudio.addNewTrack(tree);
+
+    auto trackArray = mainAudio.getAudioTrackArray();
+
+    ASSERT_TRUE(trackArray.size() == 6);
+}
+
+// ValueTree
+/*
+ * Add new Track via ValueTree
+ *
+ */
+TEST(MainAudioTest, MainAudio_AddNewTrack_3_Test)
+{
+    //initialize Track
+    juce::ValueTree tree = juce::ValueTree {SP_ID::TRACK_BRANCH};
+    SPCommandManager commandManager;
+
+    //Initialize Main Audio
+    juce::AudioDeviceManager deviceManager;
+    MainAudio mainAudio {tree, commandManager, deviceManager};
+
+    //add new track via value tree
+    auto newTree = juce::ValueTree {SP_ID::TRACK};
+    tree.appendChild(newTree, nullptr);
+
+    SP::printVT(tree);
+
+    auto trackArray = mainAudio.getAudioTrackArray();
+
+    ASSERT_TRUE(trackArray.size() == 1);
+}
+
+TEST(MainAudioTest, MainAudio_PauseOrResumeProcessing_1_Test)
+{
+    constexpr int numOfTracks = 6;
+
+    //Initialize Main Audio
+    juce::ValueTree tree = juce::ValueTree {"dummy_tree"};
+    SPCommandManager commandManager;
+    juce::AudioDeviceManager deviceManager;
+    MainAudio mainAudio {tree, commandManager, deviceManager};
+
+    for (int i = 0; i < numOfTracks; i++)
+        mainAudio.addNewTrack(tree);
+
+    mainAudio.pauseOrResumeProcessing();
+
+    auto trackList = mainAudio.getAudioTrackArray();
+
+    for (int i = 0; i < numOfTracks; i++)
+    {
+        auto trackNode = trackList[i];
+        auto track = dynamic_cast<Track*>(trackNode->getProcessor());
+        ASSERT_FALSE(track->getIsPaused());
+    }
+}
+
+TEST(MainAudioTest, MainAudio_PauseOrResumeProcessing_2_Test)
+{
+    constexpr int numOfTracks = 6;
+
+    //Initialize Main Audio
+    juce::ValueTree tree = juce::ValueTree {"dummy_tree"};
+    SPCommandManager commandManager;
+    juce::AudioDeviceManager deviceManager;
+    MainAudio mainAudio {tree, commandManager, deviceManager};
+
+    for (int i = 0; i < numOfTracks; i++)
+        mainAudio.addNewTrack(tree);
+
+    mainAudio.pauseOrResumeProcessing();
+
+    mainAudio.pauseOrResumeProcessing();
+
+
+    auto trackList = mainAudio.getAudioTrackArray();
+
+    for (int i = 0; i < numOfTracks; i++)
+    {
+        auto trackNode = trackList[i];
+        auto track = dynamic_cast<Track*>(trackNode->getProcessor());
+        ASSERT_TRUE(track->getIsPaused());
+    }
+}
+
