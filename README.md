@@ -1,6 +1,6 @@
 # LoopScheduler
 
-![LoopScheduler_2025](https://drive.google.com/file/d/1yD4m955-eacfMoWef-sz0ICrgxzI5WdI/view?usp=share_link).
+<img width="1440" alt="LoopScheduler_2025" src="https://github.com/user-attachments/assets/a3fd54f3-ca41-4190-850f-9f4b0226f363" />
 
 ## Overview
 This project is a **DAW-like application for live looping**, designed to provide intuitive control over clip rearrangement and musical structure in real time. Unlike traditional DAWs, this application prioritizes flexibility in live performance, allowing musicians to manipulate loops dynamically.
