@@ -1,10 +1,11 @@
+# LoopScheduler
+
+![LoopScheduler_2025](https://drive.google.com/file/d/1yD4m955-eacfMoWef-sz0ICrgxzI5WdI/view?usp=share_link).
+
 ## Overview
 This project is a **DAW-like application for live looping**, designed to provide intuitive control over clip rearrangement and musical structure in real time. Unlike traditional DAWs, this application prioritizes flexibility in live performance, allowing musicians to manipulate loops dynamically.
 
 Built entirely using the [JUCE](https://github.com/juce-framework/JUCE) framework, it leverages JUCE’s powerful audio engine and GUI capabilities
-
-## Features
-✅ add features
 
 ## Building instructions
 
